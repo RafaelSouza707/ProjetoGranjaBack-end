@@ -13,3 +13,5 @@ class LoteRacaoSchema(Schema):
     quilos = fields.Decimal(required=True, as_string=True, places=3)
 
     valor = fields.Decimal(required=True, as_string=True, places=2)
+
+    

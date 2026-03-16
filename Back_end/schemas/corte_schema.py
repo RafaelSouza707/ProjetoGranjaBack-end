@@ -1,4 +1,5 @@
-from marshmallow import Schema, fields, validate
+from marshmallow import Schema, fields
+from schemas.lote_frango_schema import LoteFrangoSchema
 
 
 class CorteSchema(Schema):
@@ -9,3 +10,5 @@ class CorteSchema(Schema):
     data = fields.Date(required=True)
 
     peso = fields.Decimal(required=True, as_string=True, places=3)
+
+    lote_frango = fields.Nested(LoteFrangoSchema(only=("id", "fornecedor", "tipo_lote", "galpao")), dump_only=True)

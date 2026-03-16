@@ -3,6 +3,8 @@ from flask_restful import Resource
 from helpers.database import db
 from models.lote_frangos import LoteFrango
 from schemas.lote_frango_schema import LoteFrangoSchema
+from sqlalchemy import func
+from models.mortalidade import Mortalidade
 
 lote_frango_schema = LoteFrangoSchema()
 lotes_frangos_schema = LoteFrangoSchema(many=True)
@@ -10,12 +12,21 @@ lotes_frangos_schema = LoteFrangoSchema(many=True)
 
 class LoteFrangoResource(Resource):
     
-    def get(self, id=None):
+    def get(self, id=None, data=None):
         if id:
             lote_frango = LoteFrango.query.get_or_404(id)
             current_app.logger.info(f"Lote de frangos id= {id} encontrado com sucesso")
 
-            return lote_frango_schema.dump(lote_frango), 200
+            total_mortes = (db.session.query(func.sum(Mortalidade.quantidade_mortes)).filter(Mortalidade.id_lote_frango == id).scalar()) or 0
+
+            aves_viva = lote_frango.quantidade_inicial - total_mortes
+
+            resultado = lote_frango_schema.dump(lote_frango)
+
+            resultado["total_mortes"] = total_mortes
+            resultado["aves_viva"] = aves_viva
+
+            return resultado, 200
         
         current_app.logger.info(f"Buscando todos os lotes de frangos")
         lotes = LoteFrango.query.all()
@@ -25,7 +36,7 @@ class LoteFrangoResource(Resource):
     
     def post(self):
         json_data = request.get_json()
-        data = lotes_frangos_schema.load(json_data)
+        data = lote_frango_schema.load(json_data)
 
         novo_lote = LoteFrango(**data)
         db.session.add(novo_lote)

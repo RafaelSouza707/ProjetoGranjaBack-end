@@ -5,6 +5,7 @@ from flask_restful import Resource
 from helpers.database import db
 from models.consumo_lote_diaria import ConsumoLoteDiaria
 from schemas.consumo_lote_diaria_schema import ConsumoLoteDiariaSchema
+from datetime import datetime
 
 consumo_chema = ConsumoLoteDiariaSchema()
 consumos_schema = ConsumoLoteDiariaSchema(many=True)
@@ -18,11 +19,18 @@ class ConsumoLoteDiariaResource(Resource):
             consumo = ConsumoLoteDiaria.query.get_or_404(id)
 
             return consumo_chema.dump(consumo), 200
+        
+        data_busca = request.args.get("data")
+        if data_busca:
+            data_convertida = datetime.strptime(data_busca, "%Y-%m-%d").date()
+            resultados = ConsumoLoteDiaria.query.filter_by(data=data_convertida).all()
+            
+            return consumos_schema.dump(resultados)
 
-        lotes = ConsumoLoteDiaria.query.all()
-        current_app.logger.info(f"Consumos localizados com sucesso"), 200
+        consumo = ConsumoLoteDiaria.query.all()
+        current_app.logger.info(f"Consumos localizados com sucesso")
 
-        return consumos_schema.dump(lotes), 200
+        return consumos_schema.dump(consumo), 200
     
 
     def post(self):
@@ -52,7 +60,7 @@ class ConsumoLoteDiariaResource(Resource):
 
         db.session.commit()
 
-        current_app.logger.info(f"consumo registrado. {quantidade}kg abatidos do lote de ração {lote_racao.id}")
+        current_app.logger.info(f"Consumo registrado. {quantidade}kg abatidos do lote de ração {lote_racao.id}")
 
         return consumo_chema.dump(consumo), 201
 
@@ -60,7 +68,6 @@ class ConsumoLoteDiariaResource(Resource):
         consumo = ConsumoLoteDiaria.query.get_or_404(id)
         json_data = request.get_json()
         data = consumo_chema.load(json_data)
-        current_app.logger.info(data)
 
         current_app.logger.info(f"Atualização do registro do consumo diario do lote")
 
@@ -77,7 +84,7 @@ class ConsumoLoteDiariaResource(Resource):
             return {"message": "Lote de ração não econtrado"}
         
         consumo.id_lote_racao = data["id_lote_racao"]
-
+        
         consumo.data = data["data"]
         consumo.quilos = data["quilos"]
 

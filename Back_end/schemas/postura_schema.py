@@ -1,4 +1,5 @@
-from marshmallow import Schema, fields, validate
+from marshmallow import Schema, fields
+from schemas.lote_frango_schema import LoteFrangoSchema
 
 
 class PosturaSchema(Schema):
@@ -11,3 +12,5 @@ class PosturaSchema(Schema):
     quantidade_ovos = fields.Integer(required=True)
     
     ovos_descartados = fields.Integer(required=True)
+
+    lote_frango = fields.Nested(LoteFrangoSchema(only=("id", "fornecedor", "tipo_lote", "galpao")), dump_only=True)

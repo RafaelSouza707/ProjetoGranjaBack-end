@@ -24,17 +24,18 @@ setup_logging(app)
 
 # adiciona recurso
 api.add_resource(HomeResources, '/')
-api.add_resource(LoteRacaoResource, '/lote_racao')
+api.add_resource(LoteRacaoResource, '/lote_racao', '/lote_racao/<int:id>')
 api.add_resource(CorteResource, '/corte', '/corte/<int:id>')
-api.add_resource(PosturaResource, '/postura')
+api.add_resource(PosturaResource, '/postura', '/postura/<int:id>')
 api.add_resource(LoteFrangoResource, '/lote_frango', '/lote_frango/<int:id>')
-api.add_resource(DespesaResource, '/despesa')
-api.add_resource(TipoDespesaResource, '/tipo_despesa')
-api.add_resource(VendaOvosResource, '/venda_ovos')
-api.add_resource(VendaCorteResource, '/venda_corte')
-api.add_resource(MortalidadeResource, '/mortalidade')
-api.add_resource(ControleVacinasResource, '/controle_vacinas')
+api.add_resource(DespesaResource, '/despesa', '/despesa/<int:id>')
+api.add_resource(TipoDespesaResource, '/tipo_despesa', '/tipo_despesa/<int:id>')
+api.add_resource(VendaOvosResource, '/venda_ovos', '/venda_ovos/<int:id>')
+api.add_resource(VendaCorteResource, '/venda_corte', '/venda_corte/<int:id>')
+api.add_resource(MortalidadeResource, '/mortalidade', '/mortalidade/<int:id>')
+api.add_resource(ControleVacinasResource, '/controle_vacinas', '/controle_vacinas/<int:id>')
 api.add_resource(ConsumoLoteDiariaResource, '/consumo_lote_diaria', '/consumo_lote_diaria/<int:id>')
+
 
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)
