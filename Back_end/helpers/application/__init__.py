@@ -5,6 +5,7 @@ from flask_migrate import Migrate
 from dotenv import load_dotenv
 
 from helpers.database import db
+from helpers.error_handlers import register_error_handlers
 
 load_dotenv()
 
@@ -25,6 +26,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.init_app(app)
 
 migrate = Migrate(app, db)
+
+register_error_handlers(app)
 
 import models
 
