@@ -1,6 +1,6 @@
 from helpers.database import db
 from helpers.exceptions import NotFoundError
-from models.usuarios.escolaridades import Escolaridades as Model
+from models.usuarios.escolaridades import Escolaridade as Model
 
 class EscolaridadesService:
 

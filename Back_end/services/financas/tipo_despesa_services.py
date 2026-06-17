@@ -1,5 +1,5 @@
 from helpers.database import db
-from helpers.exceptions import NotFoundError#, BusinessRuleError
+from helpers.exceptions import NotFoundError
 from models.financas.tipo_despesa import TipoDespesa as Tipo
 
 class TipoDespesaService:

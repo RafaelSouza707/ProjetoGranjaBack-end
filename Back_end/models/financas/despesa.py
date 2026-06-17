@@ -13,6 +13,7 @@ class Despesa(db.Model):
     status_financas_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("status_financas.id", ondelete="RESTRICT"), nullable=False)
     lote_frango_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("lote_frango.id", ondelete="RESTRICT"), nullable=True)
 
+    data: Mapped[Date] = mapped_column(Date, nullable=False)
     data_vencimento: Mapped[Date | None] = mapped_column(Date, nullable=False)
     valor: Mapped[Decimal] = mapped_column(Numeric(15, 2), nullable=False)
     descricao: Mapped[str] = mapped_column(String(256), nullable=True)

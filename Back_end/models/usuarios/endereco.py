@@ -13,10 +13,16 @@ class Endereco(db.Model):
         primary_key=True
     )
 
-    funcionario_id: Mapped[int] = mapped_column(
+    funcionario_id: Mapped[int | None] = mapped_column(
         BigInteger,
-        ForeignKey("funcionario.id", ondelete="CASCADE"),
-        nullable=False
+        ForeignKey("funcionario.id"),
+        nullable=True
+    )
+
+    cliente_id: Mapped[int | None] = mapped_column(
+        BigInteger,
+        ForeignKey("cliente.id"),
+        nullable=True
     )
 
     cep: Mapped[str] = mapped_column(
@@ -46,5 +52,10 @@ class Endereco(db.Model):
 
     funcionario: Mapped["Funcionario"] = relationship(
         "Funcionario",
+        back_populates="enderecos"
+    )
+
+    cliente: Mapped["Cliente"] = relationship(
+        "Cliente",
         back_populates="enderecos"
     )

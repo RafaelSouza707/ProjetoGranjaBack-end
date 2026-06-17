@@ -2,6 +2,7 @@ import os
 from flask import Flask
 from flask_restful import Api
 from flask_migrate import Migrate
+from helpers.cache import cache
 from dotenv import load_dotenv
 
 from helpers.database import db
@@ -22,6 +23,13 @@ app.config["SQLALCHEMY_DATABASE_URI"] = (
 )
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+# Cache em memória
+app.config["CACHE_TYPE"] = "RedisCache"
+app.config["CACHE_REDIS_URL"] = "redis://localhost:6379/0"
+app.config["CACHE_DEFAULT_TIMEOUT"] = 300
+
+cache.init_app(app)
 
 db.init_app(app)
 

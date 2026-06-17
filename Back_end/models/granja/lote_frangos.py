@@ -26,7 +26,7 @@ class LoteFrango(db.Model):
     )
 
     identificacao: Mapped[str] = mapped_column(
-        String(50),
+        String(32),
         nullable=False,
         unique=True
     )
@@ -42,7 +42,7 @@ class LoteFrango(db.Model):
     )
 
     fornecedor: Mapped[str] = mapped_column(
-        String(100),
+        String(128),
         nullable=False
     )
 
@@ -52,7 +52,7 @@ class LoteFrango(db.Model):
     )
 
     observacao: Mapped[str] = mapped_column(
-        String(500),
+        String(512),
         nullable=True
     )
 
@@ -73,5 +73,10 @@ class LoteFrango(db.Model):
 
     producoes: Mapped[list["Producao"]] = relationship(
         "Producao",
+        back_populates="lote_frango"
+    )
+
+    despesa: Mapped["Despesa"] = relationship(
+        "Despesa",
         back_populates="lote_frango"
     )

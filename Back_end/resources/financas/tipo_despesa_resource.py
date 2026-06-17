@@ -14,11 +14,13 @@ class TipoDespesaResource(Resource):
     def get(self, id=None):
         if id:
             with session_scope():
-                resultado = Tipo.buscar_por_id(id)
-            return tipo_schema.dump(resultado), 200
+                entidade = Tipo.buscar_por_id(id)
+                resultado = tipo_schema.dump(entidade)
+            return resultado, 200
         with session_scope():
-            resultados = Tipo.listar()
-            return tipos_schema.dump(resultados), 200
+            entidades = Tipo.listar()
+            resultados = tipos_schema.dump(entidades)
+            return resultados, 200
 
 
     def post(self):

@@ -15,5 +15,5 @@ class ConsumoLoteDiariaSchema(Schema):
         validate=validate.Range(min=Decimal(0))
     )
 
-class Meta:
-    unknown = EXCLUDE
+    class Meta:
+        unknown = EXCLUDE

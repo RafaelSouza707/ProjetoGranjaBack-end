@@ -40,3 +40,8 @@ class Cliente(db.Model):
         back_populates="cliente",
         cascade="all, delete-orphan"
     )
+
+    vendas: Mapped[list["Venda"]] = relationship(
+        "Venda",
+        back_populates="cliente"
+    )

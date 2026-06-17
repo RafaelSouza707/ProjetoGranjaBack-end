@@ -21,5 +21,5 @@ class DespesaSchema(Schema):
     created_at = fields.DateTime(dump_only=True)
     updated_at = fields.DateTime(dump_only=True)
 
-class Meta:
-    unknown = EXCLUDE
+    class Meta:
+        unknown = EXCLUDE

@@ -2,6 +2,7 @@ from helpers.database import db
 from helpers.exceptions import NotFoundError
 from models.granja.consumo_lote_diaria import ConsumoLoteDiaria as Model
 
+
 class ConsumoLoteDiariaService:
 
     @staticmethod

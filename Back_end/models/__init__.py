@@ -22,7 +22,7 @@ from .granja.tipo_racao import TipoRacao
 from .usuarios.cliente_schema import Cliente
 from .usuarios.conta_adm import ContaADM
 from .usuarios.endereco import Endereco
-from .usuarios.escolaridades import Escolaridades
+from .usuarios.escolaridades import Escolaridade
 from .usuarios.funcionario import Funcionario
 from .usuarios.sexo import Sexo
 

@@ -2,6 +2,7 @@ from flask_restful import Resource
 from flask import request
 from helpers.validate_schema import validate_schema
 from helpers.db_utils import session_scope
+from helpers.cache import cache
 
 from services.financas.despesa_services import DespesaService
 from schemas.financas.despesa_schema import DespesaSchema
@@ -17,8 +18,15 @@ class DespesaResource(Resource):
                 resultado = DespesaService.buscar_por_id(id)
             return despesa_schema.dump(resultado), 200
         
+        cache_key = "despesa"
+        dados = cache.get(cache_key)
+        if dados is not None:
+            print("CACHE USADO")
+            return dados
+        print("CACHE NÃO USADO")
+        
         with session_scope():
-            resultados = DespesaService.listar()
+            resultados = DespesaService.listar()    
             return despesas_schema.dump(resultados), 200
     
 

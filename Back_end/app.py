@@ -17,6 +17,7 @@ from resources.controle_banco_de_dados.role_resource import RoleResource
 from resources.financas.despesa_resource import DespesaResource
 from resources.financas.status_financas_resource import StatusFinancasResource
 from resources.financas.tipo_despesa_resource import TipoDespesaResource
+from resources.financas.cards_gastos_resource import CardsGastosResource
 
 ## Granja
 from resources.granja.consumo_lote_diaria_resource import ConsumoLoteDiariaResource
@@ -66,6 +67,7 @@ api.add_resource(RoleResource, '/role', '/role/<int:id>')
 api.add_resource(DespesaResource, '/despesa', '/despesa/<int:id>')
 api.add_resource(StatusFinancasResource, '/status_financas', '/status_financas/<int:id>')
 api.add_resource(TipoDespesaResource, '/tipo_despesa', '/tipo_despesa/<int:id>')
+api.add_resource(CardsGastosResource, '/cards_gastos')
 
 ## Granja
 api.add_resource(ConsumoLoteDiariaResource, '/consumo_lote_diaria', '/consumo_lote_diaria/<int:id>')

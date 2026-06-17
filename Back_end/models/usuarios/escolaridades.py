@@ -4,8 +4,8 @@ from sqlalchemy import BigInteger, Identity, ForeignKey, String
 from helpers.database import db
 
 
-class Escolaridades(db.Model):
-    __tablename__ = "escolaridade"
+class Escolaridade(db.Model):
+    __tablename__ = "escolaridades"
 
     id: Mapped[int] = mapped_column(
         BigInteger,
