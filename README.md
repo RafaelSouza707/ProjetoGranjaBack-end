@@ -16,9 +16,8 @@
 `docker compose exec api flask db upgrade`
 
 ## Após isso acessar os end-points para teste.
-#
-#
-## Fique informado que para a atividade "Atividade 4 - Cache e serviços" foram escolhidos as entidades contidas no diretorio "granja": 
+
+# Fique informado que para a atividade "Atividade 4 - Cache e serviços" foram escolhidos as entidades contidas no diretorio "granja": 
 * consumo_lote_diaria - /consumo_lote_diaria;
 * lote_frangos - /lote_frango;
 * lote_racao - /lote_racao;
