@@ -2,7 +2,8 @@ from flask import Flask
 from flask_cors import CORS
 from helpers.application import app, api
 from helpers.database import db
-from models import * 
+from models import *
+from database.seed import run_seed
 
 # Resources
 from resources.home_resource import HomeResources
@@ -97,6 +98,10 @@ api.add_resource(TipoMovimentacaoResource, '/tipo_movimentacao', '/tipo_moviment
 api.add_resource(TipoUnidadeMediaResource, '/tipo_unidade_media', '/tipo_unidade_media/<int:id>')
 api.add_resource(VendaResource, '/venda', '/venda/<int:id>')
 
+
+@app.cli.command("seed")
+def seed():
+    run_seed()
 
 
 if __name__ == "__main__":
