@@ -9,7 +9,7 @@
 
 `cp .env.example .env`
 
-## Inicializar containers, fique atento ao fato da máquina possuir docker
+## Inicializar containers, fique atento ao fato da máquina precisar ter o docker instalado
 
 `docker compose up -d --build`
 
@@ -17,18 +17,18 @@
 
 `docker ps`
 
-## Execuar o migrate do projeto para fazer o banco de dados ficar adequado
+## Executar o migrate do projeto para fazer o banco de dados ficar adequado
 
 `docker compose exec api flask db upgrade`
 
-## Para realizar insercoes no bando de dados
+## Para realizar inserções no banco de dados
 
 `docker compose exec api flask seed`
 
 
 # Após isso acessar os end-points para teste.
 
-# Fique informado que para a atividade "Atividade 4 - Cache e serviços" foram escolhidos as entidades contidas no diretorio "granja": 
+# Fique informado que para a atividade "Atividade 4 - Cache e serviços" foram escolhidos as entidades contidas no diretorio "resources/granja": 
 * consumo_lote_diaria - /consumo_lote_diaria;
 * lote_frangos - /lote_frango;
 * lote_racao - /lote_racao;
