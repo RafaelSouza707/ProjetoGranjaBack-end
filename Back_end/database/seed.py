@@ -1,265 +1,204 @@
--- ==========================================
--- TIPO RAÇÃO
--- ==========================================
+from datetime import date
 
-INSERT INTO tipo_racao (nome, descricao) VALUES
-('inicial', 'Ração utilizada nas primeiras semanas'),
-('crescimento', 'Ração para fase de crescimento'),
-('terminação', 'Ração para fase final de engorda');
+from helpers.database import db
 
--- ==========================================
--- TIPO PRODUTO
--- ==========================================
+from models.granja.tipo_racao import TipoRacao
+from models.granja.tipo_produto import TipoProduto
+from models.granja.status_lote_frango import StatusLoteFrango
+from models.granja.lote_racao import LoteRacao
+from models.granja.lote_frango import LoteFrango
+from models.granja.mortalidade import Mortalidade
+from models.granja.consumo_lote_diaria import ConsumoLoteDiaria
 
-INSERT INTO tipo_produto (nome) VALUES
-('ovos'),
-('frango vivo'),
-('esterco'),
-('pinto de um dia'),
-('frango abatido');
 
--- ==========================================
--- STATUS LOTE FRANGO
--- ==========================================
+def run_seed():
+    if TipoRacao.query.first():
+        print("Seed já executado.")
+        return
 
-INSERT INTO status_lote_frango (nome) VALUES
-('ativo'),
-('finalizado'),
-('cancelado');
+    # ==========================================
+    # TIPO RAÇÃO
+    # ==========================================
 
--- ==========================================
--- LOTE RAÇÃO
--- ==========================================
+    tipo_inicial = TipoRacao(
+        nome="inicial",
+        descricao="Ração utilizada nas primeiras semanas"
+    )
 
-INSERT INTO lote_racao (
-    tipo_racao_id,
-    fornecedor,
-    data_compra,
-    quilos,
-    valor
-) VALUES
-(
-    1,
-    'NutriRacao LTDA',
-    '2026-01-05',
-    5000.000,
-    12500.00
-),
-(
-    2,
-    'AgroFeed LTDA',
-    '2026-02-01',
-    6000.000,
-    15600.00
-),
-(
-    3,
-    'NutriRacao LTDA',
-    '2026-03-01',
-    7000.000,
-    18900.00
-);
+    tipo_crescimento = TipoRacao(
+        nome="crescimento",
+        descricao="Ração para fase de crescimento"
+    )
 
--- ==========================================
--- LOTE FRANGO
--- ==========================================
+    tipo_terminacao = TipoRacao(
+        nome="terminação",
+        descricao="Ração para fase final de engorda"
+    )
 
-INSERT INTO lote_frango (
-    status_lote_frango_id,
-    identificacao,
-    quantidade_inicial,
-    data_alojamento,
-    fornecedor,
-    quantidade_atual,
-    observacao
-) VALUES
-(
-    1,
-    'A1',
-    500,
-    '2026-01-10',
-    'Agi Ota',
-    500,
-    'Primeiro lote do ano'
-),
-(
-    1,
-    'A2',
-    500,
-    '2026-02-10',
-    'Agi Ota',
-    500,
-    'Primeiro lote do ano'
-),
-(
-    1,
-    'A3',
-    500,
-    '2026-03-10',
-    'Agi Ota',
-    500,
-    'Primeiro lote do ano'
-),
-(
-    1,
-    'LF-2026-001',
-    600,
-    '2026-04-10',
-    'Agi Ota',
-    500,
-    'Primeiro lote do ano'
-),
-(
-    1,
-    'LF-2026-002',
-    1000,
-    '2026-04-11',
-    'Agi Ota',
-    500,
-    'Lote em fase de crescimento'
-);
+    db.session.add_all([
+        tipo_inicial,
+        tipo_crescimento,
+        tipo_terminacao
+    ])
 
--- ==========================================
--- MORTALIDADE
--- ==========================================
+    # ==========================================
+    # TIPO PRODUTO
+    # ==========================================
 
-INSERT INTO mortalidade (
-    lote_frango_id,
-    data,
-    quantidade_mortes
-) VALUES
-(
-    1,
-    '2026-01-10',
-    5
-),
-(
-    1,
-    '2026-01-11',
-    5
-),
-(
-    1,
-    '2026-01-12',
-    5
-),
-(
-    1,
-    '2026-01-13',
-    5
-),
-(
-    1,
-    '2026-01-14',
-    5
-),
-(
-    1,
-    '2026-01-15',
-    5
-),
-(
-    1,
-    '2026-01-16',
-    5
-),
-(
-    1,
-    '2026-01-17',
-    10
-),
-(
-    2,
-    '2026-02-10',
-    8
-),
-(
-    2,
-    '2026-02-11',
-    8
-),
-(
-    2,
-    '2026-02-12',
-    8
-),
-(
-    2,
-    '2026-02-13',
-    8
-),
-(
-    2,
-    '2026-02-14',
-    8
-),
-(
-    2,
-    '2026-02-14',
-    8
-);
+    db.session.add_all([
+        TipoProduto(nome="ovos"),
+        TipoProduto(nome="frango vivo"),
+        TipoProduto(nome="esterco"),
+        TipoProduto(nome="pinto de um dia"),
+        TipoProduto(nome="frango abatido")
+    ])
 
--- ==========================================
--- CONSUMO LOTE DIÁRIA
--- ==========================================
+    # ==========================================
+    # STATUS LOTE FRANGO
+    # ==========================================
 
-INSERT INTO consumo_lote_diaria (
-    lote_frango_id,
-    lote_racao_id,
-    data,
-    quilos
-) VALUES
-(
-    1,
-    1,
-    '2026-01-11',
-    120.500
-),
-(
-    1,
-    1,
-    '2026-01-12',
-    118.750
-),
-(
-    1,
-    1,
-    '2026-01-13',
-    118.750
-),
-(
-    1,
-    1,
-    '2026-01-14',
-    118.750
-),
-(
-    1,
-    1,
-    '2026-01-14',
-    118.750
-),
-(
-    1,
-    1,
-    '2026-01-15',
-    118.750
-),
-(
-    1,
-    2,
-    '2026-02-01',
-    135.200
-),
-(
-    2,
-    2,
-    '2026-02-16',
-    140.000
-),
-(
-    2,
-    3,
-    '2026-03-01',
-    155.800
-);
+    status_ativo = StatusLoteFrango(nome="ativo")
+    status_finalizado = StatusLoteFrango(nome="finalizado")
+    status_cancelado = StatusLoteFrango(nome="cancelado")
+
+    db.session.add_all([
+        status_ativo,
+        status_finalizado,
+        status_cancelado
+    ])
+
+    db.session.flush()
+
+    # ==========================================
+    # LOTE RAÇÃO
+    # ==========================================
+
+    lote_racao_1 = LoteRacao(
+        tipo_racao_id=tipo_inicial.id,
+        fornecedor="NutriRacao LTDA",
+        data_compra=date(2026, 1, 5),
+        quilos=5000,
+        valor=12500.00
+    )
+
+    lote_racao_2 = LoteRacao(
+        tipo_racao_id=tipo_crescimento.id,
+        fornecedor="AgroFeed LTDA",
+        data_compra=date(2026, 2, 1),
+        quilos=6000,
+        valor=15600.00
+    )
+
+    lote_racao_3 = LoteRacao(
+        tipo_racao_id=tipo_terminacao.id,
+        fornecedor="NutriRacao LTDA",
+        data_compra=date(2026, 3, 1),
+        quilos=7000,
+        valor=18900.00
+    )
+
+    db.session.add_all([
+        lote_racao_1,
+        lote_racao_2,
+        lote_racao_3
+    ])
+
+    db.session.flush()
+
+    # ==========================================
+    # LOTE FRANGO
+    # ==========================================
+
+    lote1 = LoteFrango(
+        status_lote_frango_id=status_ativo.id,
+        identificacao="A1",
+        quantidade_inicial=500,
+        data_alojamento=date(2026, 1, 10),
+        fornecedor="Agi Ota",
+        quantidade_atual=500,
+        observacao="Primeiro lote do ano"
+    )
+
+    lote2 = LoteFrango(
+        status_lote_frango_id=status_ativo.id,
+        identificacao="A2",
+        quantidade_inicial=500,
+        data_alojamento=date(2026, 2, 10),
+        fornecedor="Agi Ota",
+        quantidade_atual=500,
+        observacao="Primeiro lote do ano"
+    )
+
+    lote3 = LoteFrango(
+        status_lote_frango_id=status_ativo.id,
+        identificacao="A3",
+        quantidade_inicial=500,
+        data_alojamento=date(2026, 3, 10),
+        fornecedor="Agi Ota",
+        quantidade_atual=500,
+        observacao="Primeiro lote do ano"
+    )
+
+    db.session.add_all([
+        lote1,
+        lote2,
+        lote3
+    ])
+
+    db.session.flush()
+
+    # ==========================================
+    # MORTALIDADE
+    # ==========================================
+
+    db.session.add_all([
+        Mortalidade(
+            lote_frango_id=lote1.id,
+            data=date(2026, 1, 10),
+            quantidade_mortes=5
+        ),
+        Mortalidade(
+            lote_frango_id=lote1.id,
+            data=date(2026, 1, 11),
+            quantidade_mortes=5
+        ),
+        Mortalidade(
+            lote_frango_id=lote1.id,
+            data=date(2026, 1, 12),
+            quantidade_mortes=5
+        ),
+        Mortalidade(
+            lote_frango_id=lote1.id,
+            data=date(2026, 1, 17),
+            quantidade_mortes=10
+        )
+    ])
+
+    # ==========================================
+    # CONSUMO LOTE DIÁRIA
+    # ==========================================
+
+    db.session.add_all([
+        ConsumoLoteDiaria(
+            lote_frango_id=lote1.id,
+            lote_racao_id=lote_racao_1.id,
+            data=date(2026, 1, 11),
+            quilos=120.500
+        ),
+        ConsumoLoteDiaria(
+            lote_frango_id=lote1.id,
+            lote_racao_id=lote_racao_1.id,
+            data=date(2026, 1, 12),
+            quilos=118.750
+        ),
+        ConsumoLoteDiaria(
+            lote_frango_id=lote2.id,
+            lote_racao_id=lote_racao_2.id,
+            data=date(2026, 2, 16),
+            quilos=140.000
+        )
+    ])
+
+    db.session.commit()
+
+    print("Seed executado com sucesso.")
