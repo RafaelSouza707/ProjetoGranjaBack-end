@@ -1,6 +1,7 @@
 # Para fazer uso do projeto siga as instruções:
 ## Clone e entre no projeto
 `git clone https://github.com/RafaelSouza707/ProjetoGranjaBack-end`
+
 `cd Back_end/`
 
 ## Copiar o exemplo de .env (já vem configurado)
