@@ -2,7 +2,7 @@
 ## Clone e entre no projeto
 `git clone https://github.com/RafaelSouza707/ProjetoGranjaBack-end`
 
-`cd Back_end/`
+`cd ProjetoGranjaBack-end/Back_end/`
 
 ## Copiar o exemplo de .env (já vem configurado)
 `cp .env.example .env`
