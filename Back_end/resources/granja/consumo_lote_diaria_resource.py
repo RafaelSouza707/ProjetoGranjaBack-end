@@ -7,7 +7,6 @@ from helpers.cache import cache
 from services.granja.consumo_lote_diaria_service import ConsumoLoteDiariaService as Servico
 from schemas.granja.consumo_lote_diaria_schema import ConsumoLoteDiariaSchema as Schema
 
-
 schema = Schema()
 schemas = Schema(many=True)
 
@@ -18,9 +17,9 @@ class ConsumoLoteDiariaResource(Resource):
             cache_key = f"consumo_lote_diaria:{id}"
             dados = cache.get(cache_key)
             if dados is not None:
-                print("CACHE USADO")
+                print("CACHE USADO") # Apenas para testar o uso do cache. O print Será retirado na proxima atualização.
                 return dados
-            print("CACHE NÃO USADO")
+            print("CACHE NÃO USADO") # Apenas para testar o uso do cache. O print Será retirado na proxima atualização.
             with session_scope():
                 resultado = Servico.buscar_por_id(id)
                 resultado_final = schema.dump(resultado)
@@ -30,15 +29,14 @@ class ConsumoLoteDiariaResource(Resource):
                 resultado_final,
                 timeout=300
             )
-
             return resultado_final, 200
         
         cache_key = "consumo_lote_diaria"
         dados = cache.get(cache_key)
         if dados is not None:
-            print("CACHE USADO")
+            print("CACHE USADO") # Apenas para testar o uso do cache. O print Será retirado na proxima atualização.
             return dados
-        print("CACHE NÃO USADO")
+        print("CACHE NÃO USADO") # Apenas para testar o uso do cache. O print Será retirado na proxima atualização.
 
         with session_scope():
             resultados = Servico.listar()
@@ -83,6 +81,7 @@ class ConsumoLoteDiariaResource(Resource):
             resultado = schema.dump(atualizado)
         
         cache.delete("consumo_lote_diaria")
+        cache.delete(f"consumo_lote_diaria:{id}")
         return resultado, 200
     
 
@@ -92,4 +91,5 @@ class ConsumoLoteDiariaResource(Resource):
             Servico.deletar(delete)
 
         cache.delete("consumo_lote_diaria")
+        cache.delete(f"consumo_lote_diaria:{id}")
         return "", 204

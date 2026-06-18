@@ -2,6 +2,7 @@ from flask_restful import Resource
 from flask import request
 from helpers.validate_schema import validate_schema
 from helpers.db_utils import session_scope
+from helpers.cache import cache
 
 from services.granja.tipo_racao_service import TipoRacaoService as Servico
 from schemas.granja.tipo_racao_schema import TipoRacaoSchema as Schema
@@ -13,13 +14,38 @@ class TipoRacaoResource(Resource):
 
     def get(self, id=None):
         if id:
+            cache_key = f"tipo_racao:{id}"
+            dados = cache.get(cache_key)
+            if dados is not None:
+                print("CACHE USADO") # Apenas para testar o uso do cache. O print Será retirado na proxima atualização.
+                return dados
+            print("CACHE NÃO USADO") # Apenas para testar o uso do cache. O print Será retirado na proxima atualização.
             with session_scope():
                 resultado = Servico.buscar_por_id(id)
                 resultado_final = schema.dump(resultado)
+
+            cache.set(
+                cache_key,
+                resultado_final,
+                timeout=300
+            )
             return resultado_final, 200
+
+        cache_key = "tipo_racao"
+        dados = cache.get(cache_key)
+        if dados is not None:
+            print("CACHE USADO") # Apenas para testar o uso do cache. O print Será retirado na proxima atualização.
+            return dados
+        print("CACHE NÃO USADO") # Apenas para testar o uso do cache. O print Será retirado na proxima atualização.
         with session_scope():
             resultados = Servico.listar()
             resultados_final = schemas.dump(resultados)
+
+        cache.set(
+            cache_key,
+            resultados_final,
+            timeout=300
+        )
         return resultados_final, 200
 
 
@@ -35,6 +61,7 @@ class TipoRacaoResource(Resource):
             novo = Servico.criar(data)
             resultado = schema.dump(novo)
         
+        cache.delete("tipo_racao")
         return resultado, 201
     
 
@@ -51,6 +78,8 @@ class TipoRacaoResource(Resource):
             atualizado = Servico.atualizar(atualizar, data)
             resultado = schema.dump(atualizado)
         
+        cache.delete("tipo_racao")
+        cache.delete(f"tipo_racao:{id}")
         return resultado, 200
     
 
@@ -59,4 +88,6 @@ class TipoRacaoResource(Resource):
             delete = Servico.buscar_por_id(id)
             Servico.deletar(delete)
 
+        cache.delete("tipo_racao")
+        cache.delete(f"tipo_racao:{id}")
         return "", 204
