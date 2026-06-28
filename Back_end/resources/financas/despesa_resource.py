@@ -1,67 +1,107 @@
 from flask_restful import Resource
-from flask import request
+from flask import request, g
 from helpers.validate_schema import validate_schema
 from helpers.db_utils import session_scope
 from helpers.cache import cache
+from middlewares.auth_middleware import token_required
 
 from services.financas.despesa_services import DespesaService
 from schemas.financas.despesa_schema import DespesaSchema
+from elastic.despesa_sync import indexar_despesa
+from services.usuarios.access_user_granja_service import ValidarAcessoGranja
 
-despesa_schema = DespesaSchema()
-despesas_schema = DespesaSchema(many=True)
+schema = DespesaSchema()
+schemas = DespesaSchema(many=True)
+
+def deletar_cache(granja_id):
+    cache.delete(f"cache:granja:{granja_id}:despesa")
+    cache.delete(f"cache:granja:{granja_id}:despesa:cards_gastos")
 
 class DespesaResource(Resource):
 
-    def get(self, id=None):
-        if id:
-            with session_scope():
-                resultado = DespesaService.buscar_por_id(id)
-            return despesa_schema.dump(resultado), 200
-        
-        cache_key = "despesa"
+    @token_required
+    def get(self):
+        user_id = g.user_id
+        granja_id = request.args.get("granja_id", type=int)
+
+        if granja_id is None:
+            return {"error": "granja_id é obrigatório"}, 400
+
+        ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
+
+        cache_key = f"cache:granja:{granja_id}:despesa"
         dados = cache.get(cache_key)
         if dados is not None:
-            print("CACHE USADO")
-            return dados
-        print("CACHE NÃO USADO")
-        
-        with session_scope():
-            resultados = DespesaService.listar()    
-            return despesas_schema.dump(resultados), 200
-    
+            return dados, 200
 
+        resultados = schemas.dump(DespesaService.listar(granja_id))
+
+        cache.set(cache_key, resultados)
+        return resultados, 200
+
+
+    @token_required
     def post(self):
+        user_id = g.user_id
+
         json = request.get_json()
-        data, error = validate_schema(despesa_schema, json)
+        data, error = validate_schema(schema, json)
 
         if error:
             return str(error)
         
+        granja_id = data.get("granja_id")
+        if granja_id is None:
+            return {"error": "granja_id é obrigatório"}, 400
+
+        ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
+
         with session_scope():
             despesa = DespesaService.criar(data)
-            resultado = despesa_schema.dump(despesa)
+            indexar_despesa(despesa)
+            resultado = schema.dump(despesa)
 
+        deletar_cache(granja_id)
         return resultado, 201
     
 
+    @token_required
     def put(self, id):
+        user_id = g.user_id
         json = request.get_json()
-        data, error = validate_schema(despesa_schema, json, partial=True)
+        data, error = validate_schema(schema, json, partial=True)
 
         if error:
             return str(error)
         
-        with session_scope():
-            despesa = DespesaService.buscar_por_id(id)
-            atualizar = DespesaService.atualizar(despesa, data)
-            resultado = despesa_schema.dump(atualizar)
+        granja_id = data.get("granja_id")
+        if granja_id is None:
+            return {"error": "granja_id é obrigatório"}, 400
 
+        ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
+
+        with session_scope():
+            despesa = DespesaService.buscar_por_id(id, granja_id)
+            atualizar = DespesaService.atualizar(despesa, data)
+            resultado = schema.dump(atualizar)
+
+        deletar_cache(granja_id)
         return resultado, 200
     
-
+    
+    @token_required
     def delete(self, id):
+        user_id = g.user_id
+
+        granja_id = request.args.get("granja_id", type=int)
+        if granja_id is None:
+            return {"error": "granja_id é obrigatório"}, 400
+
+        ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
+
         with session_scope():
-            despesa = DespesaService.buscar_por_id(id)
-            DespesaService.delete(despesa)
-        
+            despesa = DespesaService.buscar_por_id(id, granja_id)
+            DespesaService.deletar(despesa)
+
+        deletar_cache(granja_id)
         return "", 204

@@ -1,7 +1,8 @@
 from flask_restful import Resource
-from flask import request
+from flask import request, g
 from helpers.validate_schema import validate_schema
 from helpers.db_utils import session_scope
+from middlewares.auth_middleware import token_required
 
 from services.usuarios.endereco_service import EnderecoService as Servico
 from schemas.usuarios.endereco_schema import EnderecoSchema as Schema
@@ -11,21 +12,18 @@ schemas = Schema(many=True)
 
 class EnderecoResource(Resource):
 
-    def get(self, id=None):
-        if id:
-            with session_scope():
-                resultado = Servico.buscar_por_id(id)
-                resultado_final = schema.dump(resultado)
-            return resultado_final, 200
-        with session_scope():
-            resultados = Servico.listar()
-            resultados_final = schemas.dump(resultados)
-        return resultados_final, 200
+    @token_required
+    def get(self):
+        user_id = g.user_id
+
+        resultados = schemas.dump(Servico.listar(user_id))
+
+        return resultados, 200
 
 
+    @token_required
     def post(self):
         json = request.get_json()
-        
         data, error = validate_schema(schema, json)
 
         if error:
@@ -34,29 +32,30 @@ class EnderecoResource(Resource):
         with session_scope():
             novo = Servico.criar(data)
             resultado = schema.dump(novo)
-        
+            
         return resultado, 201
     
 
+    @token_required
     def put(self, id):
         json = request.get_json()
-
         data, error = validate_schema(schema, json, partial=True)
 
         if error:
             return str(error)
         
         with session_scope():
-            atualizar = Servico.buscar_por_id(id)
+            atualizar = Servico.buscar_por_id(id, g.user_id)
             atualizado = Servico.atualizar(atualizar, data)
             resultado = schema.dump(atualizado)
         
         return resultado, 200
     
 
+    @token_required
     def delete(self, id):
         with session_scope():
-            delete = Servico.buscar_por_id(id)
+            delete = Servico.buscar_por_id(id, g.user_id)
             Servico.deletar(delete)
 
         return "", 204

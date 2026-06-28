@@ -7,7 +7,7 @@ class ItemVendaSchema(Schema):
     venda_id = fields.Integer(required=True)
     produto_id = fields.Integer(required=True)
 
-    quantidade = fields.Decimal(required=True, validate=validate.Range(min=Decimal(0)))
+    quantidade = fields.Decimal(required=True, validate=validate.Range(min=0))
 
-class Meta:
-    unknown = EXCLUDE
+    class Meta:
+        unknown = EXCLUDE

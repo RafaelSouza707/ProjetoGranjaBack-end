@@ -1,17 +1,33 @@
 from helpers.database import db
 from helpers.exceptions import NotFoundError
-from models.venda_estoque.tipo_unidade_medida import TipoUnidadeMedida as Model
+from models.venda_estoque.tipo_unidade_medida import TipoUnidadeMedida
+from models.granja.granja import Granja
 
-class TipoUnidadeMediaService:
+def normalizar(data):
+    if "sigla" in data and isinstance(data["sigla"], str):
+        data["sigla"] = data["sigla"].strip().lower()
+
+class TipoUnidadeMedidaService:
+
 
     @staticmethod
-    def listar():
-        return db.session.query(Model).all()
+    def listar(granja_id):
+        resultados = (
+            db.session.query(TipoUnidadeMedida)
+            .join(TipoUnidadeMedida.granja)
+            .filter(
+                Granja.id == granja_id
+            )
+            .all()
+        )
+
+        return resultados
     
     
     @staticmethod
     def buscar_por_id(id):
-        registro = db.session.get(Model, id)
+        registro = db.session.get(TipoUnidadeMedida, id)
+
         if not registro:
             raise NotFoundError("Registro não encontrado")
         
@@ -20,7 +36,9 @@ class TipoUnidadeMediaService:
 
     @staticmethod
     def criar(data):
-        novo_registro = Model(**data)
+        normalizar(data)
+        
+        novo_registro = TipoUnidadeMedida(**data)
         
         db.session.add(novo_registro)
         db.session.flush()
@@ -30,6 +48,8 @@ class TipoUnidadeMediaService:
 
     @staticmethod
     def atualizar(registro, data):
+        normalizar(data)
+
         for k, v in data.items():
             setattr(registro, k, v)
 
@@ -37,5 +57,5 @@ class TipoUnidadeMediaService:
     
 
     @staticmethod
-    def delete(registro):
+    def deletar(registro):
         db.session.delete(registro)

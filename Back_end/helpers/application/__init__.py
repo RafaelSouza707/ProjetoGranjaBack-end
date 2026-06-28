@@ -29,7 +29,7 @@ app.config["CACHE_REDIS_URL"] = (
 )
 
 app.config["CACHE_DEFAULT_TIMEOUT"] = int(
-    os.getenv("CACHE_DEFAULT_TIMEOUT", "3000")
+    os.getenv("CACHE_DEFAULT_TIMEOUT", "300")
 )
 
 cache.init_app(app)

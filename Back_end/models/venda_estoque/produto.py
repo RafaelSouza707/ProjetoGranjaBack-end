@@ -34,6 +34,12 @@ class Produto(db.Model):
         nullable=False
     )
 
+    granja_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("granja.id", ondelete="RESTRICT"),
+        nullable=False
+    )
+
     descricao: Mapped[str] = mapped_column(
         String(120),
         nullable=False
@@ -79,4 +85,9 @@ class Produto(db.Model):
     movimentacoes: Mapped[list["MovimentacaoEstoque"]] = relationship(
         "MovimentacaoEstoque",
         back_populates="produto"
+    )
+
+    granja: Mapped["Granja"] = relationship(
+        "Granja",
+        back_populates="produtos"
     )

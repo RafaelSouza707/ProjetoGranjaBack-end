@@ -1,41 +1,61 @@
 from helpers.database import db
 from helpers.exceptions import NotFoundError
-from models.financas.status_financas import StatusFinancas as Model
+from models.financas.status_financas import StatusFinancas
+from models.granja.granja import Granja
+
+
+def normalizar(data):
+    if "nome" in data and isinstance(data["nome"], str):
+        data["nome"] = data["nome"].strip().lower()
+
 
 class StatusFinancasService:
 
     @staticmethod
-    def listar():
-        return db.session.query(Model).all()
-    
-    
+    def listar(granja_id):
+        resultado = (
+            db.session.query(StatusFinancas)
+            .join(StatusFinancas.granja)
+            .filter(Granja.id == granja_id)
+            .all()
+        )
+
+        return resultado
+
     @staticmethod
-    def buscar_por_id(id):
-        registro = db.session.get(Model, id)
+    def buscar_por_id(id, granja_id):
+        registro = (
+            db.session.query(StatusFinancas)
+            .join(StatusFinancas.granja)
+            .filter(Granja.id == granja_id, StatusFinancas.id == id)
+            .first()
+        )
+
         if not registro:
             raise NotFoundError("Registro não encontrado")
-        
+
         return registro
-    
 
     @staticmethod
     def criar(data):
-        novo_registro = Model(**data)
-        
+        normalizar(data)
+
+        novo_registro = StatusFinancas(**data)
+
         db.session.add(novo_registro)
         db.session.flush()
 
         return novo_registro
-    
 
     @staticmethod
     def atualizar(registro, data):
+        normalizar(data)
+
         for k, v in data.items():
             setattr(registro, k, v)
 
         return registro
-    
 
     @staticmethod
-    def delete(registro):
+    def deletar(registro):
         db.session.delete(registro)

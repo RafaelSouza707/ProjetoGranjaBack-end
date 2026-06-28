@@ -4,20 +4,33 @@ from sqlalchemy import extract, func
 
 from helpers.database import db
 from helpers.exceptions import NotFoundError
+from elastic.despesa_sync import deletar_index_despesa
 from models.financas.despesa import Despesa
-from models.financas.tipo_despesa import TipoDespesa
-
+from models.granja.granja import Granja
+from models.granja.usuario_granja import UsuarioGranja
 
 class DespesaService:
 
     @staticmethod
-    def listar():
-        return db.session.query(Despesa).all()
+    def listar(granja_id):
+        resultado = (
+            db.session.query(Despesa)
+            .join(Despesa.granja)
+            .filter(Granja.id == granja_id)
+            .all()
+        )
+
+        return resultado
 
 
     @staticmethod
-    def buscar_por_id(id):
-        despesa = db.session.get(Despesa, id)
+    def buscar_por_id(id, granja_id):
+        despesa = (
+            db.session.query(Despesa)
+            .join(Despesa.granja)
+            .filter(Granja.id == granja_id, Despesa.id == id)
+            .first()
+        )
 
         if not despesa:
             raise NotFoundError("Despesa não encontrada")
@@ -26,32 +39,54 @@ class DespesaService:
 
 
     @staticmethod
-    def maior_gasto_mes():
+    def maior_gasto_mes(granja_id=None):
+        hoje = datetime.now()
+
+        query = (
+            db.session.query(Despesa)
+            .join(Despesa.granja)
+            .filter(
+                extract("month", Despesa.data) == hoje.month,
+                extract("year", Despesa.data) == hoje.year,
+            )
+        )
+
+        if granja_id is not None:
+            query = query.filter(Granja.id == granja_id)
+
+        maior_gasto = query.order_by(Despesa.valor.desc()).first()
+
+        if not maior_gasto: 
+            return None
+
+        return {
+            "valor": float(maior_gasto.valor),
+            "tipo_despesa":maior_gasto.tipo_despesa.nome
+        }
+    
+
+    @staticmethod
+    def maior_gasto_mes_granja(granja_id):
         hoje = datetime.now()
 
         maior_gasto = (
             db.session.query(Despesa)
+            .join(Despesa.granja)
             .filter(
                 extract("month", Despesa.data) == hoje.month,
                 extract("year", Despesa.data) == hoje.year,
+                Granja.id == granja_id,
             )
             .order_by(Despesa.valor.desc())
             .first()
         )
 
-        if not maior_gasto: 
-            return None
-
-        return (
-            maior_gasto.valor,
-            maior_gasto.tipo_despesa
-        )
-
+        return maior_gasto
     
+
     @staticmethod
     def total_gasto_mes():
         hoje = datetime.now()
-        
         total = (
             db.session.query(
                 func.sum(Despesa.valor)
@@ -85,5 +120,6 @@ class DespesaService:
 
 
     @staticmethod
-    def delete(despesa):
+    def deletar(despesa):
         db.session.delete(despesa)
+        deletar_index_despesa(despesa.id)

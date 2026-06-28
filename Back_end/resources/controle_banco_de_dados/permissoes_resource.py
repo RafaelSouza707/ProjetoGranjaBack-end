@@ -13,13 +13,12 @@ class PermissaoResource(Resource):
 
     def get(self, id=None):
         if id:
-            with session_scope():
-                resultado = Servico.buscar_por_id(id)
-                resultado_final = schema.dump(resultado)
+            resultado = Servico.buscar_por_id(id)
+            resultado_final = schema.dump(resultado)
             return resultado_final, 200
-        with session_scope():
-            resultados = Servico.listar()
-            resultados_final = schemas.dump(resultados)
+        
+        resultados = Servico.listar()
+        resultados_final = schemas.dump(resultados)
         return resultados_final, 200
 
 

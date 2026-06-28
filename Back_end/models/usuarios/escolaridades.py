@@ -13,9 +13,9 @@ class Escolaridade(db.Model):
         primary_key=True
     )
 
-    funcionario_id: Mapped[int] = mapped_column(
+    usuario_id: Mapped[int] = mapped_column(
         BigInteger,
-        ForeignKey("funcionario.id", ondelete="CASCADE"),
+        ForeignKey("usuario.id", ondelete="CASCADE"),
         nullable=False
     )
 
@@ -24,7 +24,7 @@ class Escolaridade(db.Model):
         nullable=False
     )
 
-    funcionario: Mapped["Funcionario"] = relationship(
-        "Funcionario",
+    usuario: Mapped["Usuario"] = relationship(
+        "Usuario",
         back_populates="escolaridades"
     )

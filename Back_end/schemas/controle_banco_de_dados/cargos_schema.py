@@ -5,7 +5,7 @@ class CargosSchema(Schema):
     
     role_id = fields.Integer(required=True)
 
-    nome = fields.String(required=True, validate=validate.Length(max=100))
+    nome = fields.String(required=True, validate=validate.Length(max=128))
 
 class Meta:
     unknown = EXCLUDE

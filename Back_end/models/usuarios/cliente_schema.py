@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import BigInteger, Identity, String
+from sqlalchemy import BigInteger, Identity, String, ForeignKey
 
 from helpers.database import db
 
@@ -11,6 +11,12 @@ class Cliente(db.Model):
         BigInteger,
         Identity(start=1),
         primary_key=True
+    )
+
+    granja_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("granja.id", ondelete="RESTRICT"),
+        nullable=False
     )
 
     nome: Mapped[str] = mapped_column(
@@ -43,5 +49,10 @@ class Cliente(db.Model):
 
     vendas: Mapped[list["Venda"]] = relationship(
         "Venda",
+        back_populates="cliente"
+    )
+
+    granja: Mapped["Granja"] = relationship(
+        "Granja",
         back_populates="cliente"
     )

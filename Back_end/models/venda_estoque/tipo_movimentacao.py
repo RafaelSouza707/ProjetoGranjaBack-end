@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import BigInteger, Identity, String
+from sqlalchemy import BigInteger, Identity, String, ForeignKey
 
 from helpers.database import db
 
@@ -13,6 +13,12 @@ class TipoMovimentacao(db.Model):
         primary_key=True
     )
 
+    granja_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("granja.id", ondelete="RESTRICT"),
+        nullable=False
+    )
+
     nome: Mapped[str] = mapped_column(
         String(64),
         unique=True,
@@ -22,4 +28,9 @@ class TipoMovimentacao(db.Model):
     movimentacoes: Mapped[list["MovimentacaoEstoque"]] = relationship(
         "MovimentacaoEstoque",
         back_populates="tipo_movimentacao"
+    )
+
+    granja: Mapped["Granja"] = relationship(
+        "Granja",
+        back_populates="tipos_movimentacoes"
     )

@@ -37,5 +37,5 @@ class RolePermissaoService:
     
 
     @staticmethod
-    def delete(registro):
+    def deletar(registro):
         db.session.delete(registro)

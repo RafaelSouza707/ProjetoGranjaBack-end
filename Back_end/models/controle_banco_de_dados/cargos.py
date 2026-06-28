@@ -30,7 +30,7 @@ class Cargo(db.Model):
         back_populates="cargos"
     )
 
-    funcionarios: Mapped[list["Funcionario"]] = relationship(
-        "Funcionario",
+    usuarios: Mapped["UsuarioGranja"] = relationship(
+        "UsuarioGranja",
         back_populates="cargo"
     )

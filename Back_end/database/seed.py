@@ -2,13 +2,13 @@ from datetime import date
 
 from helpers.database import db
 
-from models.granja.tipo_racao import TipoRacao
-from models.granja.tipo_produto import TipoProduto
-from models.granja.status_lote_frango import StatusLoteFrango
-from models.granja.lote_racao import LoteRacao
-from models.granja.lote_frangos import LoteFrango
-from models.granja.mortalidade import Mortalidade
-from models.granja.consumo_lote_diaria import ConsumoLoteDiaria
+from models.aviario.tipo_racao import TipoRacao
+from models.aviario.tipo_produto import TipoProduto
+from models.aviario.status_lote_frango import StatusLoteFrango
+from models.aviario.lote_racao import LoteRacao
+from models.aviario.lote_frangos import LoteFrango
+from models.aviario.mortalidade import Mortalidade
+from models.aviario.consumo_lote_diaria import ConsumoLoteDiaria
 
 
 def run_seed():

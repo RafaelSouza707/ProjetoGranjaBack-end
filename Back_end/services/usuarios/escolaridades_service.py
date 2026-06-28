@@ -1,17 +1,40 @@
 from helpers.database import db
 from helpers.exceptions import NotFoundError
-from models.usuarios.escolaridades import Escolaridade as Model
+from models.usuarios.escolaridades import Escolaridade
+from models.usuarios.usuario import Usuario
 
+def normalizar(data):
+    if "nome" in data and isinstance(data["nome"], str):
+        data["nome"] = data["nome"].strip().lower()
+        
 class EscolaridadesService:
 
     @staticmethod
-    def listar():
-        return db.session.query(Model).all()
+    def listar(user_id):
+        resultado = (
+            db.session.query(Escolaridade)
+            .join(Escolaridade.usuario)
+            .filter(
+                Usuario.id == user_id
+            )
+            .all()
+        )
+
+        return resultado
     
     
     @staticmethod
-    def buscar_por_id(id):
-        registro = db.session.get(Model, id)
+    def buscar_por_id(id, user_id):
+        registro = (
+            db.session.query(Escolaridade)
+            .join(Escolaridade.usuario)
+            .filter(
+                Usuario.id == user_id,
+                Escolaridade.id == id
+            )
+            .first()
+        )
+
         if not registro:
             raise NotFoundError("Registro não encontrado")
         
@@ -20,7 +43,9 @@ class EscolaridadesService:
 
     @staticmethod
     def criar(data):
-        novo_registro = Model(**data)
+        normalizar(data)
+
+        novo_registro = Escolaridade(**data)
         
         db.session.add(novo_registro)
         db.session.flush()
@@ -30,6 +55,8 @@ class EscolaridadesService:
 
     @staticmethod
     def atualizar(registro, data):
+        normalizar(data)
+        
         for k, v in data.items():
             setattr(registro, k, v)
 
@@ -37,5 +64,5 @@ class EscolaridadesService:
     
 
     @staticmethod
-    def delete(registro):
+    def deletar(registro):
         db.session.delete(registro)
