@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import (
@@ -6,7 +6,9 @@ from sqlalchemy import (
     Identity,
     ForeignKey,
     Numeric,
-    Date
+    Date,
+    DateTime,
+    func
 )
 
 from helpers.database import db
@@ -24,12 +26,24 @@ class Venda(db.Model):
     cliente_id: Mapped[int] = mapped_column(
         BigInteger,
         ForeignKey("cliente.id", ondelete="RESTRICT"),
+        nullable=True
+    )
+
+    status_financas_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("status_financas.id", ondelete="RESTRICT"),
         nullable=False
     )
 
-    status_venda_id: Mapped[int] = mapped_column(
+    tipo_venda_id: Mapped[int] = mapped_column(
         BigInteger,
-        ForeignKey("status_venda.id", ondelete="RESTRICT"),
+        ForeignKey("tipo_venda.id", ondelete="RESTRICT"),
+        nullable=False
+    )
+    
+    granja_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("granja.id", ondelete="RESTRICT"),
         nullable=False
     )
 
@@ -43,13 +57,20 @@ class Venda(db.Model):
         nullable=False
     )
 
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False
+    )
+
     cliente: Mapped["Cliente"] = relationship(
         "Cliente",
         back_populates="vendas"
     )
 
-    status_venda: Mapped["StatusVenda"] = relationship(
-        "StatusVenda",
+    tipo_venda: Mapped["TipoVenda"] = relationship(
+        "TipoVenda",
         back_populates="vendas"
     )
 
@@ -57,4 +78,20 @@ class Venda(db.Model):
         "ItemVenda",
         back_populates="venda",
         cascade="all, delete-orphan"
+    )
+
+    receita: Mapped["Receita"] = relationship(
+        "Receita",
+        back_populates="venda",
+        cascade="all, delete-orphan"
+    )
+
+    status_financas: Mapped["StatusFinancas"] = relationship(
+        "StatusFinancas",
+        back_populates="venda",
+    )
+
+    granja: Mapped["Granja"] = relationship(
+        "Granja",
+        back_populates="vendas"
     )

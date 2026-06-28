@@ -6,8 +6,8 @@ class EstoqueSchema(Schema):
 
     produto_id = fields.Integer(required=True)
 
-    quantidade_atual = fields.Decimal(validate=validate.Range(min=Decimal(0)))
+    quantidade_atual = fields.Decimal(validate=validate.Range(min=0))
     updated_at = fields.DateTime(required=True)
 
-class Meta:
-    unknown = EXCLUDE
+    class Meta:
+        unknown = EXCLUDE

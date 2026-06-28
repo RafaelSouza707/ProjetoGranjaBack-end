@@ -9,9 +9,9 @@ class MovimentacaoEstoqueSchema(Schema):
     item_venda_id = fields.Integer(required=True)
     tipo_movimentacao_id = fields.Integer(required=True)
 
-    quantidade = fields.Decimal(required=True, validate=validate.Range(min=Decimal))
+    quantidade = fields.Decimal(required=True, validate=validate.Range(min=0))
     updated_at = fields.DateTime(required=True)
     observacao = fields.String(required=True, validate=validate.Length(max=256))
 
-class Meta:
-    unknown = EXCLUDE
+    class Meta:
+        unknown = EXCLUDE

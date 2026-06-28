@@ -1,7 +1,9 @@
 from marshmallow import Schema, fields, validate, EXCLUDE
 
-class CleinteSchema(Schema):
+class ClienteSchema(Schema):
     id = fields.Integer(dump_only=True)
+
+    granja_id = fields.Integer(required=True, load_only=True)
 
     tipo = fields.String(
         required=True,
@@ -10,8 +12,8 @@ class CleinteSchema(Schema):
 
     documento = fields.String(required=True)
 
-    telefone = fields.String(validate=validate.Length(min=1, max=20))
+    telefone = fields.String(validate=validate.Length(min=1, max=32))
     email = fields.String(validate=validate.Length(min=1, max=128))
 
-class Meta:
-    unknown = EXCLUDE
+    class Meta:
+        unknown = EXCLUDE

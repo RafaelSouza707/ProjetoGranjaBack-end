@@ -8,6 +8,20 @@ class TipoDespesa(db.Model):
 
     id: Mapped[int] = mapped_column(BigInteger, Identity(start=1), primary_key=True)
 
+    granja_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("granja.id", ondelete="RESTRICT"),
+        nullable=False
+    )
+
     nome: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
 
-    despesa: Mapped[list["Despesa"]] = relationship("Despesa", back_populates="tipo_despesa")
+    despesa: Mapped[list["Despesa"]] = relationship(
+        "Despesa",
+        back_populates="tipo_despesa"
+    )
+
+    granja: Mapped["Granja"] = relationship(
+        "Granja",
+        back_populates="tipos_despesa"
+    )

@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import BigInteger, Identity, String
+from sqlalchemy import BigInteger, Identity, String, ForeignKey
 
 from helpers.database import db
 
@@ -11,6 +11,12 @@ class TipoUnidadeMedida(db.Model):
         BigInteger,
         Identity(start=1),
         primary_key=True
+    )
+
+    granja_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("granja.id", ondelete="RESTRICT"),
+        nullable=False
     )
 
     sigla: Mapped[str] = mapped_column(
@@ -27,4 +33,9 @@ class TipoUnidadeMedida(db.Model):
     produtos: Mapped[list["Produto"]] = relationship(
         "Produto",
         back_populates="tipo_unidade_medida"
+    )
+
+    granja: Mapped["Granja"] = relationship(
+        "Granja",
+        back_populates="tipos_unidade_medida"
     )

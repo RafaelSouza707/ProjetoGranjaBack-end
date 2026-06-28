@@ -1,17 +1,40 @@
 from helpers.database import db
 from helpers.exceptions import NotFoundError
-from models.usuarios.cliente_schema import Cliente as Model
+from models.usuarios.cliente_schema import Cliente
+from models.granja.granja import Granja
+from models.granja.usuario_granja import UsuarioGranja
+
 
 class ClienteService:
 
     @staticmethod
-    def listar():
-        return db.session.query(Model).all()
+    def listar(user_id):
+        resultados = (
+            db.session.query(Cliente)
+            .join(Cliente.granja)
+            .join(Granja.usuarios)
+            .filter(
+                UsuarioGranja.usuario_id == user_id
+            )
+            .all()
+        )
+
+        return resultados
     
     
     @staticmethod
-    def buscar_por_id(id):
-        registro = db.session.get(Model, id)
+    def buscar_por_id(id, user_id):
+        registro = (
+            db.session.query(Cliente)
+            .join(Cliente.granja)
+            .join(Granja.usuarios)
+            .filter(
+                UsuarioGranja.usuario_id == user_id,
+                Cliente.id == id
+            )
+            .first()
+        )
+        
         if not registro:
             raise NotFoundError("Registro não encontrado")
         
@@ -20,7 +43,7 @@ class ClienteService:
 
     @staticmethod
     def criar(data):
-        novo_registro = Model(**data)
+        novo_registro = Cliente(**data)
         
         db.session.add(novo_registro)
         db.session.flush()
@@ -37,5 +60,5 @@ class ClienteService:
     
 
     @staticmethod
-    def delete(registro):
+    def deletar(registro):
         db.session.delete(registro)

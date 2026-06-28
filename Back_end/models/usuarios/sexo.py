@@ -19,7 +19,7 @@ class Sexo(db.Model):
         nullable=False
     )
 
-    funcionarios: Mapped[list["Funcionario"]] = relationship(
-        "Funcionario",
+    usuarios: Mapped[list["Usuario"]] = relationship(
+        "Usuario",
         back_populates="sexo"
     )

@@ -9,17 +9,37 @@ class Despesa(db.Model):
 
     id: Mapped[int] = mapped_column(BigInteger, Identity(start=1), primary_key=True)
     
-    tipo_despesa_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("tipo_despesa.id", ondelete="RESTRICT"), nullable=False)
-    status_financas_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("status_financas.id", ondelete="RESTRICT"), nullable=False)
-    lote_frango_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("lote_frango.id", ondelete="RESTRICT"), nullable=True)
+    tipo_despesa_id: Mapped[int] = mapped_column(
+        BigInteger, 
+        ForeignKey("tipo_despesa.id", ondelete="RESTRICT"), 
+        nullable=False
+    )
+
+    status_financas_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("status_financas.id", ondelete="RESTRICT"),
+        nullable=False
+    )
+    
+    lote_frango_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("lote_frango.id", ondelete="RESTRICT"),
+        nullable=True
+    )
+
+    granja_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("granja.id", ondelete="RESTRICT"),
+        nullable=False
+    )
 
     data: Mapped[Date] = mapped_column(Date, nullable=False)
-    data_vencimento: Mapped[Date | None] = mapped_column(Date, nullable=False)
+    data_vencimento: Mapped[Date | None] = mapped_column(Date, nullable=True)
     valor: Mapped[Decimal] = mapped_column(Numeric(15, 2), nullable=False)
     descricao: Mapped[str] = mapped_column(String(256), nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(
-        Date,
+        DateTime,
         server_default=func.now(),
         nullable=False
     )
@@ -43,4 +63,9 @@ class Despesa(db.Model):
     lote_frango: Mapped["LoteFrango"] = relationship(
         "LoteFrango",
         back_populates="despesa"
+    )
+
+    granja: Mapped["Granja"] = relationship(
+        "Granja",
+        back_populates="despesas"
     )

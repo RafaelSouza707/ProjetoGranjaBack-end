@@ -9,14 +9,22 @@ def register_error_handlers(app):
     @app.errorhandler(AppError)
     def handle_app_error(error):
         return jsonify({
-            "erro": error.message
+            "error": {
+                "message": error.message,
+                "type": error.error_type,
+                "status": error.status_code
+            }
         }), error.status_code
 
 
     @app.errorhandler(IntegrityError)
     def handle_integrity_error(error):
         return jsonify({
-            "erro": "Violação de integridade no banco de dados"
+            "error": {
+                "message": "Registro já existente ou violação de relacionamento",
+                "type": "INTEGRITY_ERROR",
+                "status": 409
+            }
         }), 409
 
 
@@ -46,5 +54,9 @@ def register_error_handlers(app):
         app.logger.exception(error)
 
         return jsonify({
-            "erro": "Erro interno"
+            "error": {
+                "message": "Erro interno no servidor",
+                "type": "INTERNAL_ERROR",
+                "status": 500
+            }
         }), 500

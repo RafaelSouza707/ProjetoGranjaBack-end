@@ -5,5 +5,5 @@ class SexoSchema(Schema):
 
     nome = fields.String(required=True, validate=validate.Length(max=1))
 
-class Meta:
-    unknown = EXCLUDE
+    class Meta:
+        unknown = EXCLUDE

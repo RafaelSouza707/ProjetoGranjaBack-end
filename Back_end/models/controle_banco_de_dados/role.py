@@ -27,8 +27,3 @@ class Role(db.Model):
         back_populates="role",
         cascade="all, delete-orphan"
     )
-
-    contas_adm: Mapped[list["ContaADM"]] = relationship(
-        "ContaADM",
-        back_populates="role"
-    )

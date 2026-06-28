@@ -11,5 +11,5 @@ class EnderecoSchema(Schema):
     bairro_logradouro = fields.String(validate=validate.Length(128))
     cidade = fields.String(validate=validate.Length(128))
 
-class Meta:
-    unknown = EXCLUDE
+    class Meta:
+        unknown = EXCLUDE

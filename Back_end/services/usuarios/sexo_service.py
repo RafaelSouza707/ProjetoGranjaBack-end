@@ -2,6 +2,11 @@ from helpers.database import db
 from helpers.exceptions import NotFoundError
 from models.usuarios.sexo import Sexo as Model
 
+def normalizar(data):
+    if "nome" in data and isinstance(data["nome"], str):
+        data["nome"] = data["nome"].strip().lower()
+        
+
 class SexoService:
 
     @staticmethod
@@ -20,6 +25,8 @@ class SexoService:
 
     @staticmethod
     def criar(data):
+        normalizar(data)
+
         novo_registro = Model(**data)
         
         db.session.add(novo_registro)
@@ -30,6 +37,8 @@ class SexoService:
 
     @staticmethod
     def atualizar(registro, data):
+        normalizar(data)
+        
         for k, v in data.items():
             setattr(registro, k, v)
 
@@ -37,5 +46,5 @@ class SexoService:
     
 
     @staticmethod
-    def delete(registro):
+    def deletar(registro):
         db.session.delete(registro)

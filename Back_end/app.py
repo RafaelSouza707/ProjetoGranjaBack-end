@@ -19,23 +19,32 @@ from resources.financas.despesa_resource import DespesaResource
 from resources.financas.status_financas_resource import StatusFinancasResource
 from resources.financas.tipo_despesa_resource import TipoDespesaResource
 from resources.financas.cards_gastos_resource import CardsGastosResource
+from resources.financas.cards_gastos_granja_resource import CardsGastosGranjaResource
+from resources.financas.despesa_search import DespesaSearch
+from resources.financas.tipo_receita_resource import TipoReceitaResource
+from resources.financas.receita_resource import ReceitaResource
 
-## Granja
-from resources.granja.consumo_lote_diaria_resource import ConsumoLoteDiariaResource
-from resources.granja.lote_frango_resource import LoteFrangoResource
-from resources.granja.lote_racao_resource import LoteRacaoResource
-from resources.granja.mortalidade_resource import MortalidadeResource
-from resources.granja.status_lote_frango_resource import StatusLoteFrangoResource
-from resources.granja.tipo_produto_resource import TipoProdutoResource
-from resources.granja.tipo_racao_resource import TipoRacaoResource
+## Aviario
+from resources.aviario.consumo_lote_diaria_resource import ConsumoLoteDiariaResource
+from resources.aviario.lote_frango_resource import LoteFrangoResource
+from resources.aviario.lote_racao_resource import LoteRacaoResource
+from resources.aviario.mortalidade_resource import MortalidadeResource
+from resources.aviario.status_lote_frango_resource import StatusLoteFrangoResource
+from resources.aviario.tipo_produto_resource import TipoProdutoResource
+from resources.aviario.tipo_racao_resource import TipoRacaoResource
+from resources.aviario.cards_lote_frango import CardsLoteFrango
 
 ## Usuarios
 from resources.usuarios.cliente_resource import ClienteResource
-from resources.usuarios.conta_adm_resource import ContaADMResource
 from resources.usuarios.endereco_resource import EnderecoResource
 from resources.usuarios.escolaridades_resource import EscolaridadesResource
-from resources.usuarios.funcionario_resource import FuncionarioResource
+from resources.usuarios.usuario_resource import UsuarioResource
 from resources.usuarios.sexo_service import SexoResource
+from resources.usuarios.login_resource import LoginResource
+
+## Granja
+from resources.granja.granja_resource import GranjaResource
+from resources.granja.usuario_resource import UsuarioGranjaResource
 
 ## Venda_Estoque
 from resources.venda_estoque.estoque_resource import EstoqueResource
@@ -43,13 +52,16 @@ from resources.venda_estoque.item_venda_resource import ItemVendaResource
 from resources.venda_estoque.movimentacao_estoque_resource import MovimentacaoEstoqueResource
 from resources.venda_estoque.producao_resource import ProducaoResource
 from resources.venda_estoque.produto_resource import ProdutoResource
-from resources.venda_estoque.status_venda_resource import StatusVendaResource
+from resources.venda_estoque.tipo_venda_resource import TipoVendaResource
 from resources.venda_estoque.tipo_movimentacao_resource import TipoMovimentacaoResource
-from resources.venda_estoque.tipo_unidade_medida_resource import TipoUnidadeMediaResource
+from resources.venda_estoque.tipo_unidade_medida_resource import TipoUnidadeMedidaResource
 from resources.venda_estoque.venda_resource import VendaResource
 
-
-CORS(app)
+CORS(
+    app,
+    supports_credentials=True,
+    origins=["http://localhost:5001"]
+)
 
 from helpers.logging_config import setup_logging
 
@@ -59,44 +71,53 @@ setup_logging(app)
 api.add_resource(HomeResources, '/')
 
 ## Controle_Banco_de_dados api.add_resource(, '/', '//<int:id>')
-api.add_resource(CargoResource, '/cargo', '/cargo/<int:id>')
-api.add_resource(PermissaoResource, '/permissao', '/permissao/<int:id>')
-api.add_resource(RolePermissaoResource, '/role_permissao', '/role_permissao/<int:id>')
-api.add_resource(RoleResource, '/role', '/role/<int:id>')
+api.add_resource(CargoResource, '/controle_bd/cargo', '/controle_bd/cargo/<int:id>')
+api.add_resource(PermissaoResource, '/controle_bd/permissao', '/controle_bd/permissao/<int:id>')
+api.add_resource(RolePermissaoResource, '/controle_bd/role_permissao', '/controle_bd/role_permissao/<int:id>')
+api.add_resource(RoleResource, '/controle_bd/role', '/controle_bd/role/<int:id>')
 
 ## Financas
-api.add_resource(DespesaResource, '/despesa', '/despesa/<int:id>')
-api.add_resource(StatusFinancasResource, '/status_financas', '/status_financas/<int:id>')
-api.add_resource(TipoDespesaResource, '/tipo_despesa', '/tipo_despesa/<int:id>')
-api.add_resource(CardsGastosResource, '/cards_gastos')
+api.add_resource(DespesaResource, '/financas/despesa', '/financas/despesa/<int:id>')
+api.add_resource(StatusFinancasResource, '/financas/status_financas', '/financas/status_financas/<int:id>')
+api.add_resource(TipoDespesaResource, '/financas/tipo_despesa', '/financas/tipo_despesa/<int:id>')
+api.add_resource(CardsGastosResource, '/financas/cards_gastos')
+api.add_resource(CardsGastosGranjaResource, '/financas/cards_gastos_granja')
+api.add_resource(DespesaSearch, '/financas/despesa_search')
+api.add_resource(TipoReceitaResource, '/financas/tipo_receita', '/financas/tipo_receita/<int:id>')
+api.add_resource(ReceitaResource, '/financas/receita', '/financas/receita/<int:id>')
 
-## Granja
-api.add_resource(ConsumoLoteDiariaResource, '/consumo_lote_diaria', '/consumo_lote_diaria/<int:id>')
-api.add_resource(LoteFrangoResource, '/lote_frango', '/lote_frango/<int:id>')
-api.add_resource(LoteRacaoResource, '/lote_racao', '/lote_racao/<int:id>')
-api.add_resource(MortalidadeResource, '/mortalidade', '/mortalidade/<int:id>')
-api.add_resource(StatusLoteFrangoResource, '/status_lote_frango', '/status_lote_frango/<int:id>')
-api.add_resource(TipoProdutoResource, '/tipo_produto', '/tipo_produto/<int:id>')
-api.add_resource(TipoRacaoResource, '/tipo_racao', '/tipo_racao/<int:id>')
+## Aviario
+api.add_resource(ConsumoLoteDiariaResource, '/granja/consumo_lote_diaria', '/granja/consumo_lote_diaria/<int:id>')
+api.add_resource(LoteFrangoResource, '/granja/lote_frango', '/granja/lote_frango/<int:id>')
+api.add_resource(LoteRacaoResource, '/granja/lote_racao', '/granja/lote_racao/<int:id>')
+api.add_resource(MortalidadeResource, '/granja/mortalidade', '/granja/mortalidade/<int:id>')
+api.add_resource(StatusLoteFrangoResource, '/granja/status_lote_frango', '/granja/status_lote_frango/<int:id>')
+api.add_resource(TipoProdutoResource, '/granja/tipo_produto', '/granja/tipo_produto/<int:id>')
+api.add_resource(TipoRacaoResource, '/granja/tipo_racao', '/granja/tipo_racao/<int:id>')
+api.add_resource(CardsLoteFrango, '/granja/cards_lote_frango')
 
 ## Usuarios
-api.add_resource(ClienteResource, '/cliente', '/cliente/<int:id>')
-api.add_resource(ContaADMResource, '/conta_adm', '/conta_adm/<int:id>')
-api.add_resource(EnderecoResource, '/endereco', '/endereco/<int:id>')
-api.add_resource(EscolaridadesResource, '/escolaridade', '/escolaridade/<int:id>')
-api.add_resource(FuncionarioResource, '/funcionario', '/funcionario/<int:id>')
-api.add_resource(SexoResource, '/sexo', '/sexo/<int:id>')
+api.add_resource(ClienteResource, '/usuarios/cliente', '/usuarios/cliente/<int:id>')
+api.add_resource(EnderecoResource, '/usuarios/endereco', '/usuarios/endereco/<int:id>')
+api.add_resource(EscolaridadesResource, '/usuarios/escolaridade', '/usuarios/escolaridade/<int:id>')
+api.add_resource(UsuarioResource, '/usuarios/usuario', '/usuarios/usuario/<int:id>')
+api.add_resource(SexoResource, '/usuarios/sexo', '/usuarios/sexo/<int:id>')
+api.add_resource(LoginResource, '/usuarios/login')
 
+## Granja
+api.add_resource(GranjaResource, '/granja/granja', '/granja/granja/<int:id>')
+api.add_resource(UsuarioGranjaResource, '/granja/usuario_granja', '/granja/usuario_granja/<int:id>')
 
-api.add_resource(EstoqueResource, '/estoque', '/estoque/<int:id>')
-api.add_resource(ItemVendaResource, '/item_venda', '/item_venda/<int:id>')
-api.add_resource(MovimentacaoEstoqueResource, '/movimentacao_estoque', '/movimentacao_estoque/<int:id>')
-api.add_resource(ProducaoResource, '/producao', '/producao/<int:id>')
-api.add_resource(ProdutoResource, '/produto', '/produto/<int:id>')
-api.add_resource(StatusVendaResource, '/status_venda', '/status_venda/<int:id>')
-api.add_resource(TipoMovimentacaoResource, '/tipo_movimentacao', '/tipo_movimentacao/<int:id>')
-api.add_resource(TipoUnidadeMediaResource, '/tipo_unidade_media', '/tipo_unidade_media/<int:id>')
-api.add_resource(VendaResource, '/venda', '/venda/<int:id>')
+# Venda_Estoque
+api.add_resource(EstoqueResource, '/venda_estoque/estoque', '/venda_estoque/estoque/<int:id>')
+api.add_resource(ItemVendaResource, '/venda_estoque/item_venda', '/venda_estoque/item_venda/<int:id>')
+api.add_resource(MovimentacaoEstoqueResource, '/venda_estoque/movimentacao_estoque', '/venda_estoque/movimentacao_estoque/<int:id>')
+api.add_resource(ProducaoResource, '/venda_estoque/producao', '/venda_estoque/producao/<int:id>')
+api.add_resource(ProdutoResource, '/venda_estoque/produto', '/venda_estoque/produto/<int:id>')
+api.add_resource(TipoVendaResource, '/venda_estoque/tipo_venda', '/venda_estoque/tipo_venda/<int:id>')
+api.add_resource(TipoMovimentacaoResource, '/venda_estoque/tipo_movimentacao', '/venda_estoque/tipo_movimentacao/<int:id>')
+api.add_resource(TipoUnidadeMedidaResource, '/venda_estoque/tipo_unidade_medida', '/venda_estoque/tipo_unidade_medida/<int:id>')
+api.add_resource(VendaResource, '/venda_estoque/venda', '/venda_estoque/venda/<int:id>')
 
 
 @app.cli.command("seed")

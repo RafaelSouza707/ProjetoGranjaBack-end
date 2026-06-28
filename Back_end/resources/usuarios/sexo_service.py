@@ -37,7 +37,7 @@ class SexoResource(Resource):
         
         return resultado, 201
     
-
+    
     def put(self, id):
         json = request.get_json()
 
