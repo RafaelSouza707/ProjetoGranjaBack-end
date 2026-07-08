@@ -23,6 +23,13 @@ class CardsGastosGranjaResource(Resource):
         if dados is not None:
             return dados, 200
         
-        return {
-            "maior_gasto_mes_granja": DespesaService.maior_gasto_mes_granja(granja_id)
+        maior_gasto = DespesaService.maior_gasto_mes_granja(granja_id)
+        
+        resultado = {
+            "maior_gasto_mes_granja": {"id": maior_gasto.id, "valor": float(maior_gasto.valor),},
+            "total_gasto_mes_granja": DespesaService.total_gasto_mes_granja(granja_id),
         }
+
+        cache.set(cache_key, resultado)
+
+        return resultado

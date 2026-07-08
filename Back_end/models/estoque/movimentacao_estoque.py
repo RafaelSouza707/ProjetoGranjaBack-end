@@ -69,7 +69,7 @@ class MovimentacaoEstoque(db.Model):
 
     producao: Mapped["Producao"] = relationship(
         "Producao",
-        back_populates="movimentacoes"
+        back_populates="movimentacoes",
     )
 
     item_venda: Mapped["ItemVenda"] = relationship(

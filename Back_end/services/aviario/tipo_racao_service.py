@@ -22,11 +22,12 @@ class TipoRacaoService:
         return resultado
 
     @staticmethod
-    def buscar_por_id(id, granja_id):
+    def buscar_por_id(id):
         registro = (
             db.session.query(TipoRacao)
-            .join(TipoRacao.granja)
-            .filter(Granja.id == granja_id, TipoRacao.id == id)
+            .filter(
+                TipoRacao.id == id
+            )
             .first()
         )
         if not registro:

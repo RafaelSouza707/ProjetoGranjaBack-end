@@ -11,15 +11,10 @@ schemas = Schema(many=True)
 
 class UsuarioGranjaResource(Resource):
 
-    def get(self, id=None):
-        if id:
-            resultado = Servico.buscar_por_id(id)
-            resultado_final = schema.dump(resultado)
-            return resultado_final, 200
-        
-        resultados = Servico.listar()
-        resultados_final = schemas.dump(resultados)
-        return resultados_final, 200
+    def get(self):        
+        resultados = schemas.dump(Servico.listar())
+
+        return resultados, 200
 
 
     def post(self):
@@ -28,7 +23,7 @@ class UsuarioGranjaResource(Resource):
         data, error = validate_schema(schema, json)
 
         if error:
-            return str(error)
+            return {str(error)}
         
         with session_scope():
             novo = Servico.criar(data)
@@ -43,7 +38,7 @@ class UsuarioGranjaResource(Resource):
         data, error = validate_schema(schema, json, partial=True)
 
         if error:
-            return str(error)
+            return {str(error)}
         
         with session_scope():
             atualizar = Servico.buscar_por_id(id)
@@ -53,7 +48,7 @@ class UsuarioGranjaResource(Resource):
         return resultado, 200
     
 
-    def deletar(self, id):
+    def delete(self, id):
         with session_scope():
             delete = Servico.buscar_por_id(id)
             Servico.deletar(delete)

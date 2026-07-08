@@ -3,7 +3,6 @@ from helpers.exceptions import NotFoundError
 from models.aviario.status_lote_frango import StatusLoteFrango
 from models.granja.granja import Granja
 
-
 def normalizar(data):
     if "nome" in data and isinstance(data["nome"], str):
         data["nome"] = data["nome"].strip().lower()
@@ -13,21 +12,21 @@ class StatusLoteFrangoService:
 
     @staticmethod
     def listar(granja_id):
-        resultado = (
+        return(
             db.session.query(StatusLoteFrango)
             .join(StatusLoteFrango.granja)
             .filter(Granja.id == granja_id)
             .all()
         )
 
-        return resultado
 
     @staticmethod
-    def buscar_por_id(id, granja_id):
+    def buscar_por_id(id):
         registro = (
             db.session.query(StatusLoteFrango)
-            .join(StatusLoteFrango.granja)
-            .filter(Granja.id == granja_id, StatusLoteFrango.id == id)
+            .filter(
+                StatusLoteFrango.id == id
+            )
             .first()
         )
         if not registro:

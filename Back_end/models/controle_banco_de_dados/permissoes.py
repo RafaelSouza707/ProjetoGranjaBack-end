@@ -19,11 +19,6 @@ class Permissao(db.Model):
         nullable=False
     )
 
-    descricao: Mapped[str] = mapped_column(
-        String(256),
-        nullable=False
-    )
-
     roles: Mapped[list["RolePermissao"]] = relationship(
         "RolePermissao",
         back_populates="permissao",

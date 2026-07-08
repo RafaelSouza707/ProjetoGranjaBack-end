@@ -1,5 +1,4 @@
 # Controle_Banco_de_Dados
-from .controle_banco_de_dados.cargos import Cargo
 from .controle_banco_de_dados.permissoes import Permissao
 from .controle_banco_de_dados.role import Role
 from .controle_banco_de_dados.role_permissao import RolePermissao
@@ -33,12 +32,12 @@ from .granja.granja import Granja
 from .granja.usuario_granja import UsuarioGranja
 
 # Venda_Estoque
-from .venda_estoque.estoque import Estoque
-from .venda_estoque.item_venda import ItemVenda
-from .venda_estoque.movimentacao_estoque import MovimentacaoEstoque
-from .venda_estoque.producao import Producao
-from .venda_estoque.produto import Produto
-from .venda_estoque.tipo_venda import TipoVenda
-from .venda_estoque.tipo_movimentacao import TipoMovimentacao
-from .venda_estoque.tipo_unidade_medida import TipoUnidadeMedida
-from .venda_estoque.venda import Venda
+from .estoque.estoque import Estoque
+from .venda.item_venda import ItemVenda
+from .estoque.movimentacao_estoque import MovimentacaoEstoque
+from .estoque.producao import Producao
+from .estoque.produto import Produto
+from .venda.tipo_venda import TipoVenda
+from .estoque.tipo_movimentacao import TipoMovimentacao
+from .estoque.tipo_unidade_medida import TipoUnidadeMedida
+from .venda.venda import Venda

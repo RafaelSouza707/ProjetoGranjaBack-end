@@ -1,10 +1,18 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import BigInteger, Identity, String, ForeignKey
+from sqlalchemy import BigInteger, Identity, String, ForeignKey, UniqueConstraint
 
 from helpers.database import db
 
 class TipoRacao(db.Model):
     __tablename__ = "tipo_racao"
+
+    __table_args__ = (
+        UniqueConstraint(
+            "granja_id",
+            "nome",
+            name="uq_tipo_racao_granja_nome"
+        ),
+    )
 
     id: Mapped[int] = mapped_column(
         BigInteger,
@@ -14,14 +22,13 @@ class TipoRacao(db.Model):
 
     granja_id: Mapped[int] = mapped_column(
         BigInteger,
-        ForeignKey("granja.id", ondelete="RESTRICT"),
+        ForeignKey("granja.id", ondelete="CASCADE"),
         nullable=False
     )
 
     nome: Mapped[str] = mapped_column(
         String(64),
         nullable=False,
-        unique=True
     )
 
     descricao: Mapped[str] = mapped_column(

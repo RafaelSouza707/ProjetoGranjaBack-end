@@ -46,11 +46,6 @@ class Usuario(db.Model):
         nullable=True
     )
 
-    salario = mapped_column(
-        Numeric(15, 2),
-        nullable=True
-    )
-
     ativo: Mapped[bool] = mapped_column(
         Boolean,
         nullable=False,

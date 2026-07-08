@@ -11,12 +11,7 @@ schemas = Schema(many=True)
 
 class PermissaoResource(Resource):
 
-    def get(self, id=None):
-        if id:
-            resultado = Servico.buscar_por_id(id)
-            resultado_final = schema.dump(resultado)
-            return resultado_final, 200
-        
+    def get(self,):        
         resultados = Servico.listar()
         resultados_final = schemas.dump(resultados)
         return resultados_final, 200
@@ -28,7 +23,7 @@ class PermissaoResource(Resource):
         data, error = validate_schema(schema, json)
 
         if error:
-            return str(error)
+            return {str(error)}
         
         with session_scope():
             novo = Servico.criar(data)
@@ -43,7 +38,7 @@ class PermissaoResource(Resource):
         data, error = validate_schema(schema, json, partial=True)
 
         if error:
-            return str(error)
+            return {str(error)}
         
         with session_scope():
             atualizar = Servico.buscar_por_id(id)

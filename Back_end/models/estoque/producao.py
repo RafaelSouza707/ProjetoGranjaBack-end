@@ -1,14 +1,8 @@
 from datetime import date
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import (
-    BigInteger,
-    Identity,
-    ForeignKey,
-    Numeric,
-    Date,
-    String
-)
+from sqlalchemy import (BigInteger, Identity, ForeignKey, Numeric, Date, String)
+from decimal import Decimal
 
 from helpers.database import db
 
@@ -30,11 +24,11 @@ class Producao(db.Model):
 
     produto_id: Mapped[int] = mapped_column(
         BigInteger,
-        ForeignKey("produto.id", ondelete="RESTRICT"),
+        ForeignKey("produto.id", ondelete="CASCADE"),
         nullable=False
     )
 
-    quantidade = mapped_column(
+    quantidade: Mapped[Decimal] = mapped_column(
         Numeric(15, 3),
         nullable=False
     )
@@ -60,5 +54,6 @@ class Producao(db.Model):
 
     movimentacoes: Mapped[list["MovimentacaoEstoque"]] = relationship(
         "MovimentacaoEstoque",
-        back_populates="producao"
+        back_populates="producao",
+        cascade="all, delete-orphan"
     )

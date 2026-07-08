@@ -10,11 +10,13 @@ class TipoReceita(db.Model):
 
     granja_id: Mapped[int] = mapped_column(
         BigInteger,
-        ForeignKey("granja.id", ondelete="RESTRICT"),
+        ForeignKey("granja.id", ondelete="CASCADE"),
         nullable=False
     )
 
-    nome: Mapped[str] = mapped_column(String(256), nullable=True)
+    nome: Mapped[str] = mapped_column(
+        String(256), nullable=True
+    )
 
     receita: Mapped["Receita"] = relationship(
         "Receita",

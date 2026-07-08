@@ -10,11 +10,14 @@ class TipoDespesa(db.Model):
 
     granja_id: Mapped[int] = mapped_column(
         BigInteger,
-        ForeignKey("granja.id", ondelete="RESTRICT"),
+        ForeignKey("granja.id", ondelete="CASCADE"),
         nullable=False
     )
 
-    nome: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
+    nome: Mapped[str] = mapped_column(
+        String(100), 
+        nullable=False
+    )
 
     despesa: Mapped[list["Despesa"]] = relationship(
         "Despesa",

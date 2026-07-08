@@ -22,11 +22,10 @@ class TipoDespesaService:
         return resultado
 
     @staticmethod
-    def buscar_por_id(id, granja_id):
+    def buscar_por_id(id):
         tipo = (
             db.session.query(TipoDespesa)
-            .join(TipoDespesa.granja)
-            .filter(Granja.id == granja_id, TipoDespesa.id == id)
+            .filter(TipoDespesa.id == id)
             .first()
         )
         if not tipo:

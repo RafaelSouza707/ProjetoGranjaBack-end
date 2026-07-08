@@ -8,7 +8,7 @@ from middlewares.auth_middleware import token_required
 from services.aviario.consumo_lote_diaria_service import ConsumoLoteDiariaService
 from schemas.aviario.consumo_lote_diaria_schema import ConsumoLoteDiariaSchema as Schema
 from services.usuarios.access_user_granja_service import ValidarAcessoGranja
-from services.aviario.lote_frango_service import LoteFrangoService
+
 
 schema = Schema()
 schemas = Schema(many=True)
@@ -19,33 +19,25 @@ def deletarCache(granja_id, lote_frango_id):
     cache.delete(f"cache:granja:{granja_id}:lote_frango:cards_lote_frango")
 
 
-def pegar_granja_id(lote_frango_id=None):
-    if lote_frango_id is not None:
-        lote_frango = LoteFrangoService.buscar_por_id(lote_frango_id)
-    else:
-        lote_frango_id = request.args.get("lote_frango_id", type=int)
-        lote_frango = LoteFrangoService.buscar_por_id(lote_frango_id)
-    
-    return lote_frango.granja_id, lote_frango_id
-
 class ConsumoLoteDiariaResource(Resource):
 
     @token_required
     def get(self):
         user_id = g.user_id
             
-        granja_id, lote_frango_id = pegar_granja_id()
+        granja_id = request.args.get("granja_id", type=int)
 
+        lote_frango_id = request.args.get("lote_frango_id", type=int)
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
         if lote_frango_id is not None:
             cache_key = f"cache:granja:{granja_id}:lote_frango:{lote_frango_id}:consumos_lote_diaria"
-            
+            cache.delete(cache_key)
             dados = cache.get(cache_key)
             if dados is not None:
                 return dados, 200
             
-            resultados = schemas.dump(ConsumoLoteDiariaService.listar_de_lote_frango(lote_frango_id, granja_id))
+            resultados = schemas.dump(ConsumoLoteDiariaService.listar_de_lote_frango(lote_frango_id))
             
             cache.set(
                 cache_key,
@@ -74,13 +66,14 @@ class ConsumoLoteDiariaResource(Resource):
         user_id = g.user_id
 
         json = request.get_json()
+        json.pop("lote_racao", None)
         data, error = validate_schema(schema, json)
 
         if error:
-            return str(error)
+            return {str(error)}
 
         lote_frango_id = data["lote_frango_id"]
-        granja_id, _ = pegar_granja_id(lote_frango_id)
+        granja_id = request.args.get("granja_id", type=int)
 
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
@@ -97,14 +90,19 @@ class ConsumoLoteDiariaResource(Resource):
         user_id = g.user_id
 
         json = request.get_json()
+        print(json)
+        json.pop("lote_racao", None)
         data, error = validate_schema(schema, json, partial=True)
 
         if error:
-            return str(error)
+            return {str(error)}
 
-        granja_id, lote_frango_id = pegar_granja_id()
+        granja_id = request.args.get("granja_id", type=int)
+        
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
+        lote_frango_id = data["lote_frango_id"]
+        
         with session_scope():
             atualizar = ConsumoLoteDiariaService.buscar_por_id(id)
             atualizado = ConsumoLoteDiariaService.atualizar(atualizar, data)
@@ -117,11 +115,14 @@ class ConsumoLoteDiariaResource(Resource):
     @token_required
     def delete(self, id):
         user_id = g.user_id
+        
+        granja_id = request.args.get("granja_id", type=int)
+        
+        ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
+
         with session_scope():
             delete = ConsumoLoteDiariaService.buscar_por_id(id)
             lote_frango_id = delete.lote_frango_id
-            granja_id, lote_frango_id = pegar_granja_id(lote_frango_id)
-            ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
             ConsumoLoteDiariaService.deletar(delete)
 
         deletarCache(granja_id, lote_frango_id)

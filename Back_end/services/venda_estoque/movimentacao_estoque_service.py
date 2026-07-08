@@ -1,7 +1,7 @@
 from helpers.database import db
 from helpers.exceptions import NotFoundError
-from models.venda_estoque.movimentacao_estoque import MovimentacaoEstoque
-from models.venda_estoque.produto import Produto
+from models.estoque.movimentacao_estoque import MovimentacaoEstoque
+from models.estoque.produto import Produto
 from models.granja.granja import Granja
 
 

@@ -24,11 +24,10 @@ class DespesaService:
 
 
     @staticmethod
-    def buscar_por_id(id, granja_id):
+    def buscar_por_id(id):
         despesa = (
             db.session.query(Despesa)
-            .join(Despesa.granja)
-            .filter(Granja.id == granja_id, Despesa.id == id)
+            .filter(Despesa.id == id)
             .first()
         )
 
@@ -36,33 +35,6 @@ class DespesaService:
             raise NotFoundError("Despesa não encontrada")
 
         return despesa
-
-
-    @staticmethod
-    def maior_gasto_mes(granja_id=None):
-        hoje = datetime.now()
-
-        query = (
-            db.session.query(Despesa)
-            .join(Despesa.granja)
-            .filter(
-                extract("month", Despesa.data) == hoje.month,
-                extract("year", Despesa.data) == hoje.year,
-            )
-        )
-
-        if granja_id is not None:
-            query = query.filter(Granja.id == granja_id)
-
-        maior_gasto = query.order_by(Despesa.valor.desc()).first()
-
-        if not maior_gasto: 
-            return None
-
-        return {
-            "valor": float(maior_gasto.valor),
-            "tipo_despesa":maior_gasto.tipo_despesa.nome
-        }
     
 
     @staticmethod
@@ -85,12 +57,13 @@ class DespesaService:
     
 
     @staticmethod
-    def total_gasto_mes():
+    def total_gasto_mes_granja(granja_id):
         hoje = datetime.now()
         total = (
             db.session.query(
                 func.sum(Despesa.valor)
             )
+            .filter(Despesa.granja_id == granja_id)
             .filter(
                 extract("month", Despesa.data) == hoje.month,
                 extract("year", Despesa.data) == hoje.year,

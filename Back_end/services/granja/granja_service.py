@@ -4,12 +4,14 @@ from models.granja.granja import Granja
 from models.granja.usuario_granja import UsuarioGranja
 from helpers.exceptions import NotFoundError
 from services.granja.usuario_granja_service import UsuarioGranjaService
+from seeds.seed_granja_tipos_status import criar_dados_padrao_granja
+from models.controle_banco_de_dados.role import Role
 
 class GranjaService:
 
     @staticmethod
     def listar(user_id):
-        resultados = (
+        granjas = (
             db.session.query(Granja)
             .join(Granja.usuarios)
             .filter(
@@ -17,34 +19,45 @@ class GranjaService:
             )
             .all()
         )
-        print("LISTAR: ", resultados)
-
-        return resultados
+    
+        return granjas
 
     
     @staticmethod
-    def buscar_por_id(id, user_id):
-        registro = db.session.query(Granja).join(Granja.usuarios).filter(UsuarioGranja.usuario_id == user_id).first()
-        if not registro:
+    def buscar_por_id(id):
+        granja = (
+            db.session.query(Granja)
+            .filter(
+                Granja.id == id
+            )
+            .first()
+        )
+        if not granja:
             raise NotFoundError("Registro não encontrado")
         
-        return registro
+        return granja
     
 
     @staticmethod
     def criar(data, user_id):
-        novo_registro = Granja(**data)
+        granja = Granja(**data)
         
-        db.session.add(novo_registro)
+        db.session.add(granja)
         db.session.flush()
+
+        role_master = Role.query.filter_by(nome="MASTER").first()
+
+        criar_dados_padrao_granja(granja.id)
 
         UsuarioGranjaService.criar({
             "usuario_id": user_id,
-            "granja_id": novo_registro.id,
-            "cargo_id": 1,
+            "granja_id": granja.id,
+            "role_id": role_master.id,
             "ativo": True
         })
-        return novo_registro
+
+
+        return granja
     
 
     @staticmethod

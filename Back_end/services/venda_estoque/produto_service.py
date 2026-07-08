@@ -1,6 +1,6 @@
 from helpers.database import db
 from helpers.exceptions import NotFoundError
-from models.venda_estoque.produto import Produto
+from models.estoque.produto import Produto
 from models.granja.granja import Granja
 
 
@@ -10,8 +10,7 @@ class ProdutoService:
     def listar(granja_id):
         resultados = (
             db.session.query(Produto)
-            .join(Produto.granja)
-            .filter(Granja.id == granja_id)
+            .filter(Produto.granja_id == granja_id)
             .all()
         )
 
@@ -40,6 +39,9 @@ class ProdutoService:
 
     @staticmethod
     def atualizar(registro, data):
+        
+        data.pop("tipo_produto", None)
+        data.pop("tipo_unidade_medida", None)
         for k, v in data.items():
             setattr(registro, k, v)
 

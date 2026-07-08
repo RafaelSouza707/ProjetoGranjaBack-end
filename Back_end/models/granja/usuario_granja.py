@@ -20,15 +20,15 @@ class UsuarioGranja(db.Model):
         nullable=False
     )
 
-    granja_id: Mapped[int] = mapped_column(
+    granja_id: Mapped[int | None] = mapped_column(
         BigInteger,
-        ForeignKey("granja.id", ondelete="RESTRICT"),
-        nullable=False
+        ForeignKey("granja.id", ondelete="SET NULL"),
+        nullable=True
     )
 
-    cargo_id: Mapped[int] = mapped_column(
+    role_id: Mapped[int] = mapped_column(
         BigInteger,
-        ForeignKey("cargo.id", ondelete="RESTRICT"),
+        ForeignKey("role.id", ondelete="RESTRICT"),
         nullable=True
     )
 
@@ -44,7 +44,7 @@ class UsuarioGranja(db.Model):
         back_populates="usuarios"
     )
 
-    cargo: Mapped["Cargo"] = relationship(
-        "Cargo",
-        back_populates="usuarios"
+    role: Mapped["Role"] = relationship(
+        "Role",
+        back_populates="usuario_granjas"
     )

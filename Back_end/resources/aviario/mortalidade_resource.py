@@ -38,13 +38,11 @@ class MortalidadeResource(Resource):
 
         granja_id = request.args.get("granja_id", type=int)
         lote_frango_id = request.args.get("lote_frango_id", type=int)
-        if lote_frango_id is not None:
-            granja_id, lote_frango_id = pegar_granja_id(lote_frango_id)
-
-        if granja_id is None:
-            return {"error": "granja_id é obrigatório"}, 400
 
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
+        
+        if lote_frango_id is not None:
+            granja_id, lote_frango_id = pegar_granja_id(lote_frango_id)
 
         if lote_frango_id is not None:
             cache_key = f"cache:granja:{granja_id}:lote_frango:{lote_frango_id}:mortalidade"
@@ -54,7 +52,7 @@ class MortalidadeResource(Resource):
                 return dados, 200
 
             resultados = schemas.dump(Servico.listar_de_lote_frango(lote_frango_id, granja_id))
-
+            
             cache.set(cache_key, resultados)
             return resultados, 200
 
@@ -77,7 +75,7 @@ class MortalidadeResource(Resource):
         data, error = validate_schema(schema, json)
 
         if error:
-            return str(error)
+            return {str(error)}
 
         lote_frango_id = data["lote_frango_id"]
         granja_id, _ = pegar_granja_id(lote_frango_id)
@@ -99,7 +97,7 @@ class MortalidadeResource(Resource):
         data, error = validate_schema(schema, json, partial=True)
 
         if error:
-            return str(error)
+            return {str(error)}
 
         lote_frango_id = data["lote_frango_id"]
         granja_id, _ = pegar_granja_id(lote_frango_id)

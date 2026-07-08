@@ -1,8 +1,10 @@
 from helpers.database import db
 from models.granja.usuario_granja import UsuarioGranja
+from models.granja.granja import Granja
 from helpers.exceptions import NotFoundError
 
 class ValidarAcessoGranja():
+
     @staticmethod
     def validar_acesso_granja(user_id, granja_id):
         pertence = (

@@ -10,14 +10,16 @@ class ReceitaSchema(Schema):
     tipo_receita = fields.Nested(
         TipoDespesaSchema,
         attribute="tipo_receita",
-        dump_only=True
+        dump_only=True,
+        only=("nome",)
     )
 
     status_financas_id = fields.Integer(required=True)
     status = fields.Nested(
         StatusFinancasSchema,
         attribute="status_financas",
-        dump_only=True
+        dump_only=True,
+        only=("nome",)
     )
 
     venda_id = fields.Integer(allow_none=True)
@@ -25,7 +27,7 @@ class ReceitaSchema(Schema):
         VendaSchema,
         attribute="venda",
         dump_only=True,
-        only=("status_venda_id", "valor_total")
+        only=("status",)
     )
 
     granja_id = fields.Integer(required=True, load_only=True)

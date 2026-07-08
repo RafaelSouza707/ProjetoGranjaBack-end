@@ -13,23 +13,16 @@ class CardsLoteFrango(Resource):
         user_id = g.user_id
         granja_id = request.args.get("granja_id", type=int)
 
+        lote_frango_id = request.args.get("lote_frango_id", type=int)
+
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
-
-        cache_key = f"cache:granja:{granja_id}:lote_frango:cards_lote_frango"
-
-        dados = cache.get(cache_key)
-        if dados is not None:
-            return dados
         
         resultado = {
-            "mortalidade_lote_frango": Servico.mortalidade_lote_frango(granja_id),
-            "total_aves_lote_frango": Servico.total_aves_lote_frango(granja_id),
-            "baixa_quantidade_aves_lote_frango": Servico.baixa_quantidade_aves_lote_frango(granja_id)
+            "mortalidade_granja_mes": Servico.mortalidade_granja_mes(granja_id),
+            "mortalidade_lote_frango_mes":Servico.mortalidade_lote_mes(lote_frango_id),
+            "total_aves_lote_frango": Servico.total_aves_lote_frango(lote_frango_id),
+            "total_aves_granja": Servico.total_aves_granja(granja_id),
+            "baixa_quantidade_aves_lote_frango": Servico.baixa_quantidade_aves_granja(granja_id)
         }
         
-        cache.set(
-            cache_key,
-            resultado,
-        )
-
         return resultado, 200

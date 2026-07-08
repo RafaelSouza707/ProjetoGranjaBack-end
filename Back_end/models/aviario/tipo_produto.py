@@ -14,19 +14,20 @@ class TipoProduto(db.Model):
 
     granja_id: Mapped[int] = mapped_column(
         BigInteger,
-        ForeignKey("granja.id", ondelete="RESTRICT"),
+        ForeignKey("granja.id", ondelete="CASCADE"),
         nullable=False
     )
 
     nome: Mapped[str] = mapped_column(
         String(64),
         nullable=False,
-        unique=True
     )
 
     produtos: Mapped[list["Produto"]] = relationship(
         "Produto",
-        back_populates="tipo_produto"
+        back_populates="tipo_produto",
+        cascade="all, delete-orphan",
+        passive_deletes=True
     )
 
     granja: Mapped["Granja"] = relationship(

@@ -41,7 +41,7 @@ class UsuarioResource(Resource):
         data, error = validate_schema(schema, json, partial=True)
 
         if error:
-            return {set(error)}
+            return {str(error)}
         
         with session_scope():
             atualizar = Servico.buscar_por_id(user_id)

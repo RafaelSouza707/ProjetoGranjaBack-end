@@ -4,11 +4,13 @@ from models.aviario.lote_frangos import LoteFrango
 from datetime import datetime
 from models.aviario.mortalidade import Mortalidade
 from models.aviario.status_lote_frango import StatusLoteFrango
-from models.granja.usuario_granja import UsuarioGranja
 from sqlalchemy import extract, func
 from models.aviario.lote_frangos import LoteFrango
 from models.granja.granja import Granja
 from helpers.exceptions import NotFoundError
+from models.aviario.consumo_lote_diaria import ConsumoLoteDiaria
+from models.estoque.producao import Producao
+from models.estoque.produto import Produto
 
 def normalizar(data):
     if "identificacao" in data and isinstance(data["identificacao"], str):
@@ -18,16 +20,16 @@ class LoteFrangoService:
 
     @staticmethod
     def listar(granja_id):
-        granjas = (
+        resultado = (
             db.session.query(LoteFrango)
-            .join(LoteFrango.granja)
             .filter(
-                Granja.id == granja_id
+                LoteFrango.granja_id == granja_id
             )
+            .order_by(LoteFrango.identificacao.desc())
             .all()
         )
 
-        return granjas
+        return resultado
 
     
     @staticmethod
@@ -41,7 +43,7 @@ class LoteFrangoService:
     
 
     @staticmethod
-    def mortalidade_lote_frango(granja_id):
+    def mortalidade_granja_mes(granja_id):
         hoje = datetime.now()
         
         total = (
@@ -49,50 +51,95 @@ class LoteFrangoService:
                 func.sum(Mortalidade.quantidade_mortes)
             )
             .join(Mortalidade.lote_frango)
-            .join(LoteFrango.granja)
-            .filter(Granja.id == granja_id)
             .filter(
                 extract("month", Mortalidade.data) == hoje.month,
                 extract("year", Mortalidade.data) == hoje.year,
+                LoteFrango.granja_id == granja_id
             )
             .scalar()
         )
-        return int(total or 0)
+        return total or 0
+    
+
+    @staticmethod
+    def mortalidade_lote_mes(lote_frango_id):
+        hoje = datetime.now()
+
+        total = (
+            db.session.query(
+                func.sum(Mortalidade.quantidade_mortes)
+            )
+            .filter(
+                extract("month", Mortalidade.data) == hoje.month,
+                extract("year", Mortalidade.data) == hoje.year,
+                Mortalidade.lote_frango_id == lote_frango_id
+            )
+            .scalar()
+        )
+        return total or 0
 
 
     @staticmethod
-    def total_aves_lote_frango(granja_id):
+    def total_aves_granja(granja_id):
         total_vivos = (
             db.session.query(func.sum(LoteFrango.quantidade_atual))
-            .join(LoteFrango.granja)
             .join(LoteFrango.status_lote_frango)
             .filter(
-                Granja.id == granja_id,
-                StatusLoteFrango.nome == "ativo"
+                LoteFrango.granja_id == granja_id,
+                StatusLoteFrango.nome == "Ativo"
             )
             .scalar()
         )
+        return total_vivos or 0
+    
 
+    @staticmethod
+    def total_aves_lote_frango(lote_frango_id):
+        total_vivos = (
+            db.session.query(LoteFrango.quantidade_atual)
+            .filter(
+                LoteFrango.id == lote_frango_id,
+            )
+            .scalar()
+        )
         return total_vivos or 0
 
 
     @staticmethod
-    def baixa_quantidade_aves_lote_frango(granja_id):
+    def baixa_quantidade_aves_granja(granja_id):
         return (
             db.session.query(LoteFrango)
-            .join(LoteFrango.granja)
             .filter(
-                Granja.id == granja_id,
+                LoteFrango.granja_id == granja_id,
                 LoteFrango.quantidade_inicial > 0,
                 (LoteFrango.quantidade_atual / LoteFrango.quantidade_inicial) <= 0.4
             )
             .count()
         )
-        
+    
+
+    @staticmethod
+    def consumo_total_granja(granja_id):
+        return (
+            db.session.query(
+                func.sum(ConsumoLoteDiaria.quilos)
+            )
+            .join(ConsumoLoteDiaria.lote_frango)
+            .filter(
+                LoteFrango.granja_id == granja_id
+            )
+            .scalar() or None
+        )
+    
 
     @staticmethod
     def criar(data):
         normalizar(data)
+
+        if data.get("status"):
+            data["status_lote_frango_id"] = data["status"]["id"]
+
+        data.pop("status", None)
 
         novo_registro = LoteFrango(**data)
         
@@ -104,7 +151,7 @@ class LoteFrangoService:
 
     @staticmethod
     def atualizar(registro, data):
-        print(data, registro)
+        data.pop("status_lote_frango", None)
         for k, v in data.items():
             setattr(registro, k, v)
 

@@ -84,10 +84,14 @@ class ProdutoResource(Resource):
     def delete(self, id):
         user_id = g.user_id
 
+        granja_id = request.args.get("granja_id")
+        if granja_id is None:
+            return {"error": "granja_id é obrigatório"}, 400
+
+        ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
+
         with session_scope():
             delete = Servico.buscar_por_id(id)
-            granja_id = delete.granja_id
-            ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
             Servico.deletar(delete)
 
         deletar_cache(granja_id)

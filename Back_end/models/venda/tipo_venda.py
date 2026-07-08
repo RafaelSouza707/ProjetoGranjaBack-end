@@ -14,14 +14,13 @@ class TipoVenda(db.Model):
 
     granja_id: Mapped[int] = mapped_column(
         BigInteger,
-        ForeignKey("granja.id", ondelete="RESTRICT"),
+        ForeignKey("granja.id", ondelete="CASCADE"),
         nullable=False
     )
 
     nome: Mapped[str] = mapped_column(
         String(32),
         nullable=False,
-        unique=True
     )
 
     vendas: Mapped[list["Venda"]] = relationship(

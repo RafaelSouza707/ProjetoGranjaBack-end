@@ -8,8 +8,7 @@ class LoteFrangoSchema(Schema):
     status = fields.Nested(
         StatusLoteFrangoSchema,
         attribute="status_lote_frango",
-        load_only=True,
-        only=("nome",)
+        only=("nome", "id")
     )
 
     granja_id = fields.Integer(required=True, load_only=True)
@@ -17,9 +16,9 @@ class LoteFrangoSchema(Schema):
     identificacao = fields.String(required=True, validate=validate.Length(max=32))
     quantidade_inicial = fields.Integer(required=True, validate=validate.Range(min=0))
     data_alojamento = fields.Date(required=True)
-    fornecedor = fields.String(required=False, validate=validate.Length(max=128))
+    fornecedor = fields.String(required=False, validate=validate.Length(max=128), allow_none=True)
     quantidade_atual = fields.Integer(required=True, validate=validate.Range(min=0))
-    observacao = fields.String(required=False, validate=validate.Length(max=512))
+    observacao = fields.String(allow_none=True, validate=validate.Length(max=512))
 
     class Meta:
         unknown = EXCLUDE

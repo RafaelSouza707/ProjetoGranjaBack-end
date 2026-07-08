@@ -1,7 +1,10 @@
 from flask_restful import Resource
-from flask import request
+from flask import request, g
 from helpers.validate_schema import validate_schema
 from helpers.db_utils import session_scope
+from middlewares.auth_middleware import token_required
+from services.usuarios.access_user_granja_service import ValidarAcessoGranja
+from helpers.cache import cache
 
 from services.venda_estoque.tipo_movimentacao_service import TipoMovimentacaoService as Servico
 from schemas.venda_estoque.tipo_movimentacao_schema import TipoMovimentacaoSchema as Schema
@@ -9,54 +12,96 @@ from schemas.venda_estoque.tipo_movimentacao_schema import TipoMovimentacaoSchem
 schema = Schema()
 schemas = Schema(many=True)
 
+
+def deletar_granja(granja_id):
+    cache.delete(f"cache:granja:{granja_id}:tipo_movimentacao")
+
 class TipoMovimentacaoResource(Resource):
 
-    def get(self, id=None):
-        if id:
-            with session_scope():
-                resultado = Servico.buscar_por_id(id)
-                resultado_final = schema.dump(resultado)
-            return resultado_final, 200
-        with session_scope():
-            resultados = Servico.listar()
-            resultados_final = schemas.dump(resultados)
-        return resultados_final, 200
+    @token_required
+    def get(self):
+        user_id = g.user_id
 
+        granja_id = request.args.get("granja_id", type=int)
+        if granja_id is None:
+            return {"error": "granja_id é obrigatório"}, 400
 
-    def post(self):
-        json = request.get_json()
+        ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
+
+        cache_key = f"cache:granja:{granja_id}:tipo_movimentacao"
+        dados = cache.get(cache_key)
+        if dados is not None:
+            return dados, 200
+
+        resultados = schemas.dump(Servico.listar(granja_id))
+
+        cache.set(cache_key, resultados)
         
+        return resultados, 200
+
+
+    @token_required
+    def post(self):
+        user_id = g.user_id
+
+        json = request.get_json()
         data, error = validate_schema(schema, json)
 
         if error:
             return str(error)
         
+        granja_id = data.get("granja_id")
+        if granja_id is None:
+            return {"error": "granja_id é obrigatório"}, 400
+
+        ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
+        
         with session_scope():
             novo = Servico.criar(data)
             resultado = schema.dump(novo)
         
+        deletar_granja(granja_id)
         return resultado, 201
     
 
+    @token_required
     def put(self, id):
-        json = request.get_json()
+        user_id = g.user_id
 
+        json = request.get_json()
         data, error = validate_schema(schema, json, partial=True)
 
         if error:
             return str(error)
+        
+        granja_id = data.get("granja_id")
+        if granja_id is None:
+            return {"error": "granja_id é obrigatório"}, 400
+
+        ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
         
         with session_scope():
             atualizar = Servico.buscar_por_id(id)
             atualizado = Servico.atualizar(atualizar, data)
             resultado = schema.dump(atualizado)
         
+        deletar_granja(granja_id)
         return resultado, 200
     
 
+    @token_required
     def delete(self, id):
+        user_id = g.user_id
+
+        granja_id = request.args.get("granja_id", type=int)
+        if granja_id is None:
+            return {"error": "granja_id é obrigatório"}, 400
+
+        ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
+
         with session_scope():
             delete = Servico.buscar_por_id(id)
             Servico.deletar(delete)
 
+        deletar_granja(granja_id)
         return "", 204

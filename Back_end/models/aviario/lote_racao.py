@@ -29,17 +29,12 @@ class LoteRacao(db.Model):
 
     granja_id: Mapped[int] = mapped_column(
         BigInteger,
-        ForeignKey("granja.id", ondelete="RESTRICT"),
+        ForeignKey("granja.id", ondelete="CASCADE"),
         nullable=False
     )
 
     fornecedor: Mapped[str] = mapped_column(
         String(100),
-        nullable=False
-    )
-
-    data_compra: Mapped[Date] = mapped_column(
-        Date,
         nullable=False
     )
 

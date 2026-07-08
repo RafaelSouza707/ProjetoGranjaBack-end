@@ -1,11 +1,11 @@
 from helpers.database import db
 from helpers.exceptions import NotFoundError
-from models.venda_estoque.tipo_unidade_medida import TipoUnidadeMedida
+from models.estoque.tipo_unidade_medida import TipoUnidadeMedida
 from models.granja.granja import Granja
 
 def normalizar(data):
     if "sigla" in data and isinstance(data["sigla"], str):
-        data["sigla"] = data["sigla"].strip().lower()
+        data["sigla"] = data["sigla"].strip().upper()
 
 class TipoUnidadeMedidaService:
 

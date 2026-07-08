@@ -1,8 +1,11 @@
 from flask_restful import Resource
-from flask import request, jsonify
+from flask import request, jsonify, g
 from middlewares.auth_middleware import token_required
 
-from services.usuarios.usuario_service import UsuarioService 
+from services.usuarios.usuario_service import UsuarioService
+from schemas.usuarios.usuario_schema import UsuarioSchema
+
+schema = UsuarioSchema()
 
 class LoginResource(Resource):
 
@@ -29,7 +32,8 @@ class LoginResource(Resource):
 
     @token_required
     def get(self):
-        return {
-            "id": request.user["user_id"],
-            "nome": request.user["username"]
-        }, 200
+        user_id = g.user_id
+
+        usuario = UsuarioService.buscar_por_id(user_id)
+
+        return schema.dump(usuario), 200

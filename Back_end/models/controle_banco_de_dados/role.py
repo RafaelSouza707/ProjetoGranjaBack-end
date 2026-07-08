@@ -17,8 +17,8 @@ class Role(db.Model):
         nullable=False
     )
 
-    cargos: Mapped[list["Cargo"]] = relationship(
-        "Cargo",
+    usuario_granjas: Mapped[list["UsuarioGranja"]] = relationship(
+        "UsuarioGranja",
         back_populates="role"
     )
 

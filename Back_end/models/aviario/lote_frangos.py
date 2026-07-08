@@ -27,7 +27,7 @@ class LoteFrango(db.Model):
 
     granja_id: Mapped[int] = mapped_column(
         BigInteger,
-        ForeignKey("granja.id", ondelete="RESTRICT"),
+        ForeignKey("granja.id", ondelete="CASCADE"),
         nullable=False
     )
 
@@ -39,7 +39,7 @@ class LoteFrango(db.Model):
 
     quantidade_inicial: Mapped[int] = mapped_column(
         Integer,
-        nullable=True
+        nullable=False
     )
 
     data_alojamento: Mapped[Date] = mapped_column(
@@ -79,7 +79,8 @@ class LoteFrango(db.Model):
 
     producoes: Mapped[list["Producao"]] = relationship(
         "Producao",
-        back_populates="lote_frango"
+        back_populates="lote_frango",
+        cascade="all, delete-orphan"
     )
 
     despesa: Mapped["Despesa"] = relationship(

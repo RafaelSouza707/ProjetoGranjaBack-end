@@ -7,8 +7,10 @@ from sqlalchemy import (
     ForeignKey,
     String,
     Boolean,
-    Date
+    Date,
+    Numeric
 )
+from decimal import Decimal
 
 from helpers.database import db
 
@@ -24,24 +26,29 @@ class Produto(db.Model):
 
     tipo_produto_id: Mapped[int] = mapped_column(
         BigInteger,
-        ForeignKey("tipo_produto.id", ondelete="RESTRICT"),
+        ForeignKey("tipo_produto.id", ondelete="CASCADE"),
         nullable=False
     )
 
     tipo_unidade_medida_id: Mapped[int] = mapped_column(
         BigInteger,
-        ForeignKey("tipo_unidade_medida.id", ondelete="RESTRICT"),
+        ForeignKey("tipo_unidade_medida.id", ondelete="CASCADE"),
         nullable=False
     )
 
     granja_id: Mapped[int] = mapped_column(
         BigInteger,
-        ForeignKey("granja.id", ondelete="RESTRICT"),
+        ForeignKey("granja.id", ondelete="CASCADE"),
         nullable=False
     )
 
     descricao: Mapped[str] = mapped_column(
         String(120),
+        nullable=False
+    )
+    
+    quantidade_estoque: Mapped[Decimal] = mapped_column(
+        Numeric(15, 3),
         nullable=False
     )
 
@@ -56,13 +63,13 @@ class Produto(db.Model):
         nullable=False
     )
 
-    tipo_produto: Mapped["TipoProduto"] = relationship(
-        "TipoProduto",
+    tipo_unidade_medida: Mapped["TipoUnidadeMedida"] = relationship(
+        "TipoUnidadeMedida",
         back_populates="produtos"
     )
 
-    tipo_unidade_medida: Mapped["TipoUnidadeMedida"] = relationship(
-        "TipoUnidadeMedida",
+    tipo_produto: Mapped["TipoProduto"] = relationship(
+        "TipoProduto",
         back_populates="produtos"
     )
 
@@ -74,7 +81,8 @@ class Produto(db.Model):
 
     producoes: Mapped[list["Producao"]] = relationship(
         "Producao",
-        back_populates="produto"
+        back_populates="produto",
+        cascade="all, delete-orphan"
     )
 
     itens_venda: Mapped[list["ItemVenda"]] = relationship(

@@ -1,4 +1,6 @@
+from datetime import datetime
 from helpers.database import db
+from sqlalchemy import extract, func
 from helpers.exceptions import NotFoundError
 from models.financas.receita import Receita
 from models.granja.granja import Granja
@@ -14,8 +16,8 @@ class ReceitaService:
             .filter(Granja.id == granja_id)
             .all()
         )
-
         return resultado
+    
 
     @staticmethod
     def buscar_por_id(id, granja_id):
@@ -25,11 +27,63 @@ class ReceitaService:
             .filter(Granja.id == granja_id, Receita.id == id)
             .first()
         )
-
         if not registro:
             raise NotFoundError("Registro não encontrado")
 
         return registro
+    
+
+    @staticmethod
+    def card_receita_valor_total_receita_mes_graja(granja_id):
+        hoje = datetime.now()
+        
+        total_vendido = (
+            db.session.query(func.sum(Receita.valor))
+            .filter(
+                extract("month", Receita.data) == hoje.month,
+                extract("year", Receita.data) == hoje.year,
+                Receita.granja_id == granja_id
+            )
+            .scalar()
+        )
+
+        return float(total_vendido or 0)
+    
+
+
+    @staticmethod
+    def card_receita_total_receitas_mes_granja(granja_id):
+        hoje = datetime.now()
+
+        total_vendas = (
+            db.session.query(func.count(Receita.id))
+            .filter(
+                extract("month", Receita.data) == hoje.month,
+                extract("year", Receita.data) == hoje.year,
+                Receita.granja_id == granja_id
+            )
+            .scalar()
+        )
+        return total_vendas or 0
+    
+
+
+    @staticmethod
+    def card_receita_maior_receita_mes(granja_id):
+        hoje = datetime.now()
+
+        maior_venda = (
+            db.session.query(Receita)
+            .filter(
+                extract("month", Receita.data) == hoje.month,
+                extract("year", Receita.data) == hoje.year,
+                Receita.granja_id == granja_id
+            )
+            .order_by(Receita.valor.desc())
+            .first()
+        )
+        return maior_venda
+
 
     @staticmethod
     def criar(data):
@@ -39,6 +93,7 @@ class ReceitaService:
         db.session.flush()
 
         return novo_registro
+    
 
     @staticmethod
     def atualizar(registro, data):
@@ -46,6 +101,7 @@ class ReceitaService:
             setattr(registro, k, v)
 
         return registro
+    
 
     @staticmethod
     def deletar(registro):

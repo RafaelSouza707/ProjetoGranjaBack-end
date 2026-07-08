@@ -1,6 +1,7 @@
 from helpers.database import db
 from helpers.exceptions import NotFoundError
-from models.venda_estoque.tipo_movimentacao import TipoMovimentacao as Model
+from models.estoque.tipo_movimentacao import TipoMovimentacao
+from models.granja.granja import Granja
 
 def normalizar(data):
     if "nome" in data and isinstance(data["nome"], str):
@@ -9,13 +10,18 @@ def normalizar(data):
 class TipoMovimentacaoService:
 
     @staticmethod
-    def listar():
-        return db.session.query(Model).all()
+    def listar(granja_id):
+        return (
+            db.session.query(TipoMovimentacao)
+            .join(TipoMovimentacao.granja)
+            .filter(Granja.id == granja_id)
+            .all()
+        )
     
     
     @staticmethod
     def buscar_por_id(id):
-        registro = db.session.get(Model, id)
+        registro = db.session.get(TipoMovimentacao, id)
         if not registro:
             raise NotFoundError("Registro não encontrado")
         
@@ -26,7 +32,7 @@ class TipoMovimentacaoService:
     def criar(data):
         normalizar(data)
 
-        novo_registro = Model(**data)
+        novo_registro = TipoMovimentacao(**data)
         
         db.session.add(novo_registro)
         db.session.flush()

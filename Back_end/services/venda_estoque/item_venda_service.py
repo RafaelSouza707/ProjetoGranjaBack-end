@@ -1,9 +1,8 @@
 from helpers.database import db
 from helpers.exceptions import NotFoundError
-from models.venda_estoque.item_venda import ItemVenda
-from models.venda_estoque.produto import Produto
+from models.venda.item_venda import ItemVenda
+from models.estoque.produto import Produto
 from models.granja.granja import Granja
-from models.granja.usuario_granja import UsuarioGranja
 
 
 class ItemVendaService:

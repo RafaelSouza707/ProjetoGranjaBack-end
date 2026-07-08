@@ -15,6 +15,8 @@ schemas = Schema(many=True)
 
 def deletar_cache(granja_id):
     cache.delete(f"cache:granja:{granja_id}:receita")
+    cache.delete(f"cache:granja:{granja_id}:receita:cards_receitas")
+    cache.delete(f"cache:granja:{granja_id}:despesa:cards_financas")
 
 
 class ReceitaResource(Resource):
@@ -22,13 +24,11 @@ class ReceitaResource(Resource):
     @token_required
     def get(self, id=None):
         user_id = g.user_id
+
         granja_id = request.args.get("granja_id", type=int)
 
-        if granja_id is None:
-            return {"error": "granja_id é obrigatório"}, 400
-
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
-
+        
         cache_key = f"cache:granja:{granja_id}:receita"
         dados = cache.get(cache_key)
         if dados is not None:
@@ -48,7 +48,7 @@ class ReceitaResource(Resource):
         data, error = validate_schema(schema, json)
 
         if error:
-            return str(error)
+            return {str(error)}
 
         granja_id = data.get("granja_id")
         if granja_id is None:
@@ -69,10 +69,15 @@ class ReceitaResource(Resource):
         user_id = g.user_id
 
         json = request.get_json()
+        json.pop("tipo_receita", None)
+        json.pop("venda", None)
+        json.pop("id", None)
+        json.pop("created_at", None)
+        json.pop("updated_at", None)
         data, error = validate_schema(schema, json, partial=True)
 
         if error:
-            return str(error)
+            return {str(error)}
 
         granja_id = data.get("granja_id")
         if granja_id is None:

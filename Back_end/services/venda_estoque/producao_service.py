@@ -1,8 +1,7 @@
 from helpers.database import db
 from helpers.exceptions import NotFoundError
-from models.venda_estoque.producao import Producao
+from models.estoque.producao import Producao
 from models.aviario.lote_frangos import LoteFrango
-from models.granja.granja import Granja
 
 
 class ProducaoService:
@@ -12,11 +11,20 @@ class ProducaoService:
         resultados = (
             db.session.query(Producao)
             .join(Producao.lote_frango)
-            .join(LoteFrango.granja)
-            .filter(Granja.id == granja_id)
+            .filter(LoteFrango.granja_id == granja_id)
             .all()
         )
 
+        return resultados
+    
+    @staticmethod
+    def listar_do_lote_frango(lote_frango_id):
+        resultados = (
+            db.session.query(Producao)
+            .filter(Producao.lote_frango_id == lote_frango_id)
+            .all()
+        )
+        
         return resultados
 
     @staticmethod

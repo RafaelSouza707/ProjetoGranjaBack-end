@@ -34,85 +34,102 @@ class Granja(db.Model):
 
     usuarios: Mapped[list["UsuarioGranja"]] = relationship (
         "UsuarioGranja",
-        back_populates="granja"
+        back_populates="granja",
+        passive_deletes=True
     )
 
     lotes_frango: Mapped[list["LoteFrango"]] = relationship(
         "LoteFrango",
-        back_populates="granja"
+        back_populates="granja",
+        cascade="all, delete-orphan"
     )
 
     lotes_racao: Mapped[list["LoteRacao"]] = relationship(
         "LoteRacao",
-        back_populates="granja"
+        back_populates="granja",
+        cascade="all, delete-orphan"
     )
 
     status_lote_frango: Mapped[list["StatusLoteFrango"]] = relationship(
         "StatusLoteFrango",
-        back_populates="granja"
+        back_populates="granja",
+        cascade="all, delete-orphan"
     )
 
     tipos_produto: Mapped[list["TipoProduto"]] = relationship(
         "TipoProduto",
-        back_populates="granja"
+        back_populates="granja",
+        cascade="all, delete-orphan"
     )
 
     tipos_racao: Mapped[list["TipoRacao"]] = relationship(
         "TipoRacao",
-        back_populates="granja"
+        back_populates="granja",
+        cascade="all, delete-orphan"
     )
 
     despesas: Mapped[list["Despesa"]] = relationship(
         "Despesa",
-        back_populates="granja"
+        back_populates="granja",
+        cascade="all, delete-orphan"
     )
 
     receitas: Mapped[list["Receita"]] = relationship(
         "Receita",
-        back_populates="granja"
+        back_populates="granja",
+        cascade="all, delete-orphan"
     )
 
     status_financas: Mapped[list["StatusFinancas"]] = relationship(
         "StatusFinancas",
-        back_populates="granja"
+        back_populates="granja",
+        cascade="all, delete-orphan"
     )
 
     tipos_despesa: Mapped[list["TipoDespesa"]] = relationship(
         "TipoDespesa",
-        back_populates="granja"
+        back_populates="granja",
+        cascade="all, delete-orphan"
     )
 
     tipos_receita: Mapped[list["TipoReceita"]] = relationship(
         "TipoReceita",
-        back_populates="granja"
+        back_populates="granja",
+        cascade="all, delete-orphan"
     )
     
     produtos: Mapped[list["Produto"]] = relationship(
         "Produto",
-        back_populates="granja"
+        back_populates="granja",
+        cascade="all, delete-orphan"
     )
 
     tipos_venda: Mapped[list["TipoVenda"]] = relationship(
         "TipoVenda",
-        back_populates="granja"
+        back_populates="granja",
+        cascade="all, delete-orphan"
     )
 
     vendas: Mapped[list["Venda"]] = relationship(
         "Venda",
-        back_populates="granja"
+        back_populates="granja",
+        cascade="all, delete-orphan"
     )
 
     tipos_unidade_medida: Mapped[list["TipoUnidadeMedida"]] = relationship(
         "TipoUnidadeMedida",
-        back_populates="granja"
+        back_populates="granja",
+        cascade="all, delete-orphan"
     )
 
     tipos_movimentacoes: Mapped[list["TipoMovimentacao"]] = relationship(
         "TipoMovimentacao",
-        back_populates="granja"
+        back_populates="granja",
+        cascade="all, delete-orphan"
     )
 
     cliente: Mapped[list["Cliente"]] = relationship(
         "Cliente",
-        back_populates="granja"
+        back_populates="granja",
+        cascade="all, delete-orphan"
     )

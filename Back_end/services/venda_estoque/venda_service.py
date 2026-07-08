@@ -1,6 +1,6 @@
 from helpers.database import db
 from helpers.exceptions import NotFoundError
-from models.venda_estoque.venda import Venda
+from models.venda.venda import Venda
 from models.granja.granja import Granja
 
 

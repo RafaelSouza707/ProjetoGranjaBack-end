@@ -1,4 +1,6 @@
 from helpers.database import db
+from datetime import datetime
+from sqlalchemy import extract, func
 from helpers.exceptions import NotFoundError
 from models.aviario.consumo_lote_diaria import ConsumoLoteDiaria
 from models.aviario.lote_frangos import LoteFrango
@@ -21,19 +23,43 @@ class ConsumoLoteDiariaService:
     
 
     @staticmethod
-    def listar_de_lote_frango(lote_frango_id, granja_id):
+    def listar_de_lote_frango(lote_frango_id):
         resultados = (
             db.session.query(ConsumoLoteDiaria)
-            .join(ConsumoLoteDiaria.lote_frango)
-            .join(LoteFrango.granja)
             .filter(
                 ConsumoLoteDiaria.lote_frango_id == lote_frango_id,
-                Granja.id == granja_id
             )
             .all()
         )
+        print(resultados)
 
         return resultados
+
+
+    @staticmethod
+    def consumo_mensal(granja_id):
+        hoje = datetime.now()
+
+        resultado = (
+            db.session.query(func.sum(ConsumoLoteDiaria.quilos))
+            .join(ConsumoLoteDiaria.lote_frango)
+            .filter(
+                extract("month", ConsumoLoteDiaria.data) == hoje.month,
+                extract("year", ConsumoLoteDiaria.data) == hoje.year,
+                LoteFrango.granja_id == granja_id
+            )
+            .scalar()
+        )
+
+        return float(resultado or 0)
+    
+
+    @staticmethod
+    def consumo_mensal_diaria(consumo_mensal):
+        hoje = datetime.now()
+        consumo_diario_medio = consumo_mensal / hoje.day
+
+        return float(consumo_diario_medio)
 
 
     @staticmethod

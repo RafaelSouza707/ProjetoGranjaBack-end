@@ -7,7 +7,8 @@ from services.usuarios.access_user_granja_service import ValidarAcessoGranja
 from helpers.cache import cache
 
 from services.venda_estoque.tipo_unidade_medida_service import TipoUnidadeMedidaService as Servico
-from schemas.venda_estoque.tipo_unidade_medida_schema import TipoMovimentacaoSchema as Schema
+from schemas.venda_estoque.tipo_unidade_medida_schema import TipoUnidadeMedidaSchema as Schema
+from services.usuarios.access_user_granja_service import ValidarAcessoGranja
 
 schema = Schema()
 schemas = Schema(many=True)
@@ -22,6 +23,9 @@ class TipoUnidadeMedidaResource(Resource):
         user_id = g.user_id
 
         granja_id = request.args.get("granja_id", type=int)
+
+        if granja_id is None:
+            return {"error": "granja_id é obrigatório"}, 400
 
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
@@ -41,13 +45,18 @@ class TipoUnidadeMedidaResource(Resource):
 
     @token_required
     def post(self):
+        user_id = g.user_id
+
         json = request.get_json()
         data, error = validate_schema(schema, json)
-
         if error:
             return str(error)
         
         granja_id = data["granja_id"]
+        if granja_id is None:
+            return {"error": "granja_id é obrigatório"}, 400
+
+        ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
         with session_scope():
             novo = Servico.criar(data)
@@ -59,13 +68,19 @@ class TipoUnidadeMedidaResource(Resource):
 
     @token_required
     def put(self, id):
+        user_id = g.user_id
+
         json = request.get_json()
         data, error = validate_schema(schema, json, partial=True)
 
         if error:
             return str(error)
         
-        granja_id = data["granja_id"]
+        granja_id = data.get("granja_id")
+        if granja_id is None:
+            return {"error": "granja_id é obrigatório"}, 400
+
+        ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
         with session_scope():
             atualizar = Servico.buscar_por_id(id)
@@ -76,10 +91,18 @@ class TipoUnidadeMedidaResource(Resource):
         return resultado, 200
     
 
+    @token_required
     def delete(self, id):
+        user_id = g.user_id
+        granja_id = request.args.get("graja_id", type=int)
+
+        if granja_id is None:
+            return {"error": "granja_id é obrigatório"}, 400
+
+        ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
+
         with session_scope():
             delete = Servico.buscar_por_id(id)
-            granja_id = delete.granja_id
             Servico.deletar(delete)
 
         deletar_cache(granja_id)

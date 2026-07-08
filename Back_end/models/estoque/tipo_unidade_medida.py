@@ -4,8 +4,8 @@ from sqlalchemy import BigInteger, Identity, String, ForeignKey
 from helpers.database import db
 
 
-class TipoMovimentacao(db.Model):
-    __tablename__ = "tipo_movimentacao"
+class TipoUnidadeMedida(db.Model):
+    __tablename__ = "tipo_unidade_medida"
 
     id: Mapped[int] = mapped_column(
         BigInteger,
@@ -15,22 +15,28 @@ class TipoMovimentacao(db.Model):
 
     granja_id: Mapped[int] = mapped_column(
         BigInteger,
-        ForeignKey("granja.id", ondelete="RESTRICT"),
+        ForeignKey("granja.id", ondelete="CASCADE"),
         nullable=False
     )
 
-    nome: Mapped[str] = mapped_column(
+    sigla: Mapped[str] = mapped_column(
+        String(8),
+        nullable=False
+    )
+
+    descricao: Mapped[str] = mapped_column(
         String(64),
-        unique=True,
         nullable=False
     )
 
-    movimentacoes: Mapped[list["MovimentacaoEstoque"]] = relationship(
-        "MovimentacaoEstoque",
-        back_populates="tipo_movimentacao"
+    produtos: Mapped[list["Produto"]] = relationship(
+        "Produto",
+        back_populates="tipo_unidade_medida",
+        cascade="all, delete-orphan",
+        passive_deletes=True
     )
 
     granja: Mapped["Granja"] = relationship(
         "Granja",
-        back_populates="tipos_movimentacoes"
+        back_populates="tipos_unidade_medida"
     )

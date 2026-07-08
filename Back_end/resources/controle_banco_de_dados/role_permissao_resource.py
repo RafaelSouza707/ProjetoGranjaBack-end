@@ -11,15 +11,9 @@ schemas = Schema(many=True)
 
 class RolePermissaoResource(Resource):
 
-    def get(self, id=None):
-        if id:
-            with session_scope():
-                resultado = Servico.buscar_por_id(id)
-                resultado_final = schema.dump(resultado)
-            return resultado_final, 200
-        with session_scope():
-            resultados = Servico.listar()
-            resultados_final = schemas.dump(resultados)
+    def get(self):
+        resultados = Servico.listar()
+        resultados_final = schemas.dump(resultados)
         return resultados_final, 200
 
 
@@ -29,7 +23,7 @@ class RolePermissaoResource(Resource):
         data, error = validate_schema(schema, json)
 
         if error:
-            return str(error)
+            return {str(error)}
         
         with session_scope():
             novo = Servico.criar(data)
@@ -44,7 +38,7 @@ class RolePermissaoResource(Resource):
         data, error = validate_schema(schema, json, partial=True)
 
         if error:
-            return str(error)
+            return {str(error)}
         
         with session_scope():
             atualizar = Servico.buscar_por_id(id)

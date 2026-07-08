@@ -22,10 +22,8 @@ class TipoProdutoResource(Resource):
     @token_required
     def get(self):
         user_id = g.user_id
-        granja_id = request.args.get("granja_id", type=int)
 
-        if granja_id is None:
-            return {"error": "granja_id é obrigatório"}, 400
+        granja_id = request.args.get("granja_id", type=int)
 
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
@@ -52,8 +50,6 @@ class TipoProdutoResource(Resource):
             return str(error)
 
         granja_id = data.get("granja_id")
-        if granja_id is None:
-            return {"error": "granja_id é obrigatório"}, 400
 
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
@@ -76,13 +72,11 @@ class TipoProdutoResource(Resource):
             return str(error)
 
         granja_id = data.get("granja_id")
-        if granja_id is None:
-            return {"error": "granja_id é obrigatório"}, 400
 
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
         with session_scope():
-            atualizar = Servico.buscar_por_id(id, granja_id)
+            atualizar = Servico.buscar_por_id(id)
             atualizado = Servico.atualizar(atualizar, data)
             resultado = schema.dump(atualizado)
 
@@ -101,7 +95,7 @@ class TipoProdutoResource(Resource):
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
         with session_scope():
-            delete = Servico.buscar_por_id(id, granja_id)
+            delete = Servico.buscar_por_id(id)
             Servico.deletar(delete)
 
         deletar_cache(granja_id)

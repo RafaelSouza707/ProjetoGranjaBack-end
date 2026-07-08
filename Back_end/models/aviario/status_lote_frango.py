@@ -14,15 +14,22 @@ class StatusLoteFrango(db.Model):
 
     granja_id: Mapped[int] = mapped_column(
         BigInteger,
-        ForeignKey("granja.id", ondelete="RESTRICT"),
+        ForeignKey("granja.id", ondelete="CASCADE"),
         nullable=False
     )
 
     nome: Mapped[str] = mapped_column(
         String(20),
-        nullable=False,
-        unique=True
+        nullable=False
     )
+
+    __table_args__ = (
+    db.UniqueConstraint(
+        "granja_id",
+        "nome",
+        name="uq_status_lote_frango_granja_nome"
+    ),
+)
 
     lotes: Mapped[list["LoteFrango"]] = relationship(
         "LoteFrango",

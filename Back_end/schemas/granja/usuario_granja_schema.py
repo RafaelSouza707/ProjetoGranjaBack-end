@@ -9,7 +9,7 @@ class UsuarioGranjaSchema(Schema):
 
     granja_id = fields.Integer(required=True)
 
-    cargo_id = fields.Integer(required=True)
+    role_id = fields.Integer(required=True)
 
     ativo = fields.Boolean(required=True)
 
