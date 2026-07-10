@@ -24,6 +24,7 @@ class EnderecoResource(Resource):
     @token_required
     def post(self):
         json = request.get_json()
+        print(json)
         data, error = validate_schema(schema, json)
 
         if error:

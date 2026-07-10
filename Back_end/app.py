@@ -44,6 +44,7 @@ from resources.usuarios.usuario_resource import UsuarioResource
 from resources.usuarios.sexo_resource import SexoResource
 from resources.usuarios.login_resource import LoginResource
 from resources.usuarios.logout_resource import LogoutResource
+from resources.usuarios.usuario_associacao_resource import UsuarioAssociacaoResource
 
 ## Granja
 from resources.granja.granja_resource import GranjaResource
@@ -108,6 +109,7 @@ api.add_resource(UsuarioResource, '/usuarios/usuario', '/usuarios/usuario/<int:i
 api.add_resource(SexoResource, '/usuarios/sexo', '/usuarios/sexo/<int:id>')
 api.add_resource(LoginResource, '/usuarios/login')
 api.add_resource(LogoutResource, '/usuarios/logout')
+api.add_resource(UsuarioAssociacaoResource, '/usuarios/relacao')
 
 ## Granja
 api.add_resource(GranjaResource, '/granja/granja', '/granja/granja/<int:id>')

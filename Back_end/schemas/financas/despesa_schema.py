@@ -31,7 +31,7 @@ class DespesaSchema(Schema):
     granja_id = fields.Integer(required=True, load_only=True)
 
     data = fields.Date(required=True)
-    data_vencimento = fields.Date(allow_none=True)
+    data_vencimento = fields.Date(allow_none=True, required=False)
 
     valor = fields.Decimal( 
         required=True,
@@ -40,7 +40,7 @@ class DespesaSchema(Schema):
         validate=validate.Range(min=0)
     )
 
-    descricao = fields.String(allow_none=True, validate=validate.Length(max=256))
+    descricao = fields.String(allow_none=True, required=False, validate=validate.Length(max=256))
 
     created_at = fields.DateTime(dump_only=True)
     updated_at = fields.DateTime(dump_only=True)

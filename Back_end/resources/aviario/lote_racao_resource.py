@@ -43,7 +43,6 @@ class LoteRacaoResource(Resource):
         user_id = g.user_id
 
         granja_id = request.args.get("granja_id", type=int)
-        print(granja_id)
 
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 

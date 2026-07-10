@@ -19,11 +19,13 @@ class CardsGastosGranjaResource(Resource):
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
         cache_key = f"cache:granja:{granja_id}:despesa:cards_gastos"
+        cache.delete(cache_key)
         dados = cache.get(cache_key)
         if dados is not None:
             return dados, 200
         
         maior_gasto = DespesaService.maior_gasto_mes_granja(granja_id)
+        print(maior_gasto)
         
         resultado = {
             "maior_gasto_mes_granja": {"id": maior_gasto.id, "valor": float(maior_gasto.valor),},

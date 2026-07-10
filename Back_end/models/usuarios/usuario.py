@@ -86,3 +86,18 @@ class Usuario(db.Model):
         "UsuarioGranja",
         back_populates="usuario"
     )
+
+
+    associacoes_enviadas = relationship(
+        "UsuarioAssociacao",
+        foreign_keys="UsuarioAssociacao.usuario_origem_id",
+        back_populates="usuario_origem",
+        cascade="all, delete-orphan"
+    )
+
+    associacoes_recebidas = relationship(
+        "UsuarioAssociacao",
+        foreign_keys="UsuarioAssociacao.usuario_destino_id",
+        back_populates="usuario_destino",
+        cascade="all, delete-orphan"
+    )
