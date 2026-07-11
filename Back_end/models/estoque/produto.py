@@ -44,7 +44,7 @@ class Produto(db.Model):
 
     descricao: Mapped[str] = mapped_column(
         String(120),
-        nullable=False
+        nullable=True
     )
     
     quantidade_estoque: Mapped[Decimal] = mapped_column(

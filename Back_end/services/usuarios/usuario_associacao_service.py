@@ -7,16 +7,37 @@ from helpers.enum_status_associado import StatusAssociacao
 class UsuarioAssociacaoService:
 
     @staticmethod
-    def listar_associacao_user(user_id):
+    def listar_associacao_enviadas(user_id):
         resultado = (
             db.session.query(UsuarioAssociacao)
-            .filter(
-                (UsuarioAssociacao.usuario_destino_id == user_id)
-                |
+            .filter(           
                 (UsuarioAssociacao.usuario_origem_id == user_id)
             )
             .all()
         )
+        
+        return resultado
+
+
+    @staticmethod
+    def listar_associacao_recebidas(user_id):
+        resultado = (
+            db.session.query(UsuarioAssociacao)
+            .filter(           
+                (UsuarioAssociacao.usuario_destino_id == user_id)
+            )
+            .all()
+        )
+        
+        return resultado
+
+
+    @staticmethod
+    def buscar_por_id_associacao(id):
+        resultado = db.session.get(UsuarioAssociacao, id)
+        if not resultado:
+            raise NotFoundError("Registro não encontrado")
+        
         return resultado
 
 
@@ -55,48 +76,28 @@ class UsuarioAssociacaoService:
     
 
     @staticmethod
-    def aceitar_associacao(associassao_id):
-        associacao = (
-            db.session.query(UsuarioAssociacao)
-            .filter(UsuarioAssociacao.id == associassao_id)
-            .first()
-        )
-
-        if associacao is None:
-            raise NotFoundError("Associação não encontrada")
-        
-        associacao.status = StatusAssociacao.ACEITO.value
+    def aceitar_associacao(registro):
+        registro.status = StatusAssociacao.ACEITO.value
 
         return ("Pedido aceito")
     
 
     @staticmethod
-    def recusar_associacao(associassao_id):
-        associacao = (
-            db.session.query(UsuarioAssociacao)
-            .filter(UsuarioAssociacao.id == associassao_id)
-            .first()
-        )
-
-        if associacao is None:
-            raise NotFoundError("Associação não encontrada")
-        
-        associacao.status = StatusAssociacao.RECUSADO.value
+    def recusar_associacao(registro):
+        registro.status = StatusAssociacao.RECUSADO.value
 
         return ("Pedido recusado")
     
 
     @staticmethod
-    def cancelar_associacao(associassao_id):
-        associacao = (
-            db.session.query(UsuarioAssociacao)
-            .filter(UsuarioAssociacao.id == associassao_id)
-            .first()
-        )
-
-        if associacao is None:
-            raise NotFoundError("Associação não encontrada")
-        
-        associacao.status = StatusAssociacao.CANCELADO.value
+    def cancelar_associacao(registro):
+        registro.status = StatusAssociacao.CANCELADO.value
 
         return ("Pedido cancelado")
+    
+
+    @staticmethod
+    def deletar_associacao(registro):
+        db.session.delete(registro)
+
+        return ("Associação excluida")

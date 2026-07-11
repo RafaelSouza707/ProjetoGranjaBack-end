@@ -6,6 +6,8 @@ from helpers.exceptions import NotFoundError
 from services.granja.usuario_granja_service import UsuarioGranjaService
 from seeds.seed_granja_tipos_status import criar_dados_padrao_granja
 from models.controle_banco_de_dados.role import Role
+from seeds.roles_permissoes import ROLES
+from services.granja.permissoes_service import PermissoesService
 
 class GranjaService:
 
@@ -19,8 +21,21 @@ class GranjaService:
             )
             .all()
         )
-    
-        return granjas
+
+        resultado = []
+
+        for granja in granjas:
+            contexto = PermissoesService.obter_contexto_usuario(
+                user_id,
+                granja.id
+            )
+
+            resultado.append({
+                "granja": granja,
+                "contexto": contexto
+            })
+
+        return resultado
 
     
     @staticmethod
@@ -37,6 +52,21 @@ class GranjaService:
         
         return granja
     
+
+    @staticmethod
+    def associar_granja(user_associado_id, granja_id, tipo_user):
+
+        role_master = Role.query.filter_by(nome=tipo_user).first()
+
+        resultado = UsuarioGranjaService.criar({
+            "usuario_id": user_associado_id,
+            "granja_id": granja_id,
+            "role_id": role_master.id,
+            "ativo": True
+        })
+
+        return resultado
+        
 
     @staticmethod
     def criar(data, user_id):

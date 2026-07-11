@@ -19,9 +19,17 @@ class GranjaResource(Resource):
     def get(self):
         user_id = g.user_id
 
-        resultados = schemas.dump(Servico.listar(user_id))
+        resultados = Servico.listar(user_id)
 
-        return resultados, 200
+        resultado_final = [
+            {
+                **schema.dump(item["granja"]),
+                "contexto": item["contexto"]
+            }
+            for item in resultados
+        ]
+
+        return resultado_final, 200
 
 
     @token_required

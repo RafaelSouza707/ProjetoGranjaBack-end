@@ -6,11 +6,8 @@ from models.aviario.mortalidade import Mortalidade
 from models.aviario.status_lote_frango import StatusLoteFrango
 from sqlalchemy import extract, func
 from models.aviario.lote_frangos import LoteFrango
-from models.granja.granja import Granja
 from helpers.exceptions import NotFoundError
 from models.aviario.consumo_lote_diaria import ConsumoLoteDiaria
-from models.estoque.producao import Producao
-from models.estoque.produto import Produto
 
 def normalizar(data):
     if "identificacao" in data and isinstance(data["identificacao"], str):
@@ -86,7 +83,7 @@ class LoteFrangoService:
             .join(LoteFrango.status_lote_frango)
             .filter(
                 LoteFrango.granja_id == granja_id,
-                StatusLoteFrango.nome == "Ativo"
+                StatusLoteFrango.nome == "ativo"
             )
             .scalar()
         )

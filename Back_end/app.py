@@ -49,6 +49,8 @@ from resources.usuarios.usuario_associacao_resource import UsuarioAssociacaoReso
 ## Granja
 from resources.granja.granja_resource import GranjaResource
 from resources.granja.usuario_resource import UsuarioGranjaResource
+from resources.granja.associar_user_granja import AssociarUserGranjaResource
+from resources.granja.cards_granja_resource import CardsGranja
 
 ## Venda_Estoque
 from resources.venda_estoque.estoque_resource import EstoqueResource
@@ -109,11 +111,13 @@ api.add_resource(UsuarioResource, '/usuarios/usuario', '/usuarios/usuario/<int:i
 api.add_resource(SexoResource, '/usuarios/sexo', '/usuarios/sexo/<int:id>')
 api.add_resource(LoginResource, '/usuarios/login')
 api.add_resource(LogoutResource, '/usuarios/logout')
-api.add_resource(UsuarioAssociacaoResource, '/usuarios/relacao')
+api.add_resource(UsuarioAssociacaoResource, '/usuarios/relacao', '/usuarios/relacao/<int:id>')
 
 ## Granja
 api.add_resource(GranjaResource, '/granja/granja', '/granja/granja/<int:id>')
 api.add_resource(UsuarioGranjaResource, '/granja/usuario_granja', '/granja/usuario_granja/<int:id>')
+api.add_resource(AssociarUserGranjaResource, '/granja/associar_user_granja')
+api.add_resource(CardsGranja, '/granja/cards_granja')
 
 # Venda_Estoque
 api.add_resource(EstoqueResource, '/venda_estoque/estoque', '/venda_estoque/estoque/<int:id>')

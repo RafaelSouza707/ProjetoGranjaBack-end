@@ -17,19 +17,28 @@ class UsuarioAssociacaoResource(Resource):
     def get(self):
         user_id = g.user_id
 
-        resultado = schemas.dump(UsuarioAssociacaoService.listar_associacao_user(user_id))
+        enviadas = schemas.dump(UsuarioAssociacaoService.listar_associacao_enviadas(user_id))
+        if enviadas:
+            return {
+                "papel": "REMETENTE",
+                "dados": enviadas
+            }, 200
+        
 
-        return resultado, 200
-
+        recebidas = schemas.dump(UsuarioAssociacaoService.listar_associacao_recebidas(user_id))
+        if recebidas:
+            return {
+                "papel": "DESTINATARIO",
+                "dados": recebidas
+            }, 200
+      
 
     @token_required
     def post(self):
         user_id = g.user_id
 
         json = request.get_json()
-        print(json)
         email_destino = json["email"]
-        print(email_destino)
         with session_scope():
             resultado = UsuarioAssociacaoService.pedir_associacao(user_id, email_destino)
             resultado_final = schemas.dump(resultado)
@@ -43,18 +52,32 @@ class UsuarioAssociacaoResource(Resource):
 
         json = request.get_json()
         resposta = json.get("resposta")
+
         associassao_id = json.get("id")
+        registro = UsuarioAssociacaoService.buscar_por_id_associacao(associassao_id)
         
         match resposta:
             
             case StatusAssociacao.ACEITO.value:
                 with session_scope():
-                    UsuarioAssociacaoService.aceitar_associacao(user_id)
+                    UsuarioAssociacaoService.aceitar_associacao(registro)
+                    return "Aceito com sucesso!", 201
             
             case StatusAssociacao.RECUSADO.value:
                 with session_scope():
-                    UsuarioAssociacaoService.recusar_associacao(associassao_id)
+                    UsuarioAssociacaoService.recusar_associacao(registro)
+                    return "Recusado com sucesso!", 201
 
             case StatusAssociacao.CANCELADO.value:
                 with session_scope():
-                    UsuarioAssociacaoService.cancelar_associacao(associassao_id)
+                    UsuarioAssociacaoService.cancelar_associacao(registro)
+                    return "Cancelado com sucesso!", 201
+
+
+    @token_required
+    def delete(self, id):
+        with session_scope():
+            registro = UsuarioAssociacaoService.buscar_por_id_associacao(id)
+            UsuarioAssociacaoService.deletar_associacao(registro)
+
+        return "", 204

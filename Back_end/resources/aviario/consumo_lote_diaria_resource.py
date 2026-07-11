@@ -90,7 +90,6 @@ class ConsumoLoteDiariaResource(Resource):
         user_id = g.user_id
 
         json = request.get_json()
-        print(json)
         json.pop("lote_racao", None)
         data, error = validate_schema(schema, json, partial=True)
 

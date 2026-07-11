@@ -38,7 +38,7 @@ class ConsumoLoteDiaria(db.Model):
 
     lote_frango: Mapped["LoteFrango"] = relationship(
         "LoteFrango",
-        back_populates="consumos"
+        back_populates="consumos",
     )
 
     lote_racao: Mapped["LoteRacao"] = relationship(

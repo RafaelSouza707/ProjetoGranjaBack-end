@@ -25,7 +25,6 @@ class CardsGastosGranjaResource(Resource):
             return dados, 200
         
         maior_gasto = DespesaService.maior_gasto_mes_granja(granja_id)
-        print(maior_gasto)
         
         resultado = {
             "maior_gasto_mes_granja": {"id": maior_gasto.id, "valor": float(maior_gasto.valor),},

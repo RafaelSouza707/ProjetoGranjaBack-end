@@ -5,7 +5,8 @@ from sqlalchemy import (
     ForeignKey,
     Integer,
     Date,
-    String
+    String,
+    UniqueConstraint
 )
 
 from helpers.database import db
@@ -34,7 +35,14 @@ class LoteFrango(db.Model):
     identificacao: Mapped[str] = mapped_column(
         String(32),
         nullable=False,
-        unique=True
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+            "granja_id",
+            "identificacao",
+            name="uq_lote_frango_granja_identificacao"
+        ),
     )
 
     quantidade_inicial: Mapped[int] = mapped_column(
@@ -69,12 +77,14 @@ class LoteFrango(db.Model):
 
     mortalidades: Mapped[list["Mortalidade"]] = relationship(
         "Mortalidade",
-        back_populates="lote_frango"
+        back_populates="lote_frango",
+        cascade="all, delete-orphan"
     )
 
     consumos: Mapped[list["ConsumoLoteDiaria"]] = relationship(
         "ConsumoLoteDiaria",
-        back_populates="lote_frango"
+        back_populates="lote_frango",
+        cascade="all, delete-orphan"
     )
 
     producoes: Mapped[list["Producao"]] = relationship(

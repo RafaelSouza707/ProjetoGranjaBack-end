@@ -31,7 +31,6 @@ class ConsumoLoteDiariaService:
             )
             .all()
         )
-        print(resultados)
 
         return resultados
 
