@@ -3,6 +3,7 @@ from helpers.exceptions import NotFoundError
 from models.usuarios.usuario import Usuario
 from models.usuarios.usuario_associacao import UsuarioAssociacao
 from helpers.enum_status_associado import StatusAssociacao
+from models.granja.usuario_granja import UsuarioGranja
 
 class UsuarioAssociacaoService:
 
@@ -98,6 +99,13 @@ class UsuarioAssociacaoService:
 
     @staticmethod
     def deletar_associacao(registro):
+        (
+            db.session.query(UsuarioGranja)
+            .filter(
+                UsuarioGranja.usuario_id == registro.usuario_destino_id
+            )
+            .delete(synchronize_session=False)
+        )
         db.session.delete(registro)
 
         return ("Associação excluida")

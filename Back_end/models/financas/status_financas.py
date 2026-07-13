@@ -33,3 +33,8 @@ class StatusFinancas(db.Model):
         "Granja",
         back_populates="status_financas"
     )
+
+    receitas: Mapped["Receita"] = relationship(
+        "Receita",
+        back_populates="status_financas"
+    )

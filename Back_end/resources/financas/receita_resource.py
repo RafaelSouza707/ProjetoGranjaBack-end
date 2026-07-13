@@ -30,6 +30,7 @@ class ReceitaResource(Resource):
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
         
         cache_key = f"cache:granja:{granja_id}:receita"
+        cache.delete(cache_key)
         dados = cache.get(cache_key)
         if dados is not None:
             return dados, 200
@@ -74,6 +75,7 @@ class ReceitaResource(Resource):
         json.pop("id", None)
         json.pop("created_at", None)
         json.pop("updated_at", None)
+        json.pop("status", None)
         data, error = validate_schema(schema, json, partial=True)
 
         if error:

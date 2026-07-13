@@ -47,6 +47,8 @@ class ProducaoService:
 
     @staticmethod
     def atualizar(registro, data):
+        data.pop("lote_frango", None)
+        data.pop("produto", None)
         for k, v in data.items():
             setattr(registro, k, v)
 

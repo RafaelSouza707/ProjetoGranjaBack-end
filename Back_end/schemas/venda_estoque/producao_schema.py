@@ -22,7 +22,7 @@ class ProducaoSchema(Schema):
 
     quantidade = fields.Decimal(required=True, validate=validate.Range(min=0), as_string=True)
     data_producao = fields.Date(required=True)
-    observacao = fields.String(validate=validate.Length(max=512))
+    observacao = fields.String(validate=validate.Length(max=512), required=True, allow_none=True)
 
     class Meta:
         unknown = EXCLUDE

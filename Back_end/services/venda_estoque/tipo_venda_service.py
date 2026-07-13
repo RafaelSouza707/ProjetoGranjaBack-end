@@ -7,7 +7,7 @@ def normalizar(data):
     if "nome" in data and isinstance(data["nome"], str):
         data["nome"] = data["nome"].strip().lower()
 
-class StatusVendaService:
+class TipoVendaService:
 
     @staticmethod
     def listar(granja_id):

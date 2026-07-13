@@ -27,7 +27,7 @@ class ReceitaSchema(Schema):
         VendaSchema,
         attribute="venda",
         dump_only=True,
-        only=("status",)
+        only=("tipo", )
     )
 
     granja_id = fields.Integer(required=True, load_only=True)

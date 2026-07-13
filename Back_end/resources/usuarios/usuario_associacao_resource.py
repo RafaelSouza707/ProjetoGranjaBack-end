@@ -17,20 +17,30 @@ class UsuarioAssociacaoResource(Resource):
     def get(self):
         user_id = g.user_id
 
-        enviadas = schemas.dump(UsuarioAssociacaoService.listar_associacao_enviadas(user_id))
+        enviadas = schemas.dump(
+            UsuarioAssociacaoService.listar_associacao_enviadas(user_id)
+        )
+
         if enviadas:
             return {
                 "papel": "REMETENTE",
                 "dados": enviadas
             }, 200
-        
 
-        recebidas = schemas.dump(UsuarioAssociacaoService.listar_associacao_recebidas(user_id))
+        recebidas = schemas.dump(
+            UsuarioAssociacaoService.listar_associacao_recebidas(user_id)
+        )
+
         if recebidas:
             return {
                 "papel": "DESTINATARIO",
                 "dados": recebidas
             }, 200
+
+        return {
+            "papel": None,
+            "dados": []
+        }, 200
       
 
     @token_required

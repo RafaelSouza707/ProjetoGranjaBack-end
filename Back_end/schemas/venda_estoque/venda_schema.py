@@ -1,6 +1,6 @@
 from marshmallow import Schema, fields, validate, EXCLUDE
 from schemas.usuarios.cliente_schema import ClienteSchema
-from schemas.venda_estoque.status_venda_schema import StatusVendaSchema
+from schemas.venda_estoque.tipo_venda_schema import TipoVendaSchema
 from schemas.financas.status_financas_schema import StatusFinancasSchema
 
 class VendaSchema(Schema):
@@ -23,8 +23,8 @@ class VendaSchema(Schema):
 
     tipo_venda_id = fields.Integer(required=True)
     tipo = fields.Nested(
-        StatusVendaSchema,
-        attribute="status_venda",
+        TipoVendaSchema,
+        attribute="tipo_venda",
         dump_only=True
     )
 

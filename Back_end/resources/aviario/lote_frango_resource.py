@@ -27,6 +27,11 @@ class LoteFrangoResource(Resource):
 
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
+        lote_frango_id = request.args.get("lote_frango_id", type=int)
+        if lote_frango_id:
+            resultado = Servico.buscar_por_id(id)
+            return schema.dump(resultado), 200
+
         cache_key = f"cache:granja:{granja_id}:lote_frango:"
         cache.delete(cache_key)
         dados = cache.get(cache_key)

@@ -46,6 +46,7 @@ class DespesaResource(Resource):
         granja_id = request.args.get("granja_id", type=int)
 
         json = request.get_json()
+        print(json)
         data, error = validate_schema(schema, json)
 
         if error:

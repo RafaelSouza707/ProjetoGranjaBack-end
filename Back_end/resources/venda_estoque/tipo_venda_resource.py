@@ -6,8 +6,8 @@ from middlewares.auth_middleware import token_required
 from helpers.cache import cache
 from services.usuarios.access_user_granja_service import ValidarAcessoGranja
 
-from services.venda_estoque.status_venda_service import StatusVendaService as Servico
-from schemas.venda_estoque.status_venda_schema import StatusVendaSchema as Schema
+from services.venda_estoque.tipo_venda_service import TipoVendaService as Servico
+from schemas.venda_estoque.tipo_venda_schema import TipoVendaSchema as Schema
 
 schema = Schema()
 schemas = Schema(many=True)

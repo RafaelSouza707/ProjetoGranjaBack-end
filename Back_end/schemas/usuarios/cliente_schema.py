@@ -5,6 +5,8 @@ class ClienteSchema(Schema):
 
     granja_id = fields.Integer(required=True, load_only=True)
 
+    nome = fields.String(required=True, validate=validate.Length(max=128))
+
     tipo = fields.String(
         required=True,
         validate=validate.OneOf(["PF", "PJ"])
