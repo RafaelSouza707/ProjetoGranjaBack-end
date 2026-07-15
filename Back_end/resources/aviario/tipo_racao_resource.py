@@ -3,6 +3,7 @@ from flask import request, g
 from helpers.validate_schema import validate_schema
 from helpers.db_utils import session_scope
 from helpers.cache import cache
+from helpers.clean_cache import CacheService
 from middlewares.auth_middleware import token_required
 
 from services.aviario.tipo_racao_service import TipoRacaoService as Servico
@@ -12,10 +13,8 @@ from services.usuarios.access_user_granja_service import ValidarAcessoGranja
 schema = Schema()
 schemas = Schema(many=True)
 
-
 def deletar_cache(granja_id):
-    cache.delete(f"cache:granja:{granja_id}:tipo_racao")
-
+    CacheService.limpar_cache_tipo_racao(granja_id)
 
 class TipoRacaoResource(Resource):
 

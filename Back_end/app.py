@@ -1,18 +1,10 @@
-from flask import Flask
 from flask_cors import CORS
 from helpers.application import app, api
-from helpers.database import db
 from models import *
 from seeds.seed import run_seed
 
-
 # Resources
 from resources.home_resource import HomeResources
-
-## Controle_Banco_de_dados
-from resources.controle_banco_de_dados.permissoes_resource import PermissaoResource
-from resources.controle_banco_de_dados.role_permissao_resource import RolePermissaoResource
-from resources.controle_banco_de_dados.role_resource import RoleResource
 
 ## Financas
 from resources.financas.despesa_resource import DespesaResource
@@ -76,11 +68,6 @@ setup_logging(app)
 # end-point's
 api.add_resource(HomeResources, '/')
 
-## Controle_Banco_de_dados api.add_resource(, '/', '//<int:id>')
-api.add_resource(PermissaoResource, '/controle_bd/permissao', '/controle_bd/permissao/<int:id>')
-api.add_resource(RolePermissaoResource, '/controle_bd/role_permissao', '/controle_bd/role_permissao/<int:id>')
-api.add_resource(RoleResource, '/controle_bd/role', '/controle_bd/role/<int:id>')
- 
 ## Financas
 api.add_resource(DespesaResource, '/financas/despesa', '/financas/despesa/<int:id>')
 api.add_resource(StatusFinancasResource, '/financas/status_financas', '/financas/status_financas/<int:id>')
@@ -134,7 +121,6 @@ api.add_resource(VendaResource, '/venda_estoque/venda', '/venda_estoque/venda/<i
 @app.cli.command("seed")
 def seed():
     run_seed()
-
 
 
 if __name__ == "__main__":

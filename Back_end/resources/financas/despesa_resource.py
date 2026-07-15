@@ -3,6 +3,7 @@ from flask import request, g
 from helpers.validate_schema import validate_schema
 from helpers.db_utils import session_scope
 from helpers.cache import cache
+from helpers.clean_cache import CacheService
 from middlewares.auth_middleware import token_required
 
 from services.financas.despesa_services import DespesaService
@@ -14,9 +15,9 @@ schema = DespesaSchema()
 schemas = DespesaSchema(many=True)
 
 def deletar_cache(granja_id):
-    cache.delete(f"cache:granja:{granja_id}:despesa")
-    cache.delete(f"cache:granja:{granja_id}:despesa:cards_gastos")
-    cache.delete(f"cache:granja:{granja_id}:despesa:cards_financas")
+    CacheService.limpar_cache_cards_gastos_granja(granja_id)
+    CacheService.limpar_cache_cards_financas(granja_id)
+    CacheService.limpar_cache_despesa_granja(granja_id)
 
 class DespesaResource(Resource):
 
@@ -28,16 +29,30 @@ class DespesaResource(Resource):
 
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
-        cache_key = f"cache:granja:{granja_id}:despesa"
+        pagina = request.args.get("pagina", type=int)
+        per_page = 20
+
+        cache_key = f"cache:granja:{granja_id}:despesa:pagina:{pagina}"
         cache.delete(cache_key)
         dados = cache.get(cache_key)
         if dados is not None:
             return dados, 200
 
-        resultados = schemas.dump(DespesaService.listar(granja_id))
+        paginacao = DespesaService.listar(granja_id, pagina, per_page)
+        resultados = schemas.dump(paginacao.items)
 
         cache.set(cache_key, resultados)
-        return resultados, 200
+        return {
+            "dados": resultados,
+            "pagination": {
+                "page": paginacao.page,
+                "per_page": paginacao.per_page,
+                "total": paginacao.total,
+                "pages": paginacao.pages,
+                "has_next": paginacao.has_next,
+                "has_prev": paginacao.has_prev
+            }
+        }, 200
 
 
     @token_required
@@ -46,7 +61,6 @@ class DespesaResource(Resource):
         granja_id = request.args.get("granja_id", type=int)
 
         json = request.get_json()
-        print(json)
         data, error = validate_schema(schema, json)
 
         if error:

@@ -21,7 +21,7 @@ class ConsumoLoteDiaria(db.Model):
 
     lote_racao_id: Mapped[int] = mapped_column(
         BigInteger,
-        ForeignKey("lote_racao.id", ondelete="RESTRICT"),
+        ForeignKey("lote_racao.id", ondelete="CASCADE"),
         nullable=False
     )
 
@@ -43,5 +43,5 @@ class ConsumoLoteDiaria(db.Model):
 
     lote_racao: Mapped["LoteRacao"] = relationship(
         "LoteRacao",
-        back_populates="consumos"
+        back_populates="consumos",
     )

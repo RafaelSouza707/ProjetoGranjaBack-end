@@ -7,20 +7,22 @@ from helpers.exceptions import NotFoundError
 from elastic.despesa_sync import deletar_index_despesa
 from models.financas.despesa import Despesa
 from models.granja.granja import Granja
-from models.granja.usuario_granja import UsuarioGranja
 
 class DespesaService:
 
     @staticmethod
-    def listar(granja_id):
-        resultado = (
+    def listar(granja_id, pagina, per_page):
+        return (
             db.session.query(Despesa)
             .join(Despesa.granja)
             .filter(Granja.id == granja_id)
-            .all()
+            .order_by(Despesa.data.desc())
+            .paginate(
+                page=pagina,
+                per_page=per_page,
+                error_out=False
+            )
         )
-
-        return resultado
 
 
     @staticmethod

@@ -54,6 +54,7 @@ class EscolaridadesResource(Resource):
 
     @token_required
     def delete(self, id):
+
         with session_scope():
             delete = Servico.buscar_por_id(id, g.user_id)
             Servico.deletar(delete)

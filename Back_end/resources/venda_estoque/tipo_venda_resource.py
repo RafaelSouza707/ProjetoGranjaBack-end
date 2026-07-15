@@ -4,6 +4,7 @@ from helpers.validate_schema import validate_schema
 from helpers.db_utils import session_scope
 from middlewares.auth_middleware import token_required
 from helpers.cache import cache
+from helpers.clean_cache import CacheService
 from services.usuarios.access_user_granja_service import ValidarAcessoGranja
 
 from services.venda_estoque.tipo_venda_service import TipoVendaService as Servico
@@ -13,7 +14,7 @@ schema = Schema()
 schemas = Schema(many=True)
 
 def deletar_cache(granja_id):
-    cache.delete(f"cache:granja:{granja_id}:tipo_venda")
+    CacheService.deletar_cache_tipo_venda(granja_id)
 
 class TipoVendaResource(Resource):
 
@@ -49,9 +50,6 @@ class TipoVendaResource(Resource):
             return str(error)
         
         granja_id = data.get("granja_id")
-        if granja_id is None:
-            return {"error": "granja_id é obrigatório"}, 400
-
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
         
         with session_scope():
@@ -73,9 +71,6 @@ class TipoVendaResource(Resource):
             return str(error)
         
         granja_id = data.get("granja_id")
-        if granja_id is None:
-            return {"error": "granja_id é obrigatório"}, 400
-
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
         
         with session_scope():
@@ -92,9 +87,6 @@ class TipoVendaResource(Resource):
         user_id = g.user_id
 
         granja_id = request.args.get("granja_id", type=int)
-        if granja_id is None:
-            return {"error": "granja_id é obrigatório"}, 400
-
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
         with session_scope():

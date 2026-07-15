@@ -1,5 +1,6 @@
 from flask_restful import Resource
 from helpers.cache import cache
+from helpers.clean_cache import CacheService
 from flask import g, request
 from middlewares.auth_middleware import token_required
 from services.usuarios.access_user_granja_service import ValidarAcessoGranja

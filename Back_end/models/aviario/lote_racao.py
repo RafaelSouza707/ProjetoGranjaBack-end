@@ -50,7 +50,8 @@ class LoteRacao(db.Model):
 
     consumos: Mapped[list["ConsumoLoteDiaria"]] = relationship(
         "ConsumoLoteDiaria",
-        back_populates="lote_racao"
+        back_populates="lote_racao",
+        cascade="all, delete-orphan"
     )
     
     granja: Mapped["Granja"] = relationship(

@@ -3,6 +3,7 @@ from flask import request, g
 from helpers.validate_schema import validate_schema
 from helpers.db_utils import session_scope
 from helpers.cache import cache
+from helpers.clean_cache import CacheService
 from middlewares.auth_middleware import token_required
 
 from services.usuarios.access_user_granja_service import ValidarAcessoGranja
@@ -12,19 +13,15 @@ from schemas.venda_estoque.venda_schema import VendaSchema as Schema
 schema = Schema()
 schemas = Schema(many=True)
 
-
 def deletar_cache(granja_id):
-    cache.delete(f"cache:granja:{granja_id}:venda")
-
+    CacheService.deletar_cache_venda(granja_id)
 
 class VendaResource(Resource):
 
     @token_required
     def get(self, id=None):
         user_id = g.user_id
-
         granja_id = request.args.get("granja_id", type=int)
-
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
         cache_key = f"cache:granja:{granja_id}:venda"
@@ -83,9 +80,11 @@ class VendaResource(Resource):
     @token_required
     def delete(self, id):
         user_id = g.user_id
+        granja_id = request.args.get("granja_id", type=int)
+        ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
+
         with session_scope():
             delete = Servico.buscar_por_id(id)
-            ValidarAcessoGranja.validar_acesso_granja(user_id, delete.granja_id)
             Servico.deletar(delete)
 
         deletar_cache(delete.granja_id)

@@ -3,7 +3,9 @@ from flask import request, g
 from helpers.validate_schema import validate_schema
 from helpers.db_utils import session_scope
 from helpers.cache import cache
+from helpers.clean_cache import CacheService
 from middlewares.auth_middleware import token_required
+from services.usuarios.access_user_granja_service import ValidarAcessoGranja
 
 from services.venda_estoque.item_venda_service import ItemVendaService as Servico
 from services.venda_estoque.produto_service import ProdutoService
@@ -13,16 +15,15 @@ schema = Schema()
 schemas = Schema(many=True)
 
 def deletar_cache(granja_id):
-    cache.delete(f"cache:granja:{granja_id}:item_venda")
+    CacheService.deletar_cache_item_venda(granja_id)
 
 class ItemVendaResource(Resource):
 
     @token_required
     def get(self):
         user_id = g.user_id
-
-        produto = ProdutoService.buscar_por_id(request.args.get("produto_id", type=int))
-        granja_id = produto.granja_id
+        granja_id = request.args.get("granja_id", type=int)
+        ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
         cache_key = f"cache:granja:{granja_id}:item_venda"
         dados = cache.get(user_id)
@@ -40,14 +41,15 @@ class ItemVendaResource(Resource):
 
     @token_required
     def post(self):
+        user_id = g.user_id
+        granja_id = request.args.get("granja_id", type=int)
+        ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
+        
         json = request.get_json()        
         data, error = validate_schema(schema, json)
 
         if error:
             return str(error)
-        
-        produto = ProdutoService.buscar_por_id(data["produto_id"])
-        granja_id = produto.granja_id
 
 
         with session_scope():
@@ -60,14 +62,15 @@ class ItemVendaResource(Resource):
 
     @token_required
     def put(self, id):
+        user_id = g.user_id
+        granja_id = request.args.get("granja_id", type=int)
+        ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
+
         json = request.get_json()
         data, error = validate_schema(schema, json, partial=True)
 
         if error:
             return str(error)
-        
-        produto = ProdutoService.buscar_por_id(data["produto_id"])
-        granja_id = produto.granja_id
 
         with session_scope():
             atualizar = Servico.buscar_por_id(id)
@@ -80,10 +83,12 @@ class ItemVendaResource(Resource):
 
     @token_required
     def delete(self, id):
+        user_id = g.user_id
+        granja_id = request.args.get("granja_id", type=int)
+        ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
+
         with session_scope():
             delete = Servico.buscar_por_id(id)
-            produto = ProdutoService.buscar_por_id(delete.produto_id)
-            granja_id = produto.granja_id
             Servico.deletar(delete)
 
         deletar_cache(granja_id)

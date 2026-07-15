@@ -3,6 +3,7 @@ from flask import request, g
 from helpers.validate_schema import validate_schema
 from helpers.db_utils import session_scope
 from helpers.cache import cache
+from helpers.clean_cache import CacheService
 from middlewares.auth_middleware import token_required
 
 from services.aviario.mortalidade_service import MortalidadeService as Servico
@@ -13,22 +14,9 @@ from services.usuarios.access_user_granja_service import ValidarAcessoGranja
 schema = Schema()
 schemas = Schema(many=True)
 
-
 def deletar_cache(granja_id, lote_frango_id):
-    cache.delete(f"cache:granja:{granja_id}:lote_frango:mortalidade")
-    cache.delete(f"cache:granja:{granja_id}:lote_frango:{lote_frango_id}:mortalidade")
-    cache.delete(f"cache:granja:{granja_id}:lote_frango:cards_lote_frango")
-
-
-def pegar_granja_id(lote_frango_id=None):
-    if lote_frango_id is None:
-        lote_frango_id = request.args.get("lote_frango_id", type=int)
-    if lote_frango_id is None:
-        return None, None
-
-    lote_frango = LoteFrangoService.buscar_por_id(lote_frango_id)
-    return lote_frango.granja_id, lote_frango_id
-
+    CacheService.limpar_cache_mortalidade(granja_id, lote_frango_id)
+    CacheService.limpar_cache_cards_granja(granja_id)
 
 class MortalidadeResource(Resource):
 
@@ -40,9 +28,6 @@ class MortalidadeResource(Resource):
         lote_frango_id = request.args.get("lote_frango_id", type=int)
 
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
-        
-        if lote_frango_id is not None:
-            granja_id, lote_frango_id = pegar_granja_id(lote_frango_id)
 
         if lote_frango_id is not None:
             cache_key = f"cache:granja:{granja_id}:lote_frango:{lote_frango_id}:mortalidade"
@@ -78,7 +63,8 @@ class MortalidadeResource(Resource):
             return {str(error)}
 
         lote_frango_id = data["lote_frango_id"]
-        granja_id, _ = pegar_granja_id(lote_frango_id)
+        
+        granja_id, _ = request.args.get("granja_id", type=int)
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
         with session_scope():
@@ -100,26 +86,30 @@ class MortalidadeResource(Resource):
             return {str(error)}
 
         lote_frango_id = data["lote_frango_id"]
-        granja_id, _ = pegar_granja_id(lote_frango_id)
+
+        granja_id, _ = request.args.get("granja_id", type=int)
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
         with session_scope():
-            atualizar = Servico.buscar_por_id(id, granja_id)
-            atualizado = Servico.atualizar(atualizar, data, granja_id)
+            atualizar = Servico.buscar_por_id(id)
+            atualizado = Servico.atualizar(atualizar, data)
             resultado = schema.dump(atualizado)
 
         deletar_cache(granja_id, lote_frango_id)
         return resultado, 200
-    
+
 
     @token_required
     def delete(self, id):
         user_id = g.user_id
+
+        granja_id = request.args.get("granja_id", type=int)
+        ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
+
+        lote_frango_id = request.args.get("lote_frango_id", type=int)
+
         with session_scope():
             delete = Servico.buscar_por_id(id)
-            lote_frango_id = delete.lote_frango_id
-            granja_id, _ = pegar_granja_id(lote_frango_id)
-            ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
             Servico.deletar(delete, granja_id)
 
         deletar_cache(granja_id, lote_frango_id)

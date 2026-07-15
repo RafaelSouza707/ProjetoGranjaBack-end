@@ -23,13 +23,10 @@ class ClienteService:
     
     
     @staticmethod
-    def buscar_por_id(id, user_id):
+    def buscar_por_id(id):
         registro = (
             db.session.query(Cliente)
-            .join(Cliente.granja)
-            .join(Granja.usuarios)
             .filter(
-                UsuarioGranja.usuario_id == user_id,
                 Cliente.id == id
             )
             .first()

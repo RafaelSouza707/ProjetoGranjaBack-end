@@ -7,9 +7,12 @@ from helpers.enum_status_associado import StatusAssociacao
 
 from services.usuarios.usuario_associacao_service import UsuarioAssociacaoService
 from schemas.usuarios.usuario_associacao_schema import UsuarioAssociacaoSchema
+from schemas.granja.granja_schema import GranjaSchema
+
 
 schema = UsuarioAssociacaoSchema()
 schemas = UsuarioAssociacaoSchema(many=True)
+granja_schemas = GranjaSchema()
 
 class UsuarioAssociacaoResource(Resource):
 
@@ -17,31 +20,47 @@ class UsuarioAssociacaoResource(Resource):
     def get(self):
         user_id = g.user_id
 
-        enviadas = schemas.dump(
-            UsuarioAssociacaoService.listar_associacao_enviadas(user_id)
-        )
-
+        enviadas = UsuarioAssociacaoService.listar_associacao_enviadas(user_id)
+        
         if enviadas:
+            agrupado = {}
+            
+            for associacao, granja in enviadas:
+                dados_associacao = schema.dump(associacao) 
+                dados_granja = granja_schemas.dump(granja)
+                
+                associacao_id = dados_associacao['id']
+                
+                if associacao_id not in agrupado:
+                    agrupado[associacao_id] = {
+                        "associacao": dados_associacao,
+                        "granjas": []
+                    }
+                
+                agrupado[associacao_id]["granjas"].append(dados_granja)
+
+            resultado = list(agrupado.values())
+
             return {
                 "papel": "REMETENTE",
-                "dados": enviadas
+                "dados": resultado,
             }, 200
 
-        recebidas = schemas.dump(
-            UsuarioAssociacaoService.listar_associacao_recebidas(user_id)
-        )
+        recebidas = UsuarioAssociacaoService.listar_associacao_recebidas(user_id)
 
         if recebidas:
+            resultado_recebidas = schemas.dump(recebidas) 
+            
             return {
                 "papel": "DESTINATARIO",
-                "dados": recebidas
+                "dados": resultado_recebidas
             }, 200
 
         return {
             "papel": None,
             "dados": []
         }, 200
-      
+
 
     @token_required
     def post(self):

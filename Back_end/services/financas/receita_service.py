@@ -9,22 +9,25 @@ from models.granja.granja import Granja
 class ReceitaService:
 
     @staticmethod
-    def listar(granja_id):
-        resultado = (
+    def listar(granja_id, pagina, per_page):
+        return (
             db.session.query(Receita)
             .join(Receita.granja)
             .filter(Granja.id == granja_id)
-            .all()
+            .order_by(Receita.data.desc())
+            .paginate(
+                page=pagina,
+                per_page=per_page,
+                error_out=False
+            )
         )
-        return resultado
     
 
     @staticmethod
-    def buscar_por_id(id, granja_id):
+    def buscar_por_id(id):
         registro = (
             db.session.query(Receita)
-            .join(Receita.granja)
-            .filter(Granja.id == granja_id, Receita.id == id)
+            .filter(Receita.id == id)
             .first()
         )
         if not registro:

@@ -2,16 +2,26 @@ from helpers.database import db
 from helpers.exceptions import NotFoundError
 from models.estoque.produto import Produto
 from models.granja.granja import Granja
-
+from models.aviario.tipo_produto import TipoProduto
 
 class ProdutoService:
 
     @staticmethod
-    def listar(granja_id):
+    def listar(granja_id, pagina, per_page):
         resultados = (
             db.session.query(Produto)
-            .filter(Produto.granja_id == granja_id)
-            .all()
+            .join(Produto.tipo_produto)
+            .filter(
+                Produto.granja_id == granja_id
+            )
+            .order_by(
+                TipoProduto.nome.asc()
+            )
+            .paginate(
+                page=pagina,
+                per_page=per_page,
+                error_out=False
+            )
         )
 
         return resultados

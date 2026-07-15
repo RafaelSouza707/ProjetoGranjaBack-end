@@ -32,25 +32,15 @@ class MortalidadeService:
         return resultado
 
     @staticmethod
-    def buscar_por_id(id, granja_id=None):
-        query = (
+    def buscar_por_id(id):
+        return (
             db.session.query(Mortalidade)
-            .join(Mortalidade.lote_frango)
-            .join(LoteFrango.granja)
+            .filter(Mortalidade.id == id)
+            .first()
         )
 
-        if granja_id is not None:
-            query = query.filter(Granja.id == granja_id)
-
-        resultado = query.filter(Mortalidade.id == id).first()
-
-        if not resultado:
-            raise NotFoundError("Registro não encontrado")
-
-        return resultado
-
     @staticmethod
-    def criar(data, granja_id):
+    def criar(data):
         lote_frango = LoteFrangoService.buscar_por_id(data["lote_frango_id"])
 
         novo_registro = Mortalidade(**data)
@@ -63,7 +53,7 @@ class MortalidadeService:
         return novo_registro
 
     @staticmethod
-    def atualizar(registro, data, granja_id):
+    def atualizar(registro, data):
         lote_frango = LoteFrangoService.buscar_por_id(registro.lote_frango_id)
 
         mortes_antigas = registro.quantidade_mortes

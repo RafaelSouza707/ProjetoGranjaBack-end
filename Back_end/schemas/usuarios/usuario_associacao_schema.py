@@ -15,7 +15,7 @@ class UsuarioAssociacaoSchema(Schema):
     usuario_destino = fields.Nested(
         UsuarioSchema,
         dump_only=True,
-        only=("nome", "email")
+        only=("nome", "email", "id")
     )
 
     status = fields.String()

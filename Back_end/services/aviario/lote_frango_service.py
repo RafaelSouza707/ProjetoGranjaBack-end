@@ -100,6 +100,22 @@ class LoteFrangoService:
             .scalar()
         )
         return total_vivos or 0
+    
+
+    @staticmethod
+    def consumo_total_lote_frango(lote_frango_id):
+        hoje = datetime.now()
+
+        consumo_total = (
+            db.session.query(func.sum(ConsumoLoteDiaria.quilos))
+            .filter(
+                extract("month", Mortalidade.data) == hoje.month,
+                extract("year", Mortalidade.data) == hoje.year,
+                ConsumoLoteDiaria.lote_frango_id == lote_frango_id
+            )
+            .scalar()
+        )
+        return float(consumo_total or 0)
 
 
     @staticmethod

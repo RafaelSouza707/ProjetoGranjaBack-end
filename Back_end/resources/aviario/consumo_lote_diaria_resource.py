@@ -3,21 +3,20 @@ from flask import request, g
 from helpers.validate_schema import validate_schema
 from helpers.db_utils import session_scope
 from helpers.cache import cache
+from helpers.clean_cache import CacheService
 from middlewares.auth_middleware import token_required
 
 from services.aviario.consumo_lote_diaria_service import ConsumoLoteDiariaService
 from schemas.aviario.consumo_lote_diaria_schema import ConsumoLoteDiariaSchema as Schema
 from services.usuarios.access_user_granja_service import ValidarAcessoGranja
 
-
 schema = Schema()
 schemas = Schema(many=True)
 
-def deletarCache(granja_id, lote_frango_id):
-    cache.delete(f"cache:granja:{granja_id}:lote_frango:consumos_lote_diaria")
-    cache.delete(f"cache:granja:{granja_id}:lote_frango:{lote_frango_id}:consumos_lote_diaria")
-    cache.delete(f"cache:granja:{granja_id}:lote_frango:cards_lote_frango")
-
+def deletar_cache(granja_id, lote_frango_id):
+    CacheService.limpar_cache_consumo_lote_diaria(granja_id, lote_frango_id)
+    CacheService.limpar_cache_cards_lote_frango(granja_id)
+    CacheService.limpar_cache_card_lote_racao(granja_id)
 
 class ConsumoLoteDiariaResource(Resource):
 
@@ -72,16 +71,16 @@ class ConsumoLoteDiariaResource(Resource):
         if error:
             return {str(error)}
 
-        lote_frango_id = data["lote_frango_id"]
         granja_id = request.args.get("granja_id", type=int)
-
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
+        
+        lote_frango_id = data["lote_frango_id"]
 
         with session_scope():
             novo = ConsumoLoteDiariaService.criar(data)
             resultado = schema.dump(novo)
 
-        deletarCache(granja_id, lote_frango_id)
+        deletar_cache(granja_id, lote_frango_id)
         return resultado, 201
 
 
@@ -97,7 +96,6 @@ class ConsumoLoteDiariaResource(Resource):
             return {str(error)}
 
         granja_id = request.args.get("granja_id", type=int)
-        
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
         lote_frango_id = data["lote_frango_id"]
@@ -107,7 +105,7 @@ class ConsumoLoteDiariaResource(Resource):
             atualizado = ConsumoLoteDiariaService.atualizar(atualizar, data)
             resultado = schema.dump(atualizado)
 
-        deletarCache(granja_id, lote_frango_id)
+        deletar_cache(granja_id, lote_frango_id)
         return resultado, 200
     
 
@@ -116,7 +114,6 @@ class ConsumoLoteDiariaResource(Resource):
         user_id = g.user_id
         
         granja_id = request.args.get("granja_id", type=int)
-        
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
         with session_scope():
@@ -124,5 +121,5 @@ class ConsumoLoteDiariaResource(Resource):
             lote_frango_id = delete.lote_frango_id
             ConsumoLoteDiariaService.deletar(delete)
 
-        deletarCache(granja_id, lote_frango_id)
+        deletar_cache(granja_id, lote_frango_id)
         return "", 204

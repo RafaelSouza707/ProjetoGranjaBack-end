@@ -4,6 +4,7 @@ from helpers.validate_schema import validate_schema
 from helpers.db_utils import session_scope
 from middlewares.auth_middleware import token_required
 from helpers.cache import cache
+from helpers.clean_cache import CacheService
 
 from services.financas.status_financas_service import StatusFinancasService as Servico
 from schemas.financas.status_financas_schema import StatusFinancasSchema as Schema
@@ -12,10 +13,8 @@ from services.usuarios.access_user_granja_service import ValidarAcessoGranja
 schema = Schema()
 schemas = Schema(many=True)
 
-
 def deletar_cache(granja_id):
-    cache.delete(f"cache:granja:{granja_id}:status_financas")
-
+    CacheService.limpar_cache_status_financas(granja_id)
 
 class StatusFinancasResource(Resource):
 
@@ -49,8 +48,6 @@ class StatusFinancasResource(Resource):
             return {str(error)}
 
         granja_id = data.get("granja_id")
-        if granja_id is None:
-            return {"error": "granja_id é obrigatório"}, 400
 
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
@@ -73,8 +70,6 @@ class StatusFinancasResource(Resource):
             return {str(error)}
 
         granja_id = data.get("granja_id")
-        if granja_id is None:
-            return {"error": "granja_id é obrigatório"}, 400
 
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
@@ -90,10 +85,8 @@ class StatusFinancasResource(Resource):
     @token_required
     def delete(self, id):
         user_id = g.user_id
-        granja_id = request.args.get("granja_id", type=int)
 
-        if granja_id is None:
-            return {"error": "granja_id é obrigatório"}, 400
+        granja_id = request.args.get("granja_id", type=int)
         
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 

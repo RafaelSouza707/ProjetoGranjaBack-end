@@ -4,20 +4,24 @@ from models.usuarios.usuario import Usuario
 from models.usuarios.usuario_associacao import UsuarioAssociacao
 from helpers.enum_status_associado import StatusAssociacao
 from models.granja.usuario_granja import UsuarioGranja
+from models.granja.granja import Granja
+from models.granja.usuario_granja import UsuarioGranja
 
 class UsuarioAssociacaoService:
 
     @staticmethod
     def listar_associacao_enviadas(user_id):
-        resultado = (
-            db.session.query(UsuarioAssociacao)
-            .filter(           
-                (UsuarioAssociacao.usuario_origem_id == user_id)
+        associacoes = (
+            db.session.query(UsuarioAssociacao, Granja)
+            .join(UsuarioGranja, UsuarioGranja.granja_id == Granja.id) 
+            .join(Usuario, Usuario.id == UsuarioGranja.usuario_id)
+            .filter(
+                UsuarioAssociacao.usuario_origem_id == user_id,
+                UsuarioGranja.usuario_id == UsuarioAssociacao.usuario_destino_id
             )
             .all()
         )
-        
-        return resultado
+        return associacoes
 
 
     @staticmethod

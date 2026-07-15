@@ -3,6 +3,7 @@ from flask import request, g
 from helpers.validate_schema import validate_schema
 from helpers.db_utils import session_scope
 from helpers.cache import cache
+from helpers.clean_cache import CacheService
 from middlewares.auth_middleware import token_required
 
 from services.aviario.tipo_produto_service import TipoProdutoService as Servico
@@ -12,10 +13,8 @@ from services.usuarios.access_user_granja_service import ValidarAcessoGranja
 schema = Schema()
 schemas = Schema(many=True)
 
-
 def deletar_cache(granja_id):
-    cache.delete(f"cache:granja:{granja_id}:tipo_produto")
-
+    CacheService.limpar_cache_tipo_produto(granja_id)
 
 class TipoProdutoResource(Resource):
 
@@ -88,9 +87,6 @@ class TipoProdutoResource(Resource):
     def delete(self, id):
         user_id = g.user_id
         granja_id = request.args.get("granja_id", type=int)
-
-        if granja_id is None:
-            return {"error": "granja_id é obrigatório"}, 400
 
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 

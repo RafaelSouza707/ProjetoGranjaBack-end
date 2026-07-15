@@ -17,6 +17,7 @@ class ProducaoService:
 
         return resultados
     
+    
     @staticmethod
     def listar_do_lote_frango(lote_frango_id):
         resultados = (
@@ -24,8 +25,9 @@ class ProducaoService:
             .filter(Producao.lote_frango_id == lote_frango_id)
             .all()
         )
-        
+
         return resultados
+    
 
     @staticmethod
     def buscar_por_id(id):
@@ -36,6 +38,7 @@ class ProducaoService:
 
         return registro
 
+
     @staticmethod
     def criar(data):
         novo_registro = Producao(**data)
@@ -44,6 +47,7 @@ class ProducaoService:
         db.session.flush()
 
         return novo_registro
+    
 
     @staticmethod
     def atualizar(registro, data):
@@ -53,6 +57,7 @@ class ProducaoService:
             setattr(registro, k, v)
 
         return registro
+    
 
     @staticmethod
     def deletar(registro):

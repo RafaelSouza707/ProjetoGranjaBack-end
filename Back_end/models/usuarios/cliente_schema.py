@@ -27,7 +27,7 @@ class Cliente(db.Model):
     cpf_cnpj: Mapped[str] = mapped_column(
         String(18),
         unique=True,
-        nullable=False
+        nullable=True
     )
 
     telefone: Mapped[str] = mapped_column(

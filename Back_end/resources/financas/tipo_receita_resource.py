@@ -4,6 +4,7 @@ from helpers.validate_schema import validate_schema
 from helpers.db_utils import session_scope
 from middlewares.auth_middleware import token_required
 from helpers.cache import cache
+from helpers.clean_cache import CacheService
 
 from services.financas.tipo_receita_service import TipoReceitaService as Servico
 from schemas.financas.tipo_receita_schema import TipoDespesaSchema as Schema
@@ -12,10 +13,8 @@ from services.usuarios.access_user_granja_service import ValidarAcessoGranja
 schema = Schema()
 schemas = Schema(many=True)
 
-
 def deletar_cache(granja_id):
-    cache.delete(f"cache:granja:{granja_id}:tipo_receita")
-
+    CacheService.limpar_cache_tipo_receita(granja_id)
 
 class TipoReceitaResource(Resource):
 

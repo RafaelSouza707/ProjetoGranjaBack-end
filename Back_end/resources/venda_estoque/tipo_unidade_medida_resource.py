@@ -5,6 +5,7 @@ from helpers.db_utils import session_scope
 from middlewares.auth_middleware import token_required
 from services.usuarios.access_user_granja_service import ValidarAcessoGranja
 from helpers.cache import cache
+from helpers.clean_cache import CacheService
 
 from services.venda_estoque.tipo_unidade_medida_service import TipoUnidadeMedidaService as Servico
 from schemas.venda_estoque.tipo_unidade_medida_schema import TipoUnidadeMedidaSchema as Schema
@@ -14,19 +15,14 @@ schema = Schema()
 schemas = Schema(many=True)
 
 def deletar_cache(granja_id):
-    cache.delete(f"cache:granja:{granja_id}:tipo_unidade_medida")
+    CacheService.deletar_cache_tipo_unidade_medida(granja_id)
 
 class TipoUnidadeMedidaResource(Resource):
 
     @token_required
     def get(self, id=None):
         user_id = g.user_id
-
         granja_id = request.args.get("granja_id", type=int)
-
-        if granja_id is None:
-            return {"error": "granja_id é obrigatório"}, 400
-
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
         cache_key = f"cache:granja:{granja_id}:tipo_unidade_medida"
@@ -53,9 +49,6 @@ class TipoUnidadeMedidaResource(Resource):
             return str(error)
         
         granja_id = data["granja_id"]
-        if granja_id is None:
-            return {"error": "granja_id é obrigatório"}, 400
-
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
         with session_scope():
@@ -77,9 +70,6 @@ class TipoUnidadeMedidaResource(Resource):
             return str(error)
         
         granja_id = data.get("granja_id")
-        if granja_id is None:
-            return {"error": "granja_id é obrigatório"}, 400
-
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
         with session_scope():
@@ -95,10 +85,6 @@ class TipoUnidadeMedidaResource(Resource):
     def delete(self, id):
         user_id = g.user_id
         granja_id = request.args.get("graja_id", type=int)
-
-        if granja_id is None:
-            return {"error": "granja_id é obrigatório"}, 400
-
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
         with session_scope():
