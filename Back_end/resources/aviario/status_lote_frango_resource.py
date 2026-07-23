@@ -1,10 +1,11 @@
 from flask_restful import Resource
 from flask import request, g
 from helpers.validate_schema import validate_schema
-from helpers.db_utils import session_scope
-from helpers.cache import cache
-from helpers.clean_cache import CacheService
+from helpers.database.db_utils import session_scope
+from helpers.cache.cache import cache
+from helpers.cache.clean_cache import CacheService
 from middlewares.auth_middleware import token_required
+from middlewares.permission_type import permissao_required
 
 from services.aviario.status_lote_frango_service import StatusLoteFrangoService as Servico
 from schemas.aviario.status_lote_frango_schema import StatusLoteFrangoSchema as Schema
@@ -19,6 +20,7 @@ def deletar_cache(granja_id):
 class StatusLoteFrangoResource(Resource):
 
     @token_required
+    @permissao_required("AVIARIO")
     def get(self):
         user_id = g.user_id
 
@@ -38,6 +40,7 @@ class StatusLoteFrangoResource(Resource):
 
 
     @token_required
+    @permissao_required("AVIARIO")
     def post(self):
         user_id = g.user_id
 
@@ -60,6 +63,7 @@ class StatusLoteFrangoResource(Resource):
     
 
     @token_required
+    @permissao_required("AVIARIO")
     def put(self, id):
         user_id = g.user_id
 
@@ -83,6 +87,7 @@ class StatusLoteFrangoResource(Resource):
     
 
     @token_required
+    @permissao_required("AVIARIO")
     def delete(self, id):
         user_id = g.user_id
         granja_id = request.args.get("granja_id", type=int)

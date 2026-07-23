@@ -1,12 +1,12 @@
 from helpers.database import db
-from helpers.exceptions import NotFoundError
+from helpers.errors.exceptions import NotFoundError
 from models.aviario.lote_frangos import LoteFrango
 from datetime import datetime
 from models.aviario.mortalidade import Mortalidade
 from models.aviario.status_lote_frango import StatusLoteFrango
 from sqlalchemy import extract, func
 from models.aviario.lote_frangos import LoteFrango
-from helpers.exceptions import NotFoundError
+from helpers.errors.exceptions import NotFoundError
 from models.aviario.consumo_lote_diaria import ConsumoLoteDiaria
 
 def normalizar(data):
@@ -108,6 +108,8 @@ class LoteFrangoService:
 
         consumo_total = (
             db.session.query(func.sum(ConsumoLoteDiaria.quilos))
+            .join(ConsumoLoteDiaria.lote_frango)
+            .join(LoteFrango.mortalidades)
             .filter(
                 extract("month", Mortalidade.data) == hoje.month,
                 extract("year", Mortalidade.data) == hoje.year,

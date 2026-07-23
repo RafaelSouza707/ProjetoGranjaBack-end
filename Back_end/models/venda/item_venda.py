@@ -35,11 +35,6 @@ class ItemVenda(db.Model):
         nullable=False
     )
 
-    valor_unitario = mapped_column(
-        Numeric(15, 2),
-        nullable=False
-    )
-
     subtotal = mapped_column(
         Numeric(15, 2),
         nullable=False

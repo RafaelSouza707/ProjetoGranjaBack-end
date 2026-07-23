@@ -1,10 +1,11 @@
 from flask_restful import Resource
 from flask import request, g
 from helpers.validate_schema import validate_schema
-from helpers.db_utils import session_scope
-from helpers.cache import cache
-from helpers.clean_cache import CacheService
+from helpers.database.db_utils import session_scope
+from helpers.cache.cache import cache
+from helpers.cache.clean_cache import CacheService
 from middlewares.auth_middleware import token_required
+from middlewares.permission_type import permissao_required
 from services.usuarios.access_user_granja_service import ValidarAcessoGranja
 
 from services.usuarios.cliente_service import ClienteService as Servico
@@ -19,6 +20,7 @@ def deletar_cache(granja_id):
 class ClienteResource(Resource):
 
     @token_required
+    @permissao_required("VENDA")
     def get(self):
         user_id = g.user_id
         granja_id = request.args.get("granja_id", type=int)
@@ -39,12 +41,12 @@ class ClienteResource(Resource):
 
 
     @token_required
+    @permissao_required("VENDA")
     def post(self):
         user_id = g.user_id
 
         json = request.get_json()
         data, error = validate_schema(schema, json)
-        print(error)
 
         if error:
             return {str(error)}
@@ -56,12 +58,12 @@ class ClienteResource(Resource):
             novo = Servico.criar(data)
             resultado = schema.dump(novo)
         
-
         deletar_cache(granja_id)
         return resultado, 201
     
 
     @token_required
+    @permissao_required("VENDA")
     def put(self, id):
         user_id = g.user_id
 
@@ -84,6 +86,7 @@ class ClienteResource(Resource):
     
 
     @token_required
+    @permissao_required("VENDA")
     def delete(self, id):
         user_id = g.user_id
         granja_id = request.args.get("granja_id", type=int)

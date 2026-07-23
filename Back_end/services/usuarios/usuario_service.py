@@ -1,5 +1,5 @@
 from helpers.database import db
-from helpers.exceptions import NotFoundError
+from helpers.errors.exceptions import NotFoundError
 from models.usuarios.usuario import Usuario
 
 from dotenv import load_dotenv

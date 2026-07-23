@@ -1,11 +1,12 @@
 from flask_restful import Resource
 from flask import request, g
 from helpers.validate_schema import validate_schema
-from helpers.db_utils import session_scope
+from helpers.database.db_utils import session_scope
 from middlewares.auth_middleware import token_required
 from services.usuarios.access_user_granja_service import ValidarAcessoGranja
-from helpers.cache import cache
-from helpers.clean_cache import CacheService
+from helpers.cache.cache import cache
+from helpers.cache.clean_cache import CacheService
+from middlewares.permission_type import permissao_required
 
 from services.venda_estoque.tipo_unidade_medida_service import TipoUnidadeMedidaService as Servico
 from schemas.venda_estoque.tipo_unidade_medida_schema import TipoUnidadeMedidaSchema as Schema
@@ -20,6 +21,7 @@ def deletar_cache(granja_id):
 class TipoUnidadeMedidaResource(Resource):
 
     @token_required
+    @permissao_required("ESTOQUE")
     def get(self, id=None):
         user_id = g.user_id
         granja_id = request.args.get("granja_id", type=int)
@@ -40,6 +42,7 @@ class TipoUnidadeMedidaResource(Resource):
 
 
     @token_required
+    @permissao_required("ESTOQUE")
     def post(self):
         user_id = g.user_id
 
@@ -60,6 +63,7 @@ class TipoUnidadeMedidaResource(Resource):
     
 
     @token_required
+    @permissao_required("ESTOQUE")
     def put(self, id):
         user_id = g.user_id
 
@@ -82,6 +86,7 @@ class TipoUnidadeMedidaResource(Resource):
     
 
     @token_required
+    @permissao_required("ESTOQUE")
     def delete(self, id):
         user_id = g.user_id
         granja_id = request.args.get("graja_id", type=int)

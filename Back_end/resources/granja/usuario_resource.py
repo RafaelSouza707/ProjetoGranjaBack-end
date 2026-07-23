@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from flask import request
 from helpers.validate_schema import validate_schema
-from helpers.db_utils import session_scope
+from helpers.database.db_utils import session_scope
 
 from services.granja.usuario_granja_service import UsuarioGranjaService as Servico
 from schemas.granja.usuario_granja_schema import UsuarioGranjaSchema as Schema
@@ -13,13 +13,11 @@ class UsuarioGranjaResource(Resource):
 
     def get(self):        
         resultados = schemas.dump(Servico.listar())
-
         return resultados, 200
 
 
     def post(self):
         json = request.get_json()
-        
         data, error = validate_schema(schema, json)
 
         if error:
@@ -34,7 +32,6 @@ class UsuarioGranjaResource(Resource):
 
     def put(self, id):
         json = request.get_json()
-
         data, error = validate_schema(schema, json, partial=True)
 
         if error:

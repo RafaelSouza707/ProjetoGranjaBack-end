@@ -17,3 +17,7 @@ class NotFoundError(AppError):
 class BusinessRuleError(AppError):
     status_code = 400
     error_type = "BUSINESS_RULE"
+
+class ForbiddenError(AppError):
+    status_code = 401
+    error_type = "FORBIDDEN"

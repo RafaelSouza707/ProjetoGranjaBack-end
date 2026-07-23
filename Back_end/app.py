@@ -27,6 +27,7 @@ from resources.aviario.tipo_produto_resource import TipoProdutoResource
 from resources.aviario.tipo_racao_resource import TipoRacaoResource
 from resources.aviario.cards_lote_frango import CardsLoteFrango
 from resources.aviario.cards_racao_resource import CardsLoteRacao
+from resources.aviario.card_mortalidade_granja import CardMortalidadeGranja
 
 ## Usuarios
 from resources.usuarios.cliente_resource import ClienteResource
@@ -46,7 +47,6 @@ from resources.granja.cards_granja_resource import CardsGranja
 
 ## Venda_Estoque
 from resources.venda_estoque.estoque_resource import EstoqueResource
-from resources.venda_estoque.item_venda_resource import ItemVendaResource
 from resources.venda_estoque.movimentacao_estoque_resource import MovimentacaoEstoqueResource
 from resources.venda_estoque.producao_resource import ProducaoResource
 from resources.venda_estoque.produto_resource import ProdutoResource
@@ -68,7 +68,7 @@ setup_logging(app)
 # end-point's
 api.add_resource(HomeResources, '/')
 
-## Financas
+## Financas # financas/despesa
 api.add_resource(DespesaResource, '/financas/despesa', '/financas/despesa/<int:id>')
 api.add_resource(StatusFinancasResource, '/financas/status_financas', '/financas/status_financas/<int:id>')
 api.add_resource(TipoDespesaResource, '/financas/tipo_despesa', '/financas/tipo_despesa/<int:id>')
@@ -89,6 +89,7 @@ api.add_resource(StatusLoteFrangoResource, '/granja/status_lote_frango', '/granj
 api.add_resource(TipoProdutoResource, '/granja/tipo_produto', '/granja/tipo_produto/<int:id>')
 api.add_resource(TipoRacaoResource, '/granja/tipo_racao', '/granja/tipo_racao/<int:id>')
 api.add_resource(CardsLoteFrango, '/granja/cards_lote_frango')
+api.add_resource(CardMortalidadeGranja, '/granja/grafico_mortalidade_granja')
 
 ## Usuarios
 api.add_resource(ClienteResource, '/usuarios/cliente', '/usuarios/cliente/<int:id>')
@@ -103,12 +104,11 @@ api.add_resource(UsuarioAssociacaoResource, '/usuarios/relacao', '/usuarios/rela
 ## Granja
 api.add_resource(GranjaResource, '/granja/granja', '/granja/granja/<int:id>')
 api.add_resource(UsuarioGranjaResource, '/granja/usuario_granja', '/granja/usuario_granja/<int:id>')
-api.add_resource(AssociarUserGranjaResource, '/granja/associar_user_granja')
+api.add_resource(AssociarUserGranjaResource, '/granja/associar_user_granja', '/granja/associar_user_granja/<int:id>')
 api.add_resource(CardsGranja, '/granja/cards_granja')
 
 # Venda_Estoque
 api.add_resource(EstoqueResource, '/venda_estoque/estoque', '/venda_estoque/estoque/<int:id>')
-api.add_resource(ItemVendaResource, '/venda_estoque/item_venda', '/venda_estoque/item_venda/<int:id>')
 api.add_resource(MovimentacaoEstoqueResource, '/venda_estoque/movimentacao_estoque', '/venda_estoque/movimentacao_estoque/<int:id>')
 api.add_resource(ProducaoResource, '/venda_estoque/producao', '/venda_estoque/producao/<int:id>')
 api.add_resource(ProdutoResource, '/venda_estoque/produto', '/venda_estoque/produto/<int:id>')

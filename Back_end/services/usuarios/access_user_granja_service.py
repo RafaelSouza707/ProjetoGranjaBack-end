@@ -1,7 +1,7 @@
 from helpers.database import db
 from models.granja.usuario_granja import UsuarioGranja
 from models.granja.granja import Granja
-from helpers.exceptions import NotFoundError
+from helpers.errors.exceptions import NotFoundError
 
 class ValidarAcessoGranja():
 

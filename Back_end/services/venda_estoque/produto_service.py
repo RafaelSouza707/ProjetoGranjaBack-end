@@ -1,5 +1,5 @@
 from helpers.database import db
-from helpers.exceptions import NotFoundError
+from helpers.errors.exceptions import NotFoundError
 from models.estoque.produto import Produto
 from models.granja.granja import Granja
 from models.aviario.tipo_produto import TipoProduto
@@ -7,7 +7,7 @@ from models.aviario.tipo_produto import TipoProduto
 class ProdutoService:
 
     @staticmethod
-    def listar(granja_id, pagina, per_page):
+    def listar_paginado(granja_id, pagina, per_page):
         resultados = (
             db.session.query(Produto)
             .join(Produto.tipo_produto)
@@ -25,6 +25,18 @@ class ProdutoService:
         )
 
         return resultados
+    
+
+    @staticmethod
+    def listar(granja_id):
+        resultado = (
+            db.session.query(Produto)
+            .filter(
+                Produto.granja_id == granja_id
+            )
+            .all()
+        )
+        return resultado
 
 
     @staticmethod
@@ -38,13 +50,29 @@ class ProdutoService:
 
 
     @staticmethod
-    def criar(data):
-        novo_registro = Produto(**data)
+    def criar(data, granja_id):
+        tipo_produto = data.get("tipo_produto_id")
+        verificacao = (
+            db.session.query(Produto)
+            .filter(
+                Produto.granja_id == granja_id,
+                Produto.tipo_produto_id == tipo_produto
+            )
+            .first()
+        )
+        if verificacao is None:
+            novo_registro = Produto(**data)
 
-        db.session.add(novo_registro)
-        db.session.flush()
+            db.session.add(novo_registro)
+            db.session.flush()
+            
+            return novo_registro
+        
+        else:
+            verificacao.quantidade_estoque += data.get("quantidade_estoque")
+            db.session.flush()
 
-        return novo_registro
+            return verificacao
 
 
     @staticmethod

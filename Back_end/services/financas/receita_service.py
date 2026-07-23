@@ -1,7 +1,7 @@
 from datetime import datetime
 from helpers.database import db
 from sqlalchemy import extract, func
-from helpers.exceptions import NotFoundError
+from helpers.errors.exceptions import NotFoundError
 from models.financas.receita import Receita
 from models.granja.granja import Granja
 

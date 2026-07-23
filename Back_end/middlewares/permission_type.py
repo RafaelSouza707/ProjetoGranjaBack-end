@@ -1,8 +1,7 @@
 from functools import wraps
 from flask import request, g
-from helpers.exceptions import ForbiddenError
+from helpers.errors.exceptions import AppError, ForbiddenError
 from services.granja.permissoes_service import PermissoesService
-
 
 def permissao_required(*permissoes):
 

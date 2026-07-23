@@ -1,25 +1,35 @@
 from helpers.database import db
-from helpers.exceptions import NotFoundError
+from helpers.errors.exceptions import NotFoundError
 from models.venda.item_venda import ItemVenda
 from models.estoque.produto import Produto
 from models.granja.granja import Granja
+from sqlalchemy.orm import joinedload
 
 
 class ItemVendaService:
 
     @staticmethod
-    def listar(granja_id):
-        resultados = (
+    def listar(venda_id):
+        return (
             db.session.query(ItemVenda)
-            .join(ItemVenda.produto)
-            .join(Produto.granja)
-            .filter(
-                Granja.id == granja_id
+            .options(
+                joinedload(ItemVenda.produto)
+                .joinedload(Produto.tipo_produto),
+                joinedload(ItemVenda.produto)
+                .joinedload(Produto.tipo_unidade_medida),
             )
+            .filter(ItemVenda.venda_id == venda_id)
             .all()
         )
+    
 
-        return resultados
+    @staticmethod
+    def listar_por_venda(venda_id):
+        return (
+            db.session.query(ItemVenda)
+            .filter(ItemVenda.venda_id == venda_id)
+            .all()
+        )
     
     
     @staticmethod

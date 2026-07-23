@@ -21,7 +21,7 @@ class ProdutoSchema(Schema):
 
     granja_id = fields.Integer(required=True, load_only=True)
 
-    descricao = fields.String(validate=validate.Length(max=128), required=False)
+    descricao = fields.String(validate=validate.Length(max=128), required=False, allow_none=True)
     quantidade_estoque = fields.Decimal(places=3, validate=validate.Range(min=0), as_string=True)
     ativo = fields.Boolean()
     data_cadastro = fields.Date(required=True)

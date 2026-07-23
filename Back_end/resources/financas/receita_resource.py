@@ -1,10 +1,12 @@
 from flask_restful import Resource
 from flask import request, g
 from helpers.validate_schema import validate_schema
-from helpers.db_utils import session_scope
+from helpers.database.db_utils import session_scope
 from middlewares.auth_middleware import token_required
-from helpers.cache import cache
-from helpers.clean_cache import CacheService
+from middlewares.permission_type import permissao_required
+from middlewares.permission_type import permissao_required
+from helpers.cache.cache import cache
+from helpers.cache.clean_cache import CacheService
 
 from services.financas.receita_service import ReceitaService
 from schemas.financas.receita_schema import ReceitaSchema as Schema
@@ -21,7 +23,8 @@ def deletar_cache(granja_id):
 class ReceitaResource(Resource):
 
     @token_required
-    def get(self, id=None):
+    @permissao_required("FINANCAS")
+    def get(self):
         user_id = g.user_id
 
         granja_id = request.args.get("granja_id", type=int)
@@ -29,10 +32,9 @@ class ReceitaResource(Resource):
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
         pagina = request.args.get("pagina", type=int)
-        per_page = 20
-        
+        per_page = 10
+
         cache_key = f"cache:granja:{granja_id}:receita:pagina:{pagina}"
-        cache.delete(cache_key)
         dados = cache.get(cache_key)
         if dados is not None:
             return dados, 200
@@ -40,8 +42,7 @@ class ReceitaResource(Resource):
         paginacao = ReceitaService.listar(granja_id, pagina, per_page)
         resultados = schemas.dump(paginacao.items)
 
-        cache.set(cache_key, resultados)
-        return {
+        resultado = {
             "dados": resultados,
             "pagination": {
                 "page": paginacao.page,
@@ -53,8 +54,11 @@ class ReceitaResource(Resource):
             }
         }, 200
 
+        cache.set(cache_key, resultado)
+        return resultado, 200
 
     @token_required
+    @permissao_required("FINANCAS")
     def post(self):
         user_id = g.user_id
 
@@ -79,6 +83,7 @@ class ReceitaResource(Resource):
 
 
     @token_required
+    @permissao_required("FINANCAS")
     def put(self, id):
         user_id = g.user_id
 
@@ -108,6 +113,7 @@ class ReceitaResource(Resource):
 
 
     @token_required
+    @permissao_required("FINANCAS")
     def delete(self, id):
         user_id = g.user_id
         granja_id = request.args.get("granja_id", type=int)

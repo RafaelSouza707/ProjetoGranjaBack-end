@@ -4,9 +4,9 @@ from flask_restful import Api
 from flask_migrate import Migrate
 from dotenv import load_dotenv
 
-from helpers.cache import cache
+from helpers.cache.cache import cache
 from helpers.database import db
-from helpers.error_handlers import register_error_handlers
+from helpers.errors.error_handlers import register_error_handlers
 
 load_dotenv()
 

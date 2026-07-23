@@ -1,7 +1,7 @@
 from helpers.database import db
 from datetime import datetime
 from sqlalchemy import extract, func
-from helpers.exceptions import NotFoundError
+from helpers.errors.exceptions import NotFoundError
 from models.aviario.consumo_lote_diaria import ConsumoLoteDiaria
 from models.aviario.lote_frangos import LoteFrango
 from models.granja.granja import Granja
@@ -23,13 +23,18 @@ class ConsumoLoteDiariaService:
     
 
     @staticmethod
-    def listar_de_lote_frango(lote_frango_id):
+    def listar_de_lote_frango(lote_frango_id, pagina, per_page):
         resultados = (
             db.session.query(ConsumoLoteDiaria)
             .filter(
                 ConsumoLoteDiaria.lote_frango_id == lote_frango_id,
             )
-            .all()
+            .order_by(ConsumoLoteDiaria.data.desc())
+            .paginate(
+                page=pagina,
+                per_page=per_page,
+                error_out=False
+            )
         )
 
         return resultados

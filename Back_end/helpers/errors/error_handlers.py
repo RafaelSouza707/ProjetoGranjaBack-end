@@ -1,7 +1,7 @@
 from flask import jsonify
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
-from helpers.exceptions import AppError
+from helpers.errors.exceptions import AppError
 
 
 def register_error_handlers(app):

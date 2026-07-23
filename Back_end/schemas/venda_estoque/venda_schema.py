@@ -2,6 +2,7 @@ from marshmallow import Schema, fields, validate, EXCLUDE
 from schemas.usuarios.cliente_schema import ClienteSchema
 from schemas.venda_estoque.tipo_venda_schema import TipoVendaSchema
 from schemas.financas.status_financas_schema import StatusFinancasSchema
+from schemas.venda_estoque.item_venda_schema import ItemVendaSchema
 
 class VendaSchema(Schema):
     id = fields.Integer(dump_only=True)
@@ -35,6 +36,8 @@ class VendaSchema(Schema):
     valor_total = fields.Decimal(required=True, as_string=True, places=2, validate=validate.Range(min=0))
     data_venda = fields.Date(required=True)
     updated_at = fields.DateTime(dump_only=True)
+
+    itens = fields.List(fields.Nested(ItemVendaSchema), dump_only=True)
 
     class Meta:
         unknown = EXCLUDE

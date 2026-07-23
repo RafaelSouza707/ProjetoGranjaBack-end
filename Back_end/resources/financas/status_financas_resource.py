@@ -1,10 +1,11 @@
 from flask_restful import Resource
 from flask import request, g
 from helpers.validate_schema import validate_schema
-from helpers.db_utils import session_scope
+from helpers.database.db_utils import session_scope
 from middlewares.auth_middleware import token_required
-from helpers.cache import cache
-from helpers.clean_cache import CacheService
+from middlewares.permission_type import permissao_required
+from helpers.cache.cache import cache
+from helpers.cache.clean_cache import CacheService
 
 from services.financas.status_financas_service import StatusFinancasService as Servico
 from schemas.financas.status_financas_schema import StatusFinancasSchema as Schema
@@ -19,6 +20,7 @@ def deletar_cache(granja_id):
 class StatusFinancasResource(Resource):
 
     @token_required
+    @permissao_required("FINANCAS")
     def get(self):
         user_id = g.user_id
 
@@ -38,6 +40,7 @@ class StatusFinancasResource(Resource):
     
 
     @token_required
+    @permissao_required("FINANCAS")
     def post(self):
         user_id = g.user_id
 
@@ -60,6 +63,7 @@ class StatusFinancasResource(Resource):
     
 
     @token_required
+    @permissao_required("FINANCAS")
     def put(self, id):
         user_id = g.user_id
 
@@ -83,6 +87,7 @@ class StatusFinancasResource(Resource):
     
 
     @token_required
+    @permissao_required("FINANCAS")
     def delete(self, id):
         user_id = g.user_id
 

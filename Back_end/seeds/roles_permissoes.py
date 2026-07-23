@@ -15,12 +15,12 @@ PERMISSOES = [
     "MINHA_CONTA"
 ]
 
-
 ROLE_PERMISSOES = {
     "OPERADOR": [
         "AVIARIO",
         "ESTOQUE",
-        "MINHA_CONTA"
+        "MINHA_CONTA",
+        "VENDA"
     ],
 
     "ADMINISTRADOR": [
@@ -29,6 +29,7 @@ ROLE_PERMISSOES = {
         "FINANCAS",
         "VENDA",
         "MOVER_USUARIOS",
+        "GERENCIAR_CARGOS",
         "MINHA_CONTA"
     ],
 

@@ -1,10 +1,11 @@
 from flask_restful import Resource
 from flask import request, g
 from helpers.validate_schema import validate_schema
-from helpers.db_utils import session_scope
-from helpers.cache import cache
-from helpers.clean_cache import CacheService
-from middlewares.auth_middleware import token_required
+from helpers.database.db_utils import session_scope
+from helpers.cache.cache import cache
+from helpers.cache.clean_cache import CacheService
+from middlewares.auth_middleware import token_required 
+from middlewares.permission_type import permissao_required
 
 from services.financas.despesa_services import DespesaService
 from schemas.financas.despesa_schema import DespesaSchema
@@ -22,6 +23,7 @@ def deletar_cache(granja_id):
 class DespesaResource(Resource):
 
     @token_required
+    @permissao_required("FINANCAS")
     def get(self):
         user_id = g.user_id
         
@@ -30,7 +32,7 @@ class DespesaResource(Resource):
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
         pagina = request.args.get("pagina", type=int)
-        per_page = 20
+        per_page = 10
 
         cache_key = f"cache:granja:{granja_id}:despesa:pagina:{pagina}"
         cache.delete(cache_key)
@@ -41,8 +43,7 @@ class DespesaResource(Resource):
         paginacao = DespesaService.listar(granja_id, pagina, per_page)
         resultados = schemas.dump(paginacao.items)
 
-        cache.set(cache_key, resultados)
-        return {
+        resultado = {
             "dados": resultados,
             "pagination": {
                 "page": paginacao.page,
@@ -52,7 +53,10 @@ class DespesaResource(Resource):
                 "has_next": paginacao.has_next,
                 "has_prev": paginacao.has_prev
             }
-        }, 200
+        }
+
+        cache.set(cache_key, resultado)
+        return resultado, 200
 
 
     @token_required

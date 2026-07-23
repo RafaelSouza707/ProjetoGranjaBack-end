@@ -1,6 +1,6 @@
 from helpers.database import db
 from sqlalchemy import extract, func
-from helpers.exceptions import NotFoundError
+from helpers.errors.exceptions import NotFoundError
 from models.aviario.lote_racao import LoteRacao
 from models.granja.granja import Granja
 
@@ -41,7 +41,7 @@ class LoteRacaoService:
             .scalar()
         )
 
-        return resultado
+        return float(resultado or 0)
     
 
     @staticmethod
@@ -68,7 +68,7 @@ class LoteRacaoService:
             .order_by(LoteRacao.quilos.asc())
             .first()
         )
-        return resultado
+        return resultado or {"tipo_racao":{"nome": None}, "quilos": 0}
 
 
     @staticmethod
@@ -83,16 +83,35 @@ class LoteRacaoService:
     
     @staticmethod
     def criar(data):
+        fornecedor = data.get("fornecedor").capitalize()
+        verificacao = (
+            db.session.query(LoteRacao)
+            .filter(
+                LoteRacao.tipo_racao_id == data.get("tipo_racao_id"),
+                LoteRacao.fornecedor == fornecedor
+            )
+            .first()
+        )
+        
         novo_registro = LoteRacao(**data)
+        novo_registro.fornecedor.capitalize()
 
+        if verificacao is not None:
+            verificacao.quilos += novo_registro.quilos
+            return verificacao
+         
+        novo_registro.fornecedor = novo_registro.fornecedor.capitalize()
         db.session.add(novo_registro)
         db.session.flush()
 
         return novo_registro
 
+
     @staticmethod
     def atualizar(registro, data):
         for k, v in data.items():
+            if k is "fornecedor":
+                v = v.capitalize()
             setattr(registro, k, v)
 
         return registro

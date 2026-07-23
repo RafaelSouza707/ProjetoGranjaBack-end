@@ -1,6 +1,6 @@
 from helpers.database import db
 from sqlalchemy import func
-from helpers.exceptions import NotFoundError
+from helpers.errors.exceptions import NotFoundError
 from models.venda.venda import Venda
 from models.granja.granja import Granja
 from services.financas.receita_service import ReceitaService
@@ -10,15 +10,19 @@ from models.financas.tipo_receita import TipoReceita
 class VendaService:
 
     @staticmethod
-    def listar(granja_id):
-        resultado = (
+    def listar(granja_id, pagina, per_page):
+        return (
             db.session.query(Venda)
             .join(Venda.granja)
             .filter(Granja.id == granja_id)
-            .all()
+            .order_by(Venda.data_venda.desc())
+            .paginate(
+                page=pagina,
+                per_page=per_page,
+                error_out=False
+            ) 
         )
-
-        return resultado
+    
 
     @staticmethod
     def buscar_por_id(id):
@@ -28,6 +32,7 @@ class VendaService:
             raise NotFoundError("Registro não encontrado")
 
         return registro
+    
 
     @staticmethod
     def criar(data):
@@ -50,6 +55,7 @@ class VendaService:
         })
 
         return novo_registro
+    
 
     @staticmethod
     def atualizar(registro, data):
@@ -57,6 +63,7 @@ class VendaService:
             setattr(registro, k, v)
 
         return registro
+    
 
     @staticmethod
     def deletar(registro):

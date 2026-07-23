@@ -1,7 +1,8 @@
 from flask_restful import Resource
 from flask import request, g
-from helpers.cache import cache
+from helpers.cache.cache import cache
 from middlewares.auth_middleware import token_required
+from middlewares.permission_type import permissao_required
 
 from services.financas.despesa_services import DespesaService
 from services.financas.receita_service import ReceitaService
@@ -11,6 +12,7 @@ from services.usuarios.access_user_granja_service import ValidarAcessoGranja
 class CardsFinancasResource(Resource):
 
     @token_required
+    @permissao_required("FINANCAS")
     def get(self):
         user_id = g.user_id
 

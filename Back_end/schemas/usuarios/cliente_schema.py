@@ -9,8 +9,8 @@ class ClienteSchema(Schema):
     
     documento = fields.String(required=False, allow_none=True)
 
-    telefone = fields.String(validate=validate.Length(min=1, max=32))
-    email = fields.String(validate=validate.Length(min=1, max=128))
+    telefone = fields.String(validate=validate.Length(min=1, max=32), allow_none=True)
+    email = fields.String(validate=validate.Length(min=1, max=128), allow_none=True)
 
     class Meta:
         unknown = EXCLUDE

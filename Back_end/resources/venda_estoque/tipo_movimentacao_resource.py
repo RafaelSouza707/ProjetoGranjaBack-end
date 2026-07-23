@@ -1,11 +1,12 @@
 from flask_restful import Resource
 from flask import request, g
 from helpers.validate_schema import validate_schema
-from helpers.db_utils import session_scope
+from helpers.database.db_utils import session_scope
 from middlewares.auth_middleware import token_required
 from services.usuarios.access_user_granja_service import ValidarAcessoGranja
-from helpers.cache import cache
-from helpers.clean_cache import CacheService
+from helpers.cache.cache import cache
+from helpers.cache.clean_cache import CacheService
+from middlewares.permission_type import permissao_required
 
 from services.venda_estoque.tipo_movimentacao_service import TipoMovimentacaoService as Servico
 from schemas.venda_estoque.tipo_movimentacao_schema import TipoMovimentacaoSchema as Schema
@@ -20,6 +21,7 @@ def deletar_granja(granja_id):
 class TipoMovimentacaoResource(Resource):
 
     @token_required
+    @permissao_required("ESTOQUE")
     def get(self):
         user_id = g.user_id
 
@@ -42,6 +44,7 @@ class TipoMovimentacaoResource(Resource):
 
 
     @token_required
+    @permissao_required("ESTOQUE")
     def post(self):
         user_id = g.user_id
 
@@ -63,6 +66,7 @@ class TipoMovimentacaoResource(Resource):
     
 
     @token_required
+    @permissao_required("ESTOQUE")
     def put(self, id):
         user_id = g.user_id
 
@@ -85,6 +89,7 @@ class TipoMovimentacaoResource(Resource):
     
 
     @token_required
+    @permissao_required("ESTOQUE")
     def delete(self, id):
         user_id = g.user_id
 

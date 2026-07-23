@@ -1,6 +1,7 @@
 from flask_restful import Resource
 from flask import request, jsonify, g
 from middlewares.auth_middleware import token_required
+from middlewares.permission_type import permissao_required
 
 from services.usuarios.usuario_service import UsuarioService
 from schemas.usuarios.usuario_schema import UsuarioSchema

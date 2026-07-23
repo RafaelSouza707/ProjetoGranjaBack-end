@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import extract, func
 
 from helpers.database import db
-from helpers.exceptions import NotFoundError
+from helpers.errors.exceptions import NotFoundError
 from elastic.despesa_sync import deletar_index_despesa
 from models.financas.despesa import Despesa
 from models.granja.granja import Granja

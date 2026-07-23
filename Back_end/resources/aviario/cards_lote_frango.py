@@ -1,14 +1,16 @@
 from flask_restful import Resource
-from helpers.cache import cache
+from helpers.cache.cache import cache
 from flask import g, request
 from middlewares.auth_middleware import token_required
-from services.usuarios.access_user_granja_service import ValidarAcessoGranja
+from middlewares.permission_type import permissao_required
 
+from services.usuarios.access_user_granja_service import ValidarAcessoGranja
 from services.aviario.lote_frango_service import LoteFrangoService as Servico
 
 class CardsLoteFrango(Resource):
 
     @token_required
+    @permissao_required("AVIARIO")
     def get(self):
         user_id = g.user_id
         granja_id = request.args.get("granja_id", type=int)
@@ -17,8 +19,7 @@ class CardsLoteFrango(Resource):
 
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
-        cache_key = f"cache:granja:{granja_id}:lote_frango:{lote_frango_id}:cards_lote_"
-        cache.delete(cache_key)
+        cache_key = f"cache:granja:{granja_id}:cards_lote_frango:{lote_frango_id}"
         dados = cache.get(cache_key)
         if dados is not None:
             return dados, 200

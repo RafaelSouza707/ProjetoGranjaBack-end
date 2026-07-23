@@ -1,5 +1,5 @@
 from helpers.database import db
-from helpers.exceptions import NotFoundError
+from helpers.errors.exceptions import NotFoundError
 from models.financas.tipo_receita import TipoReceita
 from models.granja.granja import Granja
 

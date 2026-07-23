@@ -1,5 +1,5 @@
 from helpers.database import db
-from helpers.exceptions import NotFoundError
+from helpers.errors.exceptions import NotFoundError
 from models.controle_banco_de_dados.role_permissao import RolePermissao as Model
 
 class RolePermissaoService:

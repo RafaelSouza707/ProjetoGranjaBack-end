@@ -1,8 +1,9 @@
 from flask_restful import Resource
 from flask import request, g
 from helpers.validate_schema import validate_schema
-from helpers.db_utils import session_scope
+from helpers.database.db_utils import session_scope
 from middlewares.auth_middleware import token_required
+from middlewares.permission_type import permissao_required
 
 from services.usuarios.escolaridades_service import EscolaridadesService as Servico
 from schemas.usuarios.escolaridades_schema import EscolaridadesSchema as Schema

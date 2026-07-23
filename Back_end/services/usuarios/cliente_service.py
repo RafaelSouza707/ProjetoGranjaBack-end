@@ -1,5 +1,5 @@
 from helpers.database import db
-from helpers.exceptions import NotFoundError
+from helpers.errors.exceptions import NotFoundError
 from models.usuarios.cliente_schema import Cliente
 from models.granja.granja import Granja
 from models.granja.usuario_granja import UsuarioGranja

@@ -1,4 +1,4 @@
-from helpers.cache import cache
+from helpers.cache.cache import cache
 
 class CacheService:
 
@@ -21,26 +21,22 @@ class CacheService:
             redis.delete(key)
 
     @staticmethod
-    def limpar_cache_consumo_lote_diaria(granja_id, lote_frango_id):
+    def limpar_cache_consumo_lote_diaria(granja_id, lote_frango_id = None):
         redis = cache.cache._write_client
 
         if lote_frango_id:
-            pattern = (
-                f"cache:granja:{granja_id}:lote_frango:{lote_frango_id}:consumos_lote_diaria"
-            )
+            redis.delete(f"cache:granja:{granja_id}:lote_frango:{lote_frango_id}:consumos_lote_diaria")
         else:
-            pattern = (
-                f"cache:granja:{granja_id}:lote_frango:consumos_lote_diaria"
-            )
-
-        for key in redis.scan_iter(pattern):
-            redis.delete(key)
-    
+            redis.delete(f"cache:granja:{granja_id}:lote_frango:consumos_lote_diaria")
 
     @staticmethod
     def limpar_cache_cards_lote_frango(granja_id):
-        cache.delete(f"cache:granja:{granja_id}:lote_frango:cards_lote_frango")
+        redis = cache.cache._write_client
 
+        for key in redis.scan_iter(
+            f"cache:granja:{granja_id}:cards_lote_frango:*"
+        ):
+            redis.delete(key)
 
     @staticmethod
     def limpar_cache_card_lote_racao(granja_id):
@@ -51,20 +47,15 @@ class CacheService:
         cache.delete(f"cache:granja:{granja_id}:lote_frango")
 
     @staticmethod
-    def limpar_cache_mortalidade(granja_id, lote_frango_id):
+    def deletar_cache_mortalidade(granja_id, lote_frango_id = None):
         redis = cache.cache._write_client
 
         if lote_frango_id:
-            pattern = (
-                f"cache:granja:{granja_id}:lote_frango:{lote_frango_id}:mortalidade"
-            )
-        else:
-            pattern = (
-                f"cache:granja:{granja_id}:lote_frango:mortalidade"
-            )
+            redis.delete(f"cache:granja:{granja_id}:lote_frango:{lote_frango_id}:mortalidade")
 
-        for key in redis.scan_iter(pattern):
-            redis.delete(key)
+        else:
+            redis.delete(f"cache:granja:{granja_id}:mortalidade")
+
 
     @staticmethod
     def limpar_cache_lote_racao(granja_id):
@@ -125,7 +116,7 @@ class CacheService:
         cache.delete(f"cache:granja:{granja_id}:tipo_receita")
 
     @staticmethod
-    def limpar_cache_cards_granja(granja_id):
+    def deletar_cache_cards_granja(granja_id):
         cache.delete(f"cache:granja:{granja_id}:cards")
 
     @staticmethod
@@ -149,25 +140,30 @@ class CacheService:
         cache.delete(f"cache:granja:{granja_id}:movimentacao_estoque")
 
     @staticmethod
-    def deletar_cache_producao(granja_id, lote_frango_id):
+    def deletar_cache_producao(granja_id, lote_frango_id = None):
         redis = cache.cache._write_client
 
         if lote_frango_id:
+            redis.delete(f"cache:granja:{granja_id}:lote_frango:{lote_frango_id}:producao")
+        else:
+            redis.delete(f"cache:granja:{granja_id}:producao")
+
+
+    @staticmethod
+    def deletar_cache_produto(granja_id, pagina=None):
+        redis = cache.cache._write_client
+
+        if pagina:
             pattern = (
-                f"cache:granja:{granja_id}:lote_frango:{lote_frango_id}:producao"
+                f"cache:granja:{granja_id}:produto:pagina*"
             )
         else:
             pattern = (
-                f"cache:granja:{granja_id}:producao"
+                f"cache:granja:{granja_id}:produto"
             )
 
         for key in redis.scan_iter(pattern):
             redis.delete(key)
-    
-
-    @staticmethod
-    def deletar_cache_produto(granja_id):
-        cache.delete(f"cache:granja:{granja_id}:produto")
 
     @staticmethod
     def deletar_cache_tipo_movimentacao(granja_id):
@@ -183,4 +179,14 @@ class CacheService:
 
     @staticmethod
     def deletar_cache_venda(granja_id):
-        cache.delete(f"cache:granja:{granja_id}:venda")
+        redis = cache.cache._write_client
+
+        for key in redis.scan_iter(
+            f"cache:granja:{granja_id}:venda:pagina:*"
+        ):
+            redis.delete(key)
+
+    @staticmethod
+    def deletar_cache_card_mortalidade_granja(granja_id):
+        cache.delete(f"cache:granja:{granja_id}:card:mortalidade")
+        

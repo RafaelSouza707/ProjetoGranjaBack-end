@@ -1,10 +1,11 @@
 from flask_restful import Resource
 from flask import request, g
 from helpers.validate_schema import validate_schema
-from helpers.db_utils import session_scope
-from helpers.cache import cache
-from helpers.clean_cache import CacheService
+from helpers.database.db_utils import session_scope
+from helpers.cache.cache import cache
+from helpers.cache.clean_cache import CacheService
 from middlewares.auth_middleware import token_required
+from middlewares.permission_type import permissao_required
 from services.usuarios.access_user_granja_service import ValidarAcessoGranja
 
 from services.aviario.lote_frango_service import LoteFrangoService as Servico
@@ -16,17 +17,17 @@ schemas = Schema(many=True)
 def deletar_cache(granja_id):
     CacheService.limpar_cache_lote_frango(granja_id)
     CacheService.limpar_cache_cards_lote_frango(granja_id)
-    CacheService.limpar_cache_mortalidade(granja_id)
-    CacheService.limpar_cache_cards_granja(granja_id)
+    CacheService.deletar_cache_mortalidade(granja_id)
+    CacheService.deletar_cache_cards_granja(granja_id)
 
 class LoteFrangoResource(Resource):
 
     @token_required
+    @permissao_required("AVIARIO")
     def get(self):
         user_id = g.user_id
 
         granja_id = request.args.get("granja_id", type=int)
-
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
         lote_frango_id = request.args.get("lote_frango_id", type=int)
@@ -35,7 +36,6 @@ class LoteFrangoResource(Resource):
             return schema.dump(resultado), 200
 
         cache_key = f"cache:granja:{granja_id}:lote_frango:"
-        cache.delete(cache_key)
         dados = cache.get(cache_key)
         if dados is not None:
             return dados, 200
@@ -51,6 +51,7 @@ class LoteFrangoResource(Resource):
 
 
     @token_required
+    @permissao_required("AVIARIO")
     def post(self):
         user_id = g.user_id
 
@@ -74,6 +75,7 @@ class LoteFrangoResource(Resource):
     
     
     @token_required
+    @permissao_required("AVIARIO")
     def put(self, id):
         user_id = g.user_id
 
@@ -97,6 +99,7 @@ class LoteFrangoResource(Resource):
     
     
     @token_required
+    @permissao_required("AVIARIO")
     def delete(self, id):
         user_id = g.user_id
 

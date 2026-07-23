@@ -1,39 +1,59 @@
 from helpers.database import db
-from helpers.exceptions import NotFoundError
+from helpers.errors.exceptions import NotFoundError
 from models.usuarios.usuario import Usuario
 from models.usuarios.usuario_associacao import UsuarioAssociacao
 from helpers.enum_status_associado import StatusAssociacao
 from models.granja.usuario_granja import UsuarioGranja
 from models.granja.granja import Granja
 from models.granja.usuario_granja import UsuarioGranja
+from models.controle_banco_de_dados.role import Role
 
 class UsuarioAssociacaoService:
 
     @staticmethod
     def listar_associacao_enviadas(user_id):
-        associacoes = (
-            db.session.query(UsuarioAssociacao, Granja)
-            .join(UsuarioGranja, UsuarioGranja.granja_id == Granja.id) 
-            .join(Usuario, Usuario.id == UsuarioGranja.usuario_id)
-            .filter(
-                UsuarioAssociacao.usuario_origem_id == user_id,
+        resultado = (
+            db.session.query(UsuarioAssociacao, Granja, Role.nome)
+            .outerjoin(
+                UsuarioGranja,
                 UsuarioGranja.usuario_id == UsuarioAssociacao.usuario_destino_id
+            )
+            .outerjoin(
+                Granja,
+                Granja.id == UsuarioGranja.granja_id
+            )
+            .outerjoin(
+                Role,
+                Role.id == UsuarioGranja.role_id
+            )
+            .filter(
+                UsuarioAssociacao.usuario_origem_id == user_id
             )
             .all()
         )
-        return associacoes
-
+        return resultado
 
     @staticmethod
     def listar_associacao_recebidas(user_id):
         resultado = (
-            db.session.query(UsuarioAssociacao)
-            .filter(           
-                (UsuarioAssociacao.usuario_destino_id == user_id)
+            db.session.query(UsuarioAssociacao, Granja, Role.nome)
+            .outerjoin(
+                UsuarioGranja,
+                UsuarioGranja.usuario_id == UsuarioAssociacao.usuario_destino_id
             )
-            .all()
+            .outerjoin(
+                Granja,
+                Granja.id == UsuarioGranja.granja_id
+            )
+            .outerjoin(
+                Role,
+                Role.id == UsuarioGranja.role_id
+            )
+            .filter(
+                UsuarioAssociacao.usuario_destino_id == user_id
+            )
+        .all()
         )
-        
         return resultado
 
 
@@ -103,13 +123,20 @@ class UsuarioAssociacaoService:
 
     @staticmethod
     def deletar_associacao(registro):
+
         (
             db.session.query(UsuarioGranja)
             .filter(
-                UsuarioGranja.usuario_id == registro.usuario_destino_id
+                UsuarioGranja.usuario_id == registro.usuario_destino_id,
+                UsuarioGranja.granja_id.in_(
+                    db.session.query(Granja.id).filter(
+                        Granja.usuario_proprietario_id == registro.usuario_origem_id
+                    )
+                )
             )
             .delete(synchronize_session=False)
         )
+
         db.session.delete(registro)
 
-        return ("Associação excluida")
+        return "Associação excluída"

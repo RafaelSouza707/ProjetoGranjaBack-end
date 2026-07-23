@@ -1,10 +1,11 @@
 from flask_restful import Resource
 from flask import request, g
 from helpers.validate_schema import validate_schema
-from helpers.db_utils import session_scope
+from helpers.database.db_utils import session_scope
 from middlewares.auth_middleware import token_required
-from helpers.cache import cache
-from helpers.clean_cache import CacheService
+from middlewares.permission_type import permissao_required
+from helpers.cache.cache import cache
+from helpers.cache.clean_cache import CacheService
 
 from services.granja.granja_service import GranjaService as Servico
 from schemas.granja.granja_schema import GranjaSchema as Schema
@@ -21,12 +22,12 @@ class GranjaResource(Resource):
     def get(self):
         user_id = g.user_id
         
-        resultados = Servico.listar(user_id)
-
         cache_key = f"cache:user:{user_id}"
         dados = cache.get(cache_key)
         if dados is not None:
             return dados
+
+        resultados = Servico.listar(user_id)
 
         resultado_final = [
             {

@@ -1,8 +1,8 @@
 from helpers.database import db
-from helpers.exceptions import NotFoundError
+from helpers.errors.exceptions import NotFoundError
 from models.granja.granja import Granja
 from models.granja.usuario_granja import UsuarioGranja
-from helpers.exceptions import NotFoundError
+from helpers.errors.exceptions import NotFoundError
 from services.granja.usuario_granja_service import UsuarioGranjaService
 from seeds.seed_granja_tipos_status import criar_dados_padrao_granja
 from models.controle_banco_de_dados.role import Role
@@ -15,9 +15,10 @@ class GranjaService:
     def listar(user_id):
         granjas = (
             db.session.query(Granja)
-            .join(Granja.usuarios)
+            .join(UsuarioGranja, UsuarioGranja.granja_id == Granja.id)
             .filter(
-                UsuarioGranja.usuario_id == user_id
+                UsuarioGranja.usuario_id == user_id,
+                UsuarioGranja.ativo == True
             )
             .all()
         )
@@ -54,9 +55,22 @@ class GranjaService:
     
 
     @staticmethod
-    def associar_granja(user_associado_id, granja_id, tipo_user):
-
+    def associar_granja(user_associado_id, granja_id, tipo_user):      
         role_master = Role.query.filter_by(nome=tipo_user).first()
+
+        verificacao = (
+            db.session.query(UsuarioGranja)
+            .filter(
+                UsuarioGranja.usuario_id == user_associado_id,
+                UsuarioGranja.granja_id == granja_id,
+            )
+            .first()
+        )
+
+        if verificacao is not None:
+            verificacao.role_id = role_master.id
+            
+            return verificacao
 
         resultado = UsuarioGranjaService.criar({
             "usuario_id": user_associado_id,
@@ -66,6 +80,18 @@ class GranjaService:
         })
 
         return resultado
+    
+
+    @staticmethod
+    def desassociar_granja(usuario_id, granja_id):
+        (
+            db.session.query(UsuarioGranja)
+            .filter(
+                UsuarioGranja.usuario_id == usuario_id,
+                UsuarioGranja.granja_id == granja_id
+            )
+            .delete(synchronize_session=False)
+        )
         
 
     @staticmethod

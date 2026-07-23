@@ -1,7 +1,8 @@
 from flask_restful import Resource
 from flask import request, g
-from helpers.cache import cache
+from helpers.cache.cache import cache
 from middlewares.auth_middleware import token_required
+from middlewares.permission_type import permissao_required
 
 from services.financas.despesa_services import DespesaService
 from services.usuarios.access_user_granja_service import ValidarAcessoGranja
@@ -9,6 +10,7 @@ from services.usuarios.access_user_granja_service import ValidarAcessoGranja
 class CardsGastosGranjaResource(Resource):
 
     @token_required
+    @permissao_required("FINANCAS")
     def get(self):
         user_id = g.user_id
 
@@ -19,12 +21,13 @@ class CardsGastosGranjaResource(Resource):
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
         cache_key = f"cache:granja:{granja_id}:despesa:cards_gastos"
-        cache.delete(cache_key)
         dados = cache.get(cache_key)
         if dados is not None:
             return dados, 200
         
         maior_gasto = DespesaService.maior_gasto_mes_granja(granja_id)
+        if maior_gasto is None:
+            return {"maior_gasto_mes_granja": None, "total_gasto_mes_granja": None}
         
         resultado = {
             "maior_gasto_mes_granja": {"id": maior_gasto.id, "valor": float(maior_gasto.valor),},

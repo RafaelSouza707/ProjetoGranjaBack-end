@@ -1,9 +1,10 @@
 from flask_restful import Resource
 from flask import request, g
 from helpers.validate_schema import validate_schema
-from helpers.db_utils import session_scope
+from helpers.database.db_utils import session_scope
 from middlewares.auth_middleware import token_required
-from helpers.cache import cache
+from middlewares.permission_type import permissao_required
+from helpers.cache.cache import cache
 
 from services.venda_estoque.estoque_service import EstoqueService as Servico
 from schemas.venda_estoque.estoque_schema import EstoqueSchema as Schema
@@ -17,6 +18,7 @@ def deletar_cache(user_id):
 class EstoqueResource(Resource):
 
     @token_required
+    @permissao_required("ESTOQUE")
     def get(self, id=None):
         user_id = g.user_id
 
@@ -35,6 +37,7 @@ class EstoqueResource(Resource):
 
 
     @token_required
+    @permissao_required("ESTOQUE")
     def post(self):
         user_id = g.user_id
 
@@ -53,6 +56,7 @@ class EstoqueResource(Resource):
     
 
     @token_required
+    @permissao_required("ESTOQUE")
     def put(self, id):
         user_id = g.user_id
 
@@ -72,6 +76,7 @@ class EstoqueResource(Resource):
     
 
     @token_required
+    @permissao_required("ESTOQUE")
     def delete(self, id):
         user_id = g.user_id
         with session_scope():

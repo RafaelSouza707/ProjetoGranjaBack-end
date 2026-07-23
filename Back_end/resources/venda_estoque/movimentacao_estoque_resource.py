@@ -1,10 +1,11 @@
 from flask_restful import Resource
 from flask import request, g
 from helpers.validate_schema import validate_schema
-from helpers.db_utils import session_scope
-from helpers.cache import cache
-from helpers.clean_cache import CacheService
+from helpers.database.db_utils import session_scope
+from helpers.cache.cache import cache
+from helpers.cache.clean_cache import CacheService
 from middlewares.auth_middleware import token_required
+from middlewares.permission_type import permissao_required
 
 from services.usuarios.access_user_granja_service import ValidarAcessoGranja
 from services.venda_estoque.movimentacao_estoque_service import MovimentacaoEstoqueService as Servico
@@ -21,6 +22,7 @@ def deletar_cache(granja_id):
 class MovimentacaoEstoqueResource(Resource):
 
     @token_required
+    @permissao_required("ESTOQUE")
     def get(self):
         user_id = g.user_id
         granja_id = request.args.get("granja_id", type=int)
@@ -37,6 +39,7 @@ class MovimentacaoEstoqueResource(Resource):
         return resultados, 200
 
     @token_required
+    @permissao_required("ESTOQUE")
     def post(self):
         user_id = g.user_id
 
@@ -58,6 +61,7 @@ class MovimentacaoEstoqueResource(Resource):
         return resultado, 201
 
     @token_required
+    @permissao_required("ESTOQUE")
     def put(self, id):
         user_id = g.user_id
 
@@ -80,6 +84,7 @@ class MovimentacaoEstoqueResource(Resource):
         return resultado, 200
 
     @token_required
+    @permissao_required("ESTOQUE")
     def delete(self, id):
         user_id = g.user_id
         granja_id = request.args.get("granja_id", type=int)

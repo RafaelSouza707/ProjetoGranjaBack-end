@@ -1,9 +1,9 @@
 from flask_restful import Resource
 from flask import request
-from helpers.cache import cache
-from helpers.clean_cache import CacheService
+from helpers.cache.cache import cache
+from helpers.cache.clean_cache import CacheService
 from helpers.validate_schema import validate_schema
-from helpers.db_utils import session_scope
+from helpers.database.db_utils import session_scope
 
 from services.usuarios.sexo_service import SexoService as Servico
 from schemas.usuarios.sexo_schema import SexoSchema as Schema
