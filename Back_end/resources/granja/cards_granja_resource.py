@@ -24,6 +24,7 @@ class CardsGranja(Resource):
         
         resultado = {
             "mortalidade_granja_mes": Servico.mortalidade_granja_mes(granja_id),
+            "historico_mortalidade_granja": Servico.total_mortalidade_granja(granja_id),
             "total_aves_granja": Servico.total_aves_granja(granja_id),
             "baixa_quantidade_aves_lote_frango": Servico.baixa_quantidade_aves_granja(granja_id)
         }

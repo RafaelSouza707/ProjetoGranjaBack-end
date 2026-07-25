@@ -8,6 +8,8 @@ from sqlalchemy import extract, func
 from models.aviario.lote_frangos import LoteFrango
 from helpers.errors.exceptions import NotFoundError
 from models.aviario.consumo_lote_diaria import ConsumoLoteDiaria
+from models.aviario.lote_frangos import LoteFrango
+from models.granja.granja import Granja
 
 def normalizar(data):
     if "identificacao" in data and isinstance(data["identificacao"], str):
@@ -22,7 +24,7 @@ class LoteFrangoService:
             .filter(
                 LoteFrango.granja_id == granja_id
             )
-            .order_by(LoteFrango.identificacao.desc())
+            .order_by(LoteFrango.identificacao)
             .all()
         )
 
@@ -56,6 +58,22 @@ class LoteFrangoService:
             .scalar()
         )
         return total or 0
+
+
+
+    @staticmethod
+    def total_mortalidade_granja(granja_id):
+        resultado = (
+            db.session.query(func.sum(Mortalidade.quantidade_mortes))
+            .join(Mortalidade.lote_frango)
+            .join(LoteFrango.granja)
+            .filter(
+                Granja.id == granja_id
+            )
+            .scalar()
+        )
+
+        return resultado or 0
     
 
     @staticmethod

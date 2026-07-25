@@ -68,7 +68,16 @@ class ReceitaService:
             .scalar()
         )
         return total_vendas or 0
-    
+
+
+    @staticmethod
+    def card_historico_receita_financeiro(granja_id):
+        resultado = (
+            db.session.query(func.sum(Receita.valor))
+            .filter(Receita.granja_id == granja_id)
+            .scalar()
+        )
+        return float(resultado or 0)
 
 
     @staticmethod

@@ -16,9 +16,8 @@ schema = Schema()
 schemas = Schema(many=True)
 
 def deletar_cache(granja_id):
+    print("Limpando cache da granja", granja_id)
     CacheService.limpar_cache_receita(granja_id)
-    CacheService.limpar_cache_cards_receita_granja(granja_id)
-    CacheService.limpar_cache_cards_financas(granja_id)
 
 class ReceitaResource(Resource):
 
@@ -52,7 +51,7 @@ class ReceitaResource(Resource):
                 "has_next": paginacao.has_next,
                 "has_prev": paginacao.has_prev
             }
-        }, 200
+        }
 
         cache.set(cache_key, resultado)
         return resultado, 200
@@ -78,7 +77,7 @@ class ReceitaResource(Resource):
             novo = ReceitaService.criar(data)
             resultado = schema.dump(novo)
 
-        CacheService.limpar_cache_receitas(granja_id)
+        deletar_cache(granja_id)
         return resultado, 201
 
 
@@ -108,7 +107,7 @@ class ReceitaResource(Resource):
             atualizado = ReceitaService.atualizar(atualizar, data)
             resultado = schema.dump(atualizado)
 
-        CacheService.limpar_cache_receitas(granja_id)
+        deletar_cache(granja_id)
         return resultado, 200
 
 
@@ -124,5 +123,6 @@ class ReceitaResource(Resource):
             delete = ReceitaService.buscar_por_id(id)
             ReceitaService.deletar(delete)
 
-        CacheService.limpar_cache_receitas(granja_id)
+        print("deletado", granja_id)
+        deletar_cache(granja_id)
         return "", 204

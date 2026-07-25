@@ -35,7 +35,7 @@ class LoteFrangoResource(Resource):
             resultado = Servico.buscar_por_id(id)
             return schema.dump(resultado), 200
 
-        cache_key = f"cache:granja:{granja_id}:lote_frango:"
+        cache_key = f"cache:granja:{granja_id}:lote_frango"
         dados = cache.get(cache_key)
         if dados is not None:
             return dados, 200

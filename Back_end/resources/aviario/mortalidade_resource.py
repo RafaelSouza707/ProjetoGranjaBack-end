@@ -62,6 +62,7 @@ class MortalidadeResource(Resource):
             return resultado_final, 200
 
         cache_key = f"cache:granja:{granja_id}:mortalidade"
+        cache.delete(cache_key)
         dados = cache.get(cache_key)
         if dados is not None:
             return dados, 200
@@ -69,8 +70,7 @@ class MortalidadeResource(Resource):
         paginacao = Servico.listar(granja_id, pagina, per_page)
         resultados = schemas.dump(paginacao.items)
 
-        cache.set(cache_key, resultados, timeout=300)
-        return {
+        resultado = {
                 "dados": resultados,
                 "pagination": {
                     "page": paginacao.page,
@@ -80,7 +80,10 @@ class MortalidadeResource(Resource):
                     "has_next": paginacao.has_next,
                     "has_prev": paginacao.has_prev
                 }
-            }, 200
+            }
+        cache.set(cache_key, resultado)
+        return resultado, 200
+
 
 
     @token_required

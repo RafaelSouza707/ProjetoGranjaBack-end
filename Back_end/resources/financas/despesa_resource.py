@@ -16,9 +16,7 @@ schema = DespesaSchema()
 schemas = DespesaSchema(many=True)
 
 def deletar_cache(granja_id):
-    CacheService.limpar_cache_cards_gastos_granja(granja_id)
-    CacheService.limpar_cache_cards_financas(granja_id)
-    CacheService.limpar_cache_despesa_granja(granja_id)
+    CacheService.limpar_cache_despesa(granja_id)
 
 class DespesaResource(Resource):
 
@@ -35,7 +33,6 @@ class DespesaResource(Resource):
         per_page = 10
 
         cache_key = f"cache:granja:{granja_id}:despesa:pagina:{pagina}"
-        cache.delete(cache_key)
         dados = cache.get(cache_key)
         if dados is not None:
             return dados, 200
@@ -60,6 +57,7 @@ class DespesaResource(Resource):
 
 
     @token_required
+    @permissao_required("FINANCAS")
     def post(self):
         user_id = g.user_id
         granja_id = request.args.get("granja_id", type=int)
@@ -69,7 +67,6 @@ class DespesaResource(Resource):
 
         if error:
             return {str(error)}
-        
 
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
@@ -83,6 +80,7 @@ class DespesaResource(Resource):
     
 
     @token_required
+    @permissao_required("FINANCAS")
     def put(self, id):
         user_id = g.user_id
 
@@ -107,6 +105,7 @@ class DespesaResource(Resource):
     
     
     @token_required
+    @permissao_required("FINANCAS")
     def delete(self, id):
         user_id = g.user_id
 

@@ -21,7 +21,7 @@ class CardMortalidadeGranja(Resource):
         granja_id = request.args.get("granja_id", type=int)
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
-        cache_key = f"granja:{granja_id}:card:mortalidade:"
+        cache_key = f"granja:{granja_id}:card:mortalidade"
         dados = cache.get(cache_key)
         if dados is not None:
             return dados, 200

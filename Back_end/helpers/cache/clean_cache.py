@@ -7,7 +7,7 @@ class CacheService:
         redis = cache.cache._write_client
 
         for key in redis.scan_iter(
-            f"cache:granja:{granja_id}:despesa:*"
+            f"*cache:granja:{granja_id}:despesa:*"
         ):
             redis.delete(key)
 
@@ -74,33 +74,19 @@ class CacheService:
         cache.delete(f"cache:granja:{granja_id}:tipo_racao")
 
     @staticmethod
-    def limpar_cache_cards_gastos_granja(granja_id):
-        cache.delete(f"cache:granja:{granja_id}:despesa:cards_gastos")
-    
-    @staticmethod
     def limpar_cache_despesa_granja(granja_id):
         redis = cache.cache._write_client
 
-        for key in redis.scan_iter(
-            f"cache:granja:{granja_id}:despesa:pagina:*"
-        ):
+        pattern = f"*granja:{granja_id}:despesa*"
+        for key in redis.scan_iter(pattern):
             redis.delete(key)
-
-    @staticmethod
-    def limpar_cache_cards_financas(granja_id):
-        cache.delete(f"cache:granja:{granja_id}:despesa:cards_financas")
-    
-    @staticmethod
-    def limpar_cache_cards_receita_granja(granja_id):
-        cache.delete(f"cache:granja:{granja_id}:receita:cards_receitas")
     
     @staticmethod
     def limpar_cache_receita(granja_id):
         redis = cache.cache._write_client
 
-        for key in redis.scan_iter(
-            f"cache:granja:{granja_id}:receita:pagina:*"
-        ):
+        pattern = f"*cache:granja:{granja_id}:receita*"
+        for key in redis.scan_iter(pattern):
             redis.delete(key)
     
     @staticmethod

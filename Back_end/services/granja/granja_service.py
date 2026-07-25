@@ -8,6 +8,7 @@ from seeds.seed_granja_tipos_status import criar_dados_padrao_granja
 from models.controle_banco_de_dados.role import Role
 from seeds.roles_permissoes import ROLES
 from services.granja.permissoes_service import PermissoesService
+from sqlalchemy import desc
 
 class GranjaService:
 
@@ -20,6 +21,7 @@ class GranjaService:
                 UsuarioGranja.usuario_id == user_id,
                 UsuarioGranja.ativo == True
             )
+            .order_by(desc(Granja.identificacao))
             .all()
         )
 
