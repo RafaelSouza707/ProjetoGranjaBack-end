@@ -35,15 +35,66 @@ class ConsumoLoteDiariaResource(Resource):
         pagina = request.args.get("pagina", type=int)
         per_page = 10
 
-        if lote_frango_id is not None:
-            cache_key = f"cache:granja:{granja_id}:lote_frango:{lote_frango_id}:consumos_lote_diaria"
+        tem_filtro = any(
+            k not in {"granja_id", "pagina", "per_pagina"}
+            for k in request.args.keys()
+        )
+
+        if not tem_filtro:
+            if lote_frango_id is not None:
+                cache_key = f"cache:granja:{granja_id}:lote_frango:{lote_frango_id}:consumos_lote_diaria"
+                dados = cache.get(cache_key)
+                if dados is not None:
+                    return dados, 200
+                
+                paginacao = ConsumoLoteDiariaService.listar_de_lote_frango(lote_frango_id, pagina, per_page)
+                resultados = schemas.dump(paginacao.items)
+            
+
+                resultado = {
+                    "dados": resultados,
+                    "pagination": {
+                        "page": paginacao.page,
+                        "per_page": paginacao.per_page,
+                        "total": paginacao.total,
+                        "pages": paginacao.pages,
+                        "has_next": paginacao.has_next,
+                        "has_prev": paginacao.has_prev
+                    }
+                }
+                cache.set(
+                    cache_key,
+                    resultado
+                )
+
+            cache_key = f"cache:granja:{granja_id}:lote_frango:consumos_lote_diaria"
             dados = cache.get(cache_key)
             if dados is not None:
                 return dados, 200
-            
-            paginacao = ConsumoLoteDiariaService.listar_de_lote_frango(lote_frango_id, pagina, per_page)
+
+            paginacao = ConsumoLoteDiariaService.listar(granja_id, pagina, per_page)
             resultados = schemas.dump(paginacao.items)
+
+
+            resultado = {
+                "dados": resultados,
+                "pagination": {
+                    "page": paginacao.page,
+                    "per_page": paginacao.per_page,
+                    "total": paginacao.total,
+                    "pages": paginacao.pages,
+                    "has_next": paginacao.has_next,
+                    "has_prev": paginacao.has_prev
+                }
+            }
+            cache.set(
+                cache_key,
+                resultado,
+            )
             
+        else:
+            paginacao = ConsumoLoteDiariaService.listar(granja_id, pagina, per_page)
+            resultados = schemas.dump(paginacao.items)
 
             resultado = {
                 "dados": resultados,
@@ -57,25 +108,7 @@ class ConsumoLoteDiariaResource(Resource):
                 }
             }
 
-            cache.set(
-                cache_key,
-                resultado
-            )
-            return resultado, 200
-
-        cache_key = f"cache:granja:{granja_id}:lote_frango:consumos_lote_diaria"
-        dados = cache.get(cache_key)
-        if dados is not None:
-            return dados, 200
-
-        resultados = schemas.dump(ConsumoLoteDiariaService.listar(granja_id))
-        
-        cache.set(
-            cache_key,
-            resultados,
-        )
-
-        return resultados, 200
+        return resultado, 200
 
 
     @token_required

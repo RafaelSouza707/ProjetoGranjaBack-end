@@ -2,6 +2,7 @@ from helpers.database import db
 from helpers.errors.exceptions import NotFoundError
 from models.estoque.producao import Producao
 from models.aviario.lote_frangos import LoteFrango
+from helpers.database.query_builder import QueryBuilder
 
 
 class ProducaoService:
@@ -20,18 +21,21 @@ class ProducaoService:
     
     @staticmethod
     def listar_do_lote_frango(lote_frango_id, pagina, per_page):
-        resultados = (
+        query = (
             db.session.query(Producao)
             .filter(Producao.lote_frango_id == lote_frango_id)
-            .order_by(Producao.data_producao.desc())
-            .paginate(
-                page=pagina,
-                per_page=per_page,
-                error_out=False
-            )
         )
 
-        return resultados
+        query = QueryBuilder(
+            Producao,
+            query
+        ).build().order_by(Producao.data_producao.desc())
+
+        return query.paginate(
+            page=pagina,
+            per_page=per_page,
+            error_out=False
+        )
     
 
     @staticmethod

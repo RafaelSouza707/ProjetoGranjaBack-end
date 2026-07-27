@@ -6,24 +6,30 @@ from models.granja.granja import Granja
 from models.aviario.lote_frangos import LoteFrango
 from services.aviario.lote_frango_service import LoteFrangoService
 from sqlalchemy import extract, func
+from helpers.database.query_builder import QueryBuilder
+
 
 class MortalidadeService:
 
     @staticmethod
     def listar(granja_id, pagina, per_page):
-        resultado = (
+        query = (
             db.session.query(Mortalidade)
             .join(Mortalidade.lote_frango)
-            .join(LoteFrango.granja)
-            .filter(Granja.id == granja_id)
-            .order_by(Mortalidade.data.desc())
-            .paginate(
-                page=pagina,
-                per_page=per_page,
-                error_out=False
-            )
+            .filter(LoteFrango.granja_id == granja_id)
         )
-        return resultado
+
+        query = QueryBuilder(
+            Mortalidade,
+            query
+        ).build().order_by(Mortalidade.data.desc())
+        print(query) # Erro nas datas
+        
+        return query.paginate(
+            page=pagina,
+            per_page=per_page,
+            error_out=False
+        )
 
 
     @staticmethod

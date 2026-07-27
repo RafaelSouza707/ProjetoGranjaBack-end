@@ -95,3 +95,8 @@ class Venda(db.Model):
         "Granja",
         back_populates="vendas"
     )
+
+
+    __filters__ = {
+        "data_venda": {"search": True},
+    }

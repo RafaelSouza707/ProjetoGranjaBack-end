@@ -5,21 +5,31 @@ from helpers.errors.exceptions import NotFoundError
 from models.aviario.consumo_lote_diaria import ConsumoLoteDiaria
 from models.aviario.lote_frangos import LoteFrango
 from models.granja.granja import Granja
+from helpers.database.query_builder import QueryBuilder
 
 class ConsumoLoteDiariaService:
 
     @staticmethod
-    def listar(granja_id):
-        resultados = (
+    def listar(granja_id, pagina, per_page):
+        query = (
             db.session.query(ConsumoLoteDiaria)
             .join(ConsumoLoteDiaria.lote_frango)
             .join(LoteFrango.granja)
             .filter(
                 Granja.id == granja_id
             )
-            .all()
         )
-        return resultados
+
+        query = QueryBuilder(
+            ConsumoLoteDiaria,
+            query
+        ).build().order_by(ConsumoLoteDiaria.data.desc())
+        
+        return query.paginate(
+            page=pagina,
+            per_page=per_page,
+            error_out=False
+        )
     
 
     @staticmethod

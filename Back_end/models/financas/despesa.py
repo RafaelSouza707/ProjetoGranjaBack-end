@@ -69,3 +69,11 @@ class Despesa(db.Model):
         "Granja",
         back_populates="despesas"
     )
+
+    __filters__ = {
+        "tipo_despesa_id": {"search": False},
+        "status_financas_id": {"search": False},
+        "lote_frango_id": {"search": False},
+        "data": {"search": False},
+        "descricao": {"search": True},
+    }

@@ -5,22 +5,28 @@ from models.venda.venda import Venda
 from models.granja.granja import Granja
 from services.financas.receita_service import ReceitaService
 from models.financas.tipo_receita import TipoReceita
+from helpers.database.query_builder import QueryBuilder
 
 
 class VendaService:
 
     @staticmethod
     def listar(granja_id, pagina, per_page):
-        return (
+        query = (
             db.session.query(Venda)
             .join(Venda.granja)
             .filter(Granja.id == granja_id)
-            .order_by(Venda.data_venda.desc())
-            .paginate(
-                page=pagina,
-                per_page=per_page,
-                error_out=False
-            ) 
+        )
+
+        query = QueryBuilder(
+            Venda,
+            query
+        ).build().order_by(Venda.data_venda.desc())
+
+        return query.paginate(
+            page=pagina,
+            per_page=per_page,
+            error_out=False
         )
     
 

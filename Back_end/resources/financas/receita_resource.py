@@ -16,7 +16,6 @@ schema = Schema()
 schemas = Schema(many=True)
 
 def deletar_cache(granja_id):
-    print("Limpando cache da granja", granja_id)
     CacheService.limpar_cache_receita(granja_id)
 
 class ReceitaResource(Resource):
@@ -33,27 +32,50 @@ class ReceitaResource(Resource):
         pagina = request.args.get("pagina", type=int)
         per_page = 10
 
-        cache_key = f"cache:granja:{granja_id}:receita:pagina:{pagina}"
-        dados = cache.get(cache_key)
-        if dados is not None:
-            return dados, 200
-        
-        paginacao = ReceitaService.listar(granja_id, pagina, per_page)
-        resultados = schemas.dump(paginacao.items)
+        tem_filtro = any(
+            k not in {"granja_id", "pagina", "per_pagina"}
+            for k in request.args.keys()
+        )
 
-        resultado = {
-            "dados": resultados,
-            "pagination": {
-                "page": paginacao.page,
-                "per_page": paginacao.per_page,
-                "total": paginacao.total,
-                "pages": paginacao.pages,
-                "has_next": paginacao.has_next,
-                "has_prev": paginacao.has_prev
+        if not tem_filtro:
+            cache_key = f"cache:granja:{granja_id}:receita:pagina:{pagina}"
+            dados = cache.get(cache_key)
+            if dados is not None:
+                return dados, 200
+            
+            paginacao = ReceitaService.listar(granja_id, pagina, per_page)
+            resultados = schemas.dump(paginacao.items)
+
+            resultado = {
+                "dados": resultados,
+                "pagination": {
+                    "page": paginacao.page,
+                    "per_page": paginacao.per_page,
+                    "total": paginacao.total,
+                    "pages": paginacao.pages,
+                    "has_next": paginacao.has_next,
+                    "has_prev": paginacao.has_prev
+                }
             }
-        }
 
-        cache.set(cache_key, resultado)
+            cache.set(cache_key, resultado)
+
+        else:
+            paginacao = ReceitaService.listar(granja_id, pagina, per_page)
+            resultados = schemas.dump(paginacao.items)
+
+            resultado = {
+                "dados": resultados,
+                "pagination": {
+                    "page": paginacao.page,
+                    "per_page": paginacao.per_page,
+                    "total": paginacao.total,
+                    "pages": paginacao.pages,
+                    "has_next": paginacao.has_next,
+                    "has_prev": paginacao.has_prev
+                }
+            }
+
         return resultado, 200
 
     @token_required
@@ -123,6 +145,5 @@ class ReceitaResource(Resource):
             delete = ReceitaService.buscar_por_id(id)
             ReceitaService.deletar(delete)
 
-        print("deletado", granja_id)
         deletar_cache(granja_id)
         return "", 204

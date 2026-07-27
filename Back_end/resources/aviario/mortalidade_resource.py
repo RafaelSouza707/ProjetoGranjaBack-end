@@ -35,17 +35,63 @@ class MortalidadeResource(Resource):
         pagina = request.args.get("pagina", type=int)
         per_page = 10
 
-        if lote_frango_id is not None:
-            cache_key = f"cache:granja:{granja_id}:lote_frango:{lote_frango_id}:mortalidade"
-            cache.delete(cache_key)
+        tem_filtro = any(
+            k not in {"granja_id", "pagina", "per_pagina"}
+            for k in request.args.keys()
+        )
+
+        if not tem_filtro:
+            if lote_frango_id is not None:
+                cache_key = f"cache:granja:{granja_id}:lote_frango:{lote_frango_id}:mortalidade"
+                dados = cache.get(cache_key)
+                if dados is not None:
+                    return dados, 200
+
+                paginacao = Servico.listar_de_lote_frango(lote_frango_id, pagina, per_page)
+                resultados = schemas.dump(paginacao.items)
+                
+                resultado_final = {
+                    "dados": resultados,
+                    "pagination": {
+                        "page": paginacao.page,
+                        "per_page": paginacao.per_page,
+                        "total": paginacao.total,
+                        "pages": paginacao.pages,
+                        "has_next": paginacao.has_next,
+                        "has_prev": paginacao.has_prev
+                    }
+                }
+
+                cache.set(cache_key, resultado_final)
+                
+                return resultado_final, 200
+
+            cache_key = f"cache:granja:{granja_id}:mortalidade"
             dados = cache.get(cache_key)
             if dados is not None:
                 return dados, 200
 
-            paginacao = Servico.listar_de_lote_frango(lote_frango_id, pagina, per_page)
+            paginacao = Servico.listar(granja_id, pagina, per_page)
             resultados = schemas.dump(paginacao.items)
-            
-            resultado_final = {
+
+            resultado = {
+                    "dados": resultados,
+                    "pagination": {
+                        "page": paginacao.page,
+                        "per_page": paginacao.per_page,
+                        "total": paginacao.total,
+                        "pages": paginacao.pages,
+                        "has_next": paginacao.has_next,
+                        "has_prev": paginacao.has_prev
+                    }
+                }
+            cache.set(cache_key, resultado)
+
+        else:
+            paginacao = Servico.listar(granja_id, pagina, per_page)
+            resultados = schemas.dump(paginacao.items)
+
+            resultado = {
                 "dados": resultados,
                 "pagination": {
                     "page": paginacao.page,
@@ -56,32 +102,6 @@ class MortalidadeResource(Resource):
                     "has_prev": paginacao.has_prev
                 }
             }
-
-            cache.set(cache_key, resultado_final)
-            
-            return resultado_final, 200
-
-        cache_key = f"cache:granja:{granja_id}:mortalidade"
-        cache.delete(cache_key)
-        dados = cache.get(cache_key)
-        if dados is not None:
-            return dados, 200
-
-        paginacao = Servico.listar(granja_id, pagina, per_page)
-        resultados = schemas.dump(paginacao.items)
-
-        resultado = {
-                "dados": resultados,
-                "pagination": {
-                    "page": paginacao.page,
-                    "per_page": paginacao.per_page,
-                    "total": paginacao.total,
-                    "pages": paginacao.pages,
-                    "has_next": paginacao.has_next,
-                    "has_prev": paginacao.has_prev
-                }
-            }
-        cache.set(cache_key, resultado)
         return resultado, 200
 
 
@@ -95,8 +115,6 @@ class MortalidadeResource(Resource):
 
         json = request.get_json()
         data, error = validate_schema(schema, json)
-
-        print(json)
 
         if error:
             return {str(error)}

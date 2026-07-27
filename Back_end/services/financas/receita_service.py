@@ -4,22 +4,28 @@ from sqlalchemy import extract, func
 from helpers.errors.exceptions import NotFoundError
 from models.financas.receita import Receita
 from models.granja.granja import Granja
+from helpers.database.query_builder import QueryBuilder
 
 
 class ReceitaService:
 
     @staticmethod
     def listar(granja_id, pagina, per_page):
-        return (
+        query = (
             db.session.query(Receita)
             .join(Receita.granja)
             .filter(Granja.id == granja_id)
-            .order_by(Receita.data.desc())
-            .paginate(
-                page=pagina,
-                per_page=per_page,
-                error_out=False
-            )
+        )
+
+        query = QueryBuilder(
+            Receita,
+            query
+        ).build().order_by(Receita.data.desc())
+
+        return query.paginate(
+            page=pagina,
+            per_page=per_page,
+            error_out=False
         )
     
 

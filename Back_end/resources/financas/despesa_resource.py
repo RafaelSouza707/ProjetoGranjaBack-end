@@ -26,33 +26,55 @@ class DespesaResource(Resource):
         user_id = g.user_id
         
         granja_id = request.args.get("granja_id", type=int)
-
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
         pagina = request.args.get("pagina", type=int)
         per_page = 10
 
-        cache_key = f"cache:granja:{granja_id}:despesa:pagina:{pagina}"
-        dados = cache.get(cache_key)
-        if dados is not None:
-            return dados, 200
+        tem_filtro = any(
+            k not in {"granja_id", "pagina", "per_pagina"}
+            for k in request.args.keys()
+        )
 
-        paginacao = DespesaService.listar(granja_id, pagina, per_page)
-        resultados = schemas.dump(paginacao.items)
+        if not tem_filtro:
+            cache_key = f"cache:granja:{granja_id}:despesa:pagina:{pagina}"
+            dados = cache.get(cache_key)
+            if dados is not None:
+                return dados, 200
 
-        resultado = {
-            "dados": resultados,
-            "pagination": {
-                "page": paginacao.page,
-                "per_page": paginacao.per_page,
-                "total": paginacao.total,
-                "pages": paginacao.pages,
-                "has_next": paginacao.has_next,
-                "has_prev": paginacao.has_prev
+            paginacao = DespesaService.listar(granja_id, pagina, per_page)
+            resultados = schemas.dump(paginacao.items)
+
+
+            resultado = {
+                "dados": resultados,
+                "pagination": {
+                    "page": paginacao.page,
+                    "per_page": paginacao.per_page,
+                    "total": paginacao.total,
+                    "pages": paginacao.pages,
+                    "has_next": paginacao.has_next,
+                    "has_prev": paginacao.has_prev
+                }
             }
-        }
+            cache.set(cache_key, resultado)
+        
+        else:
+            paginacao = DespesaService.listar(granja_id, pagina, per_page)
+            resultados = schemas.dump(paginacao.items)
 
-        cache.set(cache_key, resultado)
+            resultado = {
+                "dados": resultados,
+                "pagination": {
+                    "page": paginacao.page,
+                    "per_page": paginacao.per_page,
+                    "total": paginacao.total,
+                    "pages": paginacao.pages,
+                    "has_next": paginacao.has_next,
+                    "has_prev": paginacao.has_prev
+                }
+            }
+            
         return resultado, 200
 
 

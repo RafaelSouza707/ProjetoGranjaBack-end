@@ -2,6 +2,8 @@ from datetime import datetime
 
 from sqlalchemy import extract, func
 
+
+from helpers.database.query_builder import QueryBuilder
 from helpers.database import db
 from helpers.errors.exceptions import NotFoundError
 from elastic.despesa_sync import deletar_index_despesa
@@ -12,16 +14,21 @@ class DespesaService:
 
     @staticmethod
     def listar(granja_id, pagina, per_page):
-        return (
+        query = (
             db.session.query(Despesa)
             .join(Despesa.granja)
             .filter(Granja.id == granja_id)
-            .order_by(Despesa.data.desc())
-            .paginate(
-                page=pagina,
-                per_page=per_page,
-                error_out=False
-            )
+        )
+
+        query = QueryBuilder(
+            Despesa,
+            query
+        ).build().order_by(Despesa.data.desc())
+
+        return query.paginate(
+            page=pagina,
+            per_page=per_page,
+            error_out=False
         )
 
 

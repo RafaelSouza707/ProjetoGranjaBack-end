@@ -16,7 +16,7 @@ class CacheService:
         redis = cache.cache._write_client
 
         for key in redis.scan_iter(
-            f"cache:granja:{granja_id}:receita:*"
+            f"*cache:granja:{granja_id}:receita:*"
         ):
             redis.delete(key)
 
@@ -34,7 +34,7 @@ class CacheService:
         redis = cache.cache._write_client
 
         for key in redis.scan_iter(
-            f"cache:granja:{granja_id}:cards_lote_frango:*"
+            f"*cache:granja:{granja_id}:cards_lote_frango:*"
         ):
             redis.delete(key)
 
@@ -141,7 +141,7 @@ class CacheService:
 
         if pagina:
             pattern = (
-                f"cache:granja:{granja_id}:produto:pagina*"
+                f"*cache:granja:{granja_id}:produto:pagina*"
             )
         else:
             pattern = (
@@ -168,7 +168,7 @@ class CacheService:
         redis = cache.cache._write_client
 
         for key in redis.scan_iter(
-            f"cache:granja:{granja_id}:venda:pagina:*"
+            f"*cache:granja:{granja_id}:venda:pagina:*"
         ):
             redis.delete(key)
 

@@ -34,31 +34,57 @@ class VendaResource(Resource):
         pagina = request.args.get("pagina", type=int)
         per_page = 10
 
-        cache_key = f"cache:granja:{granja_id}:venda:pagina:{pagina}"
-        dados = cache.get(cache_key)
-        if dados is not None:
-            return dados, 200
+        tem_filtro = any(
+            k not in {"granja_id", "pagina", "per_pagina"}
+            for k in request.args.keys()
+        )
 
-        paginacao = VendaService.listar(granja_id, pagina, per_page)
-        resultados = schemas.dump(paginacao.items)
+        if not tem_filtro:
+            cache_key = f"cache:granja:{granja_id}:venda:pagina:{pagina}"
+            dados = cache.get(cache_key)
+            if dados is not None:
+                return dados, 200
 
-        for venda in resultados:
-            itens = ItemVendaService.listar(venda["id"])
-            venda["itens"] = itens_venda_schemas.dump(itens)
+            paginacao = VendaService.listar(granja_id, pagina, per_page)
+            resultados = schemas.dump(paginacao.items)
 
-        resposta = {
-            "dados": resultados,
-            "pagination": {
-                "page": paginacao.page,
-                "per_page": paginacao.per_page,
-                "total": paginacao.total,
-                "pages": paginacao.pages,
-                "has_next": paginacao.has_next,
-                "has_prev": paginacao.has_prev
+            for venda in resultados:
+                itens = ItemVendaService.listar(venda["id"])
+                venda["itens"] = itens_venda_schemas.dump(itens)
+
+            resposta = {
+                "dados": resultados,
+                "pagination": {
+                    "page": paginacao.page,
+                    "per_page": paginacao.per_page,
+                    "total": paginacao.total,
+                    "pages": paginacao.pages,
+                    "has_next": paginacao.has_next,
+                    "has_prev": paginacao.has_prev
+                }
             }
-        }
 
-        cache.set(cache_key, resposta)
+            cache.set(cache_key, resposta)
+
+        else:
+            paginacao = VendaService.listar(granja_id, pagina, per_page)
+            resultados = schemas.dump(paginacao.items)
+
+            for venda in resultados:
+                itens = ItemVendaService.listar(venda["id"])
+                venda["itens"] = itens_venda_schemas.dump(itens)
+
+            resposta = {
+                "dados": resultados,
+                "pagination": {
+                    "page": paginacao.page,
+                    "per_page": paginacao.per_page,
+                    "total": paginacao.total,
+                    "pages": paginacao.pages,
+                    "has_next": paginacao.has_next,
+                    "has_prev": paginacao.has_prev
+                }
+            }
 
         return resposta, 200
     

@@ -71,3 +71,11 @@ class Receita(db.Model):
         "StatusFinancas",
         back_populates="receitas"
     )
+
+    __filters__ = {
+        "tipo_receita_id": {"search": False},
+        "status_financas_id": {"search": False},
+        "venda_id": {"search": False},
+        "data": {"search": False},
+        "descricao": {"search": True},
+    }

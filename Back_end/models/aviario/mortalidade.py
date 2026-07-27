@@ -38,3 +38,18 @@ class Mortalidade(db.Model):
         "LoteFrango",
         back_populates="mortalidades"
     )
+
+
+    __filters__ = {
+        "lote_frango_id": {
+            "search": False, 
+            "alias": ["lotes_frango", "lote_frango"]
+        },
+        "data": {
+            "search": False, 
+            "alias": ["data_inicio", "data_fim"]
+        },
+        "descricao": {
+            "search": True
+        }
+    }
