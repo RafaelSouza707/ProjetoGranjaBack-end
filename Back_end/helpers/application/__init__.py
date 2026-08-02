@@ -21,6 +21,14 @@ app.config["SQLALCHEMY_DATABASE_URI"] = (
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "pool_size": 80,
+    "max_overflow": 40,
+    "pool_timeout": 30,
+    "pool_recycle": 1800,
+    "pool_pre_ping": True,
+}
+
 app.config["CACHE_TYPE"] = "RedisCache"
 app.config["CACHE_REDIS_URL"] = (
     f"redis://{os.getenv('CACHE_REDIS_HOST', 'localhost')}:"

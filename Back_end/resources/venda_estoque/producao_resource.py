@@ -90,6 +90,7 @@ class ProducaoResource(Resource):
             }
 
             return resultado, 200
+        
 
     @token_required
     @permissao_required("ESTOQUE")

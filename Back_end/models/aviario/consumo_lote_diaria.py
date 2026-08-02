@@ -45,3 +45,10 @@ class ConsumoLoteDiaria(db.Model):
         "LoteRacao",
         back_populates="consumos",
     )
+
+    __filters__ = {
+        "data": {
+            "search": False, 
+            "alias": ["data_inicio", "data_fim"]
+        },
+    }

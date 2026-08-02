@@ -33,7 +33,7 @@ class Producao(db.Model):
         nullable=False
     )
 
-    data_producao: Mapped[date] = mapped_column(
+    data: Mapped[date] = mapped_column(
         Date,
         nullable=False
     )
@@ -57,3 +57,11 @@ class Producao(db.Model):
         back_populates="producao",
         cascade="all, delete-orphan"
     )
+
+
+    __filters__ = {
+        "data_producao": {
+            "search": False, 
+            "alias": ["data_inicio", "data_fim"]
+        },
+    }

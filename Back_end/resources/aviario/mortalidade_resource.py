@@ -88,7 +88,7 @@ class MortalidadeResource(Resource):
             cache.set(cache_key, resultado)
 
         else:
-            paginacao = Servico.listar(granja_id, pagina, per_page)
+            paginacao = Servico.listar_de_lote_frango(lote_frango_id, pagina, per_page)
             resultados = schemas.dump(paginacao.items)
 
             resultado = {

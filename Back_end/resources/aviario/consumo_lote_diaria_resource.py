@@ -1,3 +1,4 @@
+import time
 from flask_restful import Resource
 from flask import request, g
 from helpers.validate_schema import validate_schema
@@ -26,11 +27,10 @@ class ConsumoLoteDiariaResource(Resource):
     @permissao_required("AVIARIO")
     def get(self):
         user_id = g.user_id
-            
         granja_id = request.args.get("granja_id", type=int)
+        ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
         lote_frango_id = request.args.get("lote_frango_id", type=int)
-        ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
         pagina = request.args.get("pagina", type=int)
         per_page = 10
@@ -46,11 +46,10 @@ class ConsumoLoteDiariaResource(Resource):
                 dados = cache.get(cache_key)
                 if dados is not None:
                     return dados, 200
-                
+
                 paginacao = ConsumoLoteDiariaService.listar_de_lote_frango(lote_frango_id, pagina, per_page)
                 resultados = schemas.dump(paginacao.items)
             
-
                 resultado = {
                     "dados": resultados,
                     "pagination": {
@@ -62,6 +61,7 @@ class ConsumoLoteDiariaResource(Resource):
                         "has_prev": paginacao.has_prev
                     }
                 }
+                
                 cache.set(
                     cache_key,
                     resultado
@@ -75,7 +75,6 @@ class ConsumoLoteDiariaResource(Resource):
             paginacao = ConsumoLoteDiariaService.listar(granja_id, pagina, per_page)
             resultados = schemas.dump(paginacao.items)
 
-
             resultado = {
                 "dados": resultados,
                 "pagination": {
@@ -87,14 +86,18 @@ class ConsumoLoteDiariaResource(Resource):
                     "has_prev": paginacao.has_prev
                 }
             }
+            
             cache.set(
                 cache_key,
                 resultado,
             )
             
         else:
-            paginacao = ConsumoLoteDiariaService.listar(granja_id, pagina, per_page)
+            paginacao = ConsumoLoteDiariaService.listar_de_lote_frango(lote_frango_id, pagina, per_page)
             resultados = schemas.dump(paginacao.items)
+            print(paginacao)
+            for a in resultados:
+                print(a)
 
             resultado = {
                 "dados": resultados,

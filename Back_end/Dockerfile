@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 5000
 
-CMD ["python", "app.py"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "18", "--threads", "6", "--worker-class", "gthread", "--timeout", "60", "app:app"]

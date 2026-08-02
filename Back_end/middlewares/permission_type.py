@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import request, g
+from flask import request, g, jsonify
 from helpers.errors.exceptions import AppError, ForbiddenError
 from services.granja.permissoes_service import PermissoesService
 
@@ -20,17 +20,17 @@ def permissao_required(*permissoes):
                 granja_id
             )
 
+
             if contexto is None:
                 raise ForbiddenError("Usuário não pertence à granja.")
 
             if not any(
                 permissao in contexto["permissoes"]
                 for permissao in permissoes
-            ):
+            ):  
                 raise ForbiddenError("Sem permissão.")
 
             return func(*args, **kwargs)
-
         return wrapper
 
     return decorator

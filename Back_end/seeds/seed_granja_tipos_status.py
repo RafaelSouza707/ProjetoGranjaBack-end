@@ -126,3 +126,73 @@ def criar_dados_padrao_granja(granja_id):
     ])
 
     db.session.flush()
+
+
+    from decimal import Decimal
+    from datetime import date
+
+    from models.estoque.produto import Produto
+
+    # Buscar os tipos criados
+    tipos_produto = {
+        tp.nome: tp
+        for tp in db.session.query(TipoProduto)
+        .filter(TipoProduto.granja_id == granja_id)
+    }
+
+    unidades = {
+        u.sigla: u
+        for u in db.session.query(TipoUnidadeMedida)
+        .filter(TipoUnidadeMedida.granja_id == granja_id)
+    }
+
+    db.session.add_all([
+        Produto(
+            tipo_produto_id=tipos_produto["Ovo"].id,
+            tipo_unidade_medida_id=unidades["DZ"].id,
+            granja_id=granja_id,
+            descricao="Ovos",
+            quantidade_estoque=Decimal("0.000"),
+            data_cadastro=date.today()
+        ),
+        Produto(
+            tipo_produto_id=tipos_produto["Frango Vivo"].id,
+            tipo_unidade_medida_id=unidades["UN"].id,
+            granja_id=granja_id,
+            descricao="Frango Vivo",
+            quantidade_estoque=Decimal("0.000"),
+            data_cadastro=date.today()
+        ),
+        Produto(
+            tipo_produto_id=tipos_produto["Frango Abatido"].id,
+            tipo_unidade_medida_id=unidades["KG"].id,
+            granja_id=granja_id,
+            descricao="Frango Abatido",
+            quantidade_estoque=Decimal("0.000"),
+            data_cadastro=date.today()
+        ),
+        Produto(
+            tipo_produto_id=tipos_produto["Pinto de Um Dia"].id,
+            tipo_unidade_medida_id=unidades["UN"].id,
+            granja_id=granja_id,
+            descricao="Pinto de Um Dia",
+            quantidade_estoque=Decimal("0.000"),
+            data_cadastro=date.today()
+        ),
+        Produto(
+            tipo_produto_id=tipos_produto["Esterco"].id,
+            tipo_unidade_medida_id=unidades["KG"].id,
+            granja_id=granja_id,
+            descricao="Esterco",
+            quantidade_estoque=Decimal("0.000"),
+            data_cadastro=date.today()
+        ),
+        Produto(
+            tipo_produto_id=tipos_produto["Ração"].id,
+            tipo_unidade_medida_id=unidades["KG"].id,
+            granja_id=granja_id,
+            descricao="Ração",
+            quantidade_estoque=Decimal("0.000"),
+            data_cadastro=date.today()
+        ),
+    ])

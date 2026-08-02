@@ -12,6 +12,12 @@ def token_required(f):
         token = request.cookies.get("granja_access_token")
 
         if not token:
+            auth = request.headers.get("Authorization")
+
+            if auth and auth.startswith("Bearer "):
+                token = auth.split(" ", 1)[1]
+
+        if not token:
             return {"message": "Token ausente"}, 401
 
         try:
@@ -23,7 +29,7 @@ def token_required(f):
         except jwt.ExpiredSignatureError:
             return {"message": "Token expirado"}, 401
 
-        except jwt.InvalidTokenError as e:
+        except jwt.InvalidTokenError:
             return {"message": "Token inválido"}, 401
 
         return f(*args, **kwargs)

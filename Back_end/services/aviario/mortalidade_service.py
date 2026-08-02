@@ -23,7 +23,6 @@ class MortalidadeService:
             Mortalidade,
             query
         ).build().order_by(Mortalidade.data.desc())
-        print(query) # Erro nas datas
         
         return query.paginate(
             page=pagina,
@@ -60,23 +59,22 @@ class MortalidadeService:
 
     @staticmethod
     def listar_de_lote_frango(lote_frango_id, pagina, per_page):
-        resultado = (
+        query = (
             db.session.query(Mortalidade)
-            .join(Mortalidade.lote_frango)
-            .join(LoteFrango.granja)
-            .filter(LoteFrango.id == lote_frango_id)
-            .order_by(Mortalidade.data.desc())
-            .paginate(
-                page=pagina,
-                per_page=per_page,
-                error_out=False
-            )
+            .filter(Mortalidade.lote_frango_id == lote_frango_id)
         )
 
-        if not resultado:
-            raise NotFoundError("Registros de mortalidade não encotrados")
+        query = QueryBuilder(
+            Mortalidade,
+            query
+        ).build().order_by(Mortalidade.data.desc())
 
-        return resultado
+        return query.paginate(
+            page=pagina,
+            per_page=per_page,
+            error_out=False
+        )
+    
 
     @staticmethod
     def buscar_por_id(id):

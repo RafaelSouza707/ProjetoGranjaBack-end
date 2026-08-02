@@ -1,20 +1,20 @@
 from flask import jsonify
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
-from helpers.errors.exceptions import AppError
+from helpers.errors.exceptions import AppError, ForbiddenError
 
 
 def register_error_handlers(app):
 
     @app.errorhandler(AppError)
     def handle_app_error(error):
-        return jsonify({
+        return {
             "error": {
                 "message": error.message,
                 "type": error.error_type,
                 "status": error.status_code
             }
-        }), error.status_code
+        }, error.status_code
 
 
     @app.errorhandler(IntegrityError)

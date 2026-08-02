@@ -19,5 +19,5 @@ class BusinessRuleError(AppError):
     error_type = "BUSINESS_RULE"
 
 class ForbiddenError(AppError):
-    status_code = 401
+    status_code = 403
     error_type = "FORBIDDEN"

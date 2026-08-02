@@ -14,9 +14,8 @@ class ConsumoLoteDiariaService:
         query = (
             db.session.query(ConsumoLoteDiaria)
             .join(ConsumoLoteDiaria.lote_frango)
-            .join(LoteFrango.granja)
             .filter(
-                Granja.id == granja_id
+                LoteFrango.granja_id == granja_id
             )
         )
 
@@ -34,20 +33,24 @@ class ConsumoLoteDiariaService:
 
     @staticmethod
     def listar_de_lote_frango(lote_frango_id, pagina, per_page):
-        resultados = (
+        query = (
             db.session.query(ConsumoLoteDiaria)
             .filter(
-                ConsumoLoteDiaria.lote_frango_id == lote_frango_id,
-            )
-            .order_by(ConsumoLoteDiaria.data.desc())
-            .paginate(
-                page=pagina,
-                per_page=per_page,
-                error_out=False
+                ConsumoLoteDiaria.lote_frango_id == lote_frango_id
             )
         )
 
-        return resultados
+        query = QueryBuilder(
+            ConsumoLoteDiaria,
+            query
+        ).build().order_by(ConsumoLoteDiaria.data.desc())
+        print("query", query)
+
+        return query.paginate(
+            page=pagina,
+            per_page=per_page,
+            error_out=False
+        )
 
 
     @staticmethod

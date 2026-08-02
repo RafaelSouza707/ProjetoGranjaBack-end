@@ -29,7 +29,8 @@ class ProducaoService:
         query = QueryBuilder(
             Producao,
             query
-        ).build().order_by(Producao.data_producao.desc())
+        ).build().order_by(Producao.data.desc())
+        print(query)
 
         return query.paginate(
             page=pagina,

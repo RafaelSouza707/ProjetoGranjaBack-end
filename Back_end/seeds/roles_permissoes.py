@@ -20,7 +20,6 @@ ROLE_PERMISSOES = {
         "AVIARIO",
         "ESTOQUE",
         "MINHA_CONTA",
-        "VENDA"
     ],
 
     "ADMINISTRADOR": [
