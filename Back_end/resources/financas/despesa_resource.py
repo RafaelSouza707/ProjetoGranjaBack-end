@@ -9,7 +9,6 @@ from middlewares.permission_type import permissao_required
 
 from services.financas.despesa_services import DespesaService
 from schemas.financas.despesa_schema import DespesaSchema
-from elastic.despesa_sync import indexar_despesa
 from services.usuarios.access_user_granja_service import ValidarAcessoGranja
 
 schema = DespesaSchema()
@@ -17,6 +16,7 @@ schemas = DespesaSchema(many=True)
 
 def deletar_cache(granja_id):
     CacheService.limpar_cache_despesa(granja_id)
+    CacheService.limpar_cache_despesa_granja(granja_id)
 
 class DespesaResource(Resource):
 
@@ -94,7 +94,6 @@ class DespesaResource(Resource):
 
         with session_scope():
             despesa = DespesaService.criar(data)
-            indexar_despesa(despesa)
             resultado = schema.dump(despesa)
 
         deletar_cache(granja_id)

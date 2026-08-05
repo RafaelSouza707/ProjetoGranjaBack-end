@@ -19,6 +19,8 @@ def deletar_cache(granja_id, lote_frango_id):
     CacheService.limpar_cache_consumo_lote_diaria(granja_id, lote_frango_id)
     CacheService.limpar_cache_cards_lote_frango(granja_id)
     CacheService.limpar_cache_card_lote_racao(granja_id)
+    CacheService.limpar_cache_lote_racao(granja_id)
+    CacheService.limpar_cache_card_lote_racao(granja_id)
     
 
 class ConsumoLoteDiariaResource(Resource):
@@ -95,9 +97,6 @@ class ConsumoLoteDiariaResource(Resource):
         else:
             paginacao = ConsumoLoteDiariaService.listar_de_lote_frango(lote_frango_id, pagina, per_page)
             resultados = schemas.dump(paginacao.items)
-            print(paginacao)
-            for a in resultados:
-                print(a)
 
             resultado = {
                 "dados": resultados,

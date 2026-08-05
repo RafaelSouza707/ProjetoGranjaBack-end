@@ -2,11 +2,9 @@ from datetime import datetime
 
 from sqlalchemy import extract, func
 
-
 from helpers.database.query_builder import QueryBuilder
 from helpers.database import db
 from helpers.errors.exceptions import NotFoundError
-from elastic.despesa_sync import deletar_index_despesa
 from models.financas.despesa import Despesa
 from models.granja.granja import Granja
 
@@ -104,4 +102,3 @@ class DespesaService:
     @staticmethod
     def deletar(despesa):
         db.session.delete(despesa)
-        deletar_index_despesa(despesa.id)

@@ -9,6 +9,7 @@ from helpers.cache.cache import cache
 from helpers.cache.clean_cache import CacheService
 
 from services.financas.receita_service import ReceitaService
+from services.venda_estoque.venda_service import VendaService
 from schemas.financas.receita_schema import ReceitaSchema as Schema
 from services.usuarios.access_user_granja_service import ValidarAcessoGranja
 
@@ -16,6 +17,8 @@ schema = Schema()
 schemas = Schema(many=True)
 
 def deletar_cache(granja_id):
+    CacheService.limpar_cache_receita(granja_id)
+    CacheService.deletar_cache_venda(granja_id)
     CacheService.limpar_cache_receita(granja_id)
 
 class ReceitaResource(Resource):
@@ -125,8 +128,8 @@ class ReceitaResource(Resource):
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
         with session_scope():
-            atualizar = ReceitaService.buscar_por_id(id)
-            atualizado = ReceitaService.atualizar(atualizar, data)
+            atualizar_receita = ReceitaService.buscar_por_id(id)
+            atualizado = ReceitaService.atualizar(atualizar_receita, data)
             resultado = schema.dump(atualizado)
 
         deletar_cache(granja_id)
@@ -143,6 +146,9 @@ class ReceitaResource(Resource):
 
         with session_scope():
             delete = ReceitaService.buscar_por_id(id)
+            delete_venda = VendaService.buscar_por_id(delete.venda_id)
+
+            VendaService.deletar(delete_venda)
             ReceitaService.deletar(delete)
 
         deletar_cache(granja_id)

@@ -7,7 +7,7 @@ class ClienteSchema(Schema):
 
     nome = fields.String(required=True, validate=validate.Length(max=128))
     
-    documento = fields.String(required=False, allow_none=True)
+    cpf_cnpj = fields.String(required=False, allow_none=True, validate=validate.Length(max=18))
 
     telefone = fields.String(validate=validate.Length(min=1, max=32), allow_none=True)
     email = fields.String(validate=validate.Length(min=1, max=128), allow_none=True)

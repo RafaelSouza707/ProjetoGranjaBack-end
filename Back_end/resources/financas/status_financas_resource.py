@@ -27,7 +27,6 @@ class StatusFinancasResource(Resource):
         ValidarAcessoGranja.validar_acesso_granja(user_id, granja_id)
 
         cache_key = f"cache:granja:{granja_id}:status_financas"
-        cache.delete(cache_key)
         dados = cache.get(cache_key)
         if dados is not None:
             return dados, 200

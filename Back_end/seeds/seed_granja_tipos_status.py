@@ -11,7 +11,6 @@ from models.financas.tipo_receita import TipoReceita
 from models.estoque.tipo_movimentacao import TipoMovimentacao
 from models.estoque.tipo_unidade_medida import TipoUnidadeMedida
 from models.venda.tipo_venda import TipoVenda
-from models.usuarios.sexo import Sexo
 
 
 def criar_dados_padrao_granja(granja_id):
@@ -38,6 +37,13 @@ def criar_dados_padrao_granja(granja_id):
         TipoReceita(nome="Venda Produto", granja_id=granja_id),
         TipoReceita(nome="Venda Excedente", granja_id=granja_id),
         TipoReceita(nome="Aluguel", granja_id=granja_id),
+        TipoReceita(nome="Prestação de serviços", granja_id=granja_id),
+        TipoReceita(nome="Bonificações e incentivos", granja_id=granja_id),
+        TipoReceita(nome="Receitas financeiras", granja_id=granja_id),
+        TipoReceita(nome="Venda de ativos", granja_id=granja_id),
+        TipoReceita(nome="Doações e contribuições", granja_id=granja_id),
+        TipoReceita(nome="Outras receitas operacionais", granja_id=granja_id),
+        TipoReceita(nome="Outras receitas não operacionais", granja_id=granja_id),
     ])
 
     # STATUS LOTE
@@ -98,7 +104,7 @@ def criar_dados_padrao_granja(granja_id):
         TipoVenda(
             nome="Venda Indireta",
             granja_id=granja_id
-        ),
+        )
     ])
 
     # UNIDADES
@@ -152,6 +158,14 @@ def criar_dados_padrao_granja(granja_id):
             tipo_unidade_medida_id=unidades["DZ"].id,
             granja_id=granja_id,
             descricao="Ovos",
+            quantidade_estoque=Decimal("0.000"),
+            data_cadastro=date.today()
+        ),
+        Produto(
+            tipo_produto_id=tipos_produto["Ovo"].id,
+            tipo_unidade_medida_id=unidades["UN"].id,
+            granja_id=granja_id,
+            descricao="Ovo",
             quantidade_estoque=Decimal("0.000"),
             data_cadastro=date.today()
         ),

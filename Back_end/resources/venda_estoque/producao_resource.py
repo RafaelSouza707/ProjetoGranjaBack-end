@@ -14,10 +14,8 @@ from schemas.venda_estoque.producao_schema import ProducaoSchema as Schema
 schema = Schema()
 schemas = Schema(many=True)
 
-
 def deletar_cache(granja_id, lote_frango_id):
     CacheService.deletar_cache_producao(granja_id, lote_frango_id)
-
 
 class ProducaoResource(Resource):
 
@@ -105,7 +103,7 @@ class ProducaoResource(Resource):
         data, error = validate_schema(schema, json)
 
         if error:
-            return {str(error)}
+            return {"erro": str(error)}, 400
 
 
         with session_scope():

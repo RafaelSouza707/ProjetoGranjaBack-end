@@ -32,6 +32,7 @@ class CardsLoteRacao(Resource):
         consumo_diaria = ConsumoLoteDiariaService.consumo_mensal_diaria(consumo_mes)
         lote_menor_quantiade = lote_racao_schema.dump(LoteRacaoService.lote_menor_quantidade(granja_id))
         qtd_total_granja = LoteRacaoService.quantidade_total_racao_granja(granja_id)
+        previsao = LoteRacaoService.previsao_acabar(qtd_total_granja, consumo_diaria)
                 
         resultado = {
             "quantidade_total_racao_granja": qtd_total_granja,
@@ -44,7 +45,7 @@ class CardsLoteRacao(Resource):
                 "tipo_racao": lote_menor_quantiade["tipo_racao"]["nome"],
                 "quantidade": lote_menor_quantiade["quilos"] or None
             },
-            "previsao": LoteRacaoService.previsao_acabar(qtd_total_granja, consumo_diaria)
+            "previsao": previsao
         }
 
 

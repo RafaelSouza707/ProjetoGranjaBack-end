@@ -12,7 +12,6 @@ from resources.financas.status_financas_resource import StatusFinancasResource
 from resources.financas.tipo_despesa_resource import TipoDespesaResource
 from resources.financas.cards_gastos_resource import CardsFinancasResource
 from resources.financas.cards_gastos_granja_resource import CardsGastosGranjaResource
-from resources.financas.despesa_search import DespesaSearch
 from resources.financas.tipo_receita_resource import TipoReceitaResource
 from resources.financas.receita_resource import ReceitaResource
 from resources.financas.cards_receitas_granja_resource import CardsReceitasResource
@@ -74,7 +73,6 @@ api.add_resource(StatusFinancasResource, '/financas/status_financas', '/financas
 api.add_resource(TipoDespesaResource, '/financas/tipo_despesa', '/financas/tipo_despesa/<int:id>')
 api.add_resource(CardsFinancasResource, '/financas/cards_financas')
 api.add_resource(CardsGastosGranjaResource, '/financas/cards_gastos_granja')
-api.add_resource(DespesaSearch, '/financas/despesa_search')
 api.add_resource(TipoReceitaResource, '/financas/tipo_receita', '/financas/tipo_receita/<int:id>')
 api.add_resource(ReceitaResource, '/financas/receita', '/financas/receita/<int:id>')
 api.add_resource(CardsReceitasResource, '/financas/cards_receitas_granja')

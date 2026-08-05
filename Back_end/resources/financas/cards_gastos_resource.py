@@ -28,9 +28,11 @@ class CardsFinancasResource(Resource):
         despesas_valor = DespesaService.total_gasto_mes_granja(granja_id)
         receitas_valor = ReceitaService.card_receita_valor_total_receita_mes_graja(granja_id)
         lucro_mes = receitas_valor - despesas_valor
+        card_arrecadado = ReceitaService.card_arrecadado(granja_id)
 
         return {
             "total_gasto_mes_granja": despesas_valor,
             "card_receita_total_receitas_mes_granja": receitas_valor,
-            "lucro_granja_mes": lucro_mes
+            "lucro_granja_mes": lucro_mes,
+            "card_arrecadado": card_arrecadado
         }, 200

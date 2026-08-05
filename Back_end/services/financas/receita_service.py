@@ -1,7 +1,7 @@
 from datetime import datetime
 from helpers.database import db
 from sqlalchemy import extract, func
-from helpers.errors.exceptions import NotFoundError
+from helpers.errors.exceptions import NotFoundError, BusinessRuleError
 from models.financas.receita import Receita
 from models.granja.granja import Granja
 from helpers.database.query_builder import QueryBuilder
@@ -57,7 +57,17 @@ class ReceitaService:
         )
 
         return float(total_vendido or 0)
-    
+
+
+    @staticmethod
+    def card_arrecadado(granja_id):
+        total_receita = (
+            db.session.query(func.sum(Receita.valor))
+            .filter(Receita.granja_id == granja_id)
+            .scalar()
+        )
+
+        return float(total_receita or 0)
 
 
     @staticmethod
@@ -115,6 +125,11 @@ class ReceitaService:
 
     @staticmethod
     def atualizar(registro, data):
+        if registro.venda_id is not None:
+            raise BusinessRuleError(
+                "Esta receita foi gerada automaticamente por uma venda. Utilize o módulo de Vendas para realizar alterações."
+            )
+        
         for k, v in data.items():
             setattr(registro, k, v)
 
@@ -123,4 +138,9 @@ class ReceitaService:
 
     @staticmethod
     def deletar(registro):
+        if registro.venda_id is not None:
+            raise BusinessRuleError(
+                "Esta receita foi gerada automaticamente por uma venda. Utilize o módulo de Vendas para realizar alterações."
+            )
+    
         db.session.delete(registro)

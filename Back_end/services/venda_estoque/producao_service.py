@@ -30,7 +30,6 @@ class ProducaoService:
             Producao,
             query
         ).build().order_by(Producao.data.desc())
-        print(query)
 
         return query.paginate(
             page=pagina,

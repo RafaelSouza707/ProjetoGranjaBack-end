@@ -169,11 +169,6 @@ class LoteFrangoService:
     def criar(data):
         normalizar(data)
 
-        if data.get("status"):
-            data["status_lote_frango_id"] = data["status"]["id"]
-
-        data.pop("status", None)
-
         novo_registro = LoteFrango(**data)
         
         db.session.add(novo_registro)
